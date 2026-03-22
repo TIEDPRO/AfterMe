@@ -1,12 +1,29 @@
 # After Me — Comprehensive UAT Test Scripts
 
-**Document Version:** 5.0  
+**Document Version:** 6.0  
 **Last Updated:** March 2026  
-**App Version:** After Me Mobile v1.0  
+**App Version:** After Me Mobile v1.0.1  
 **Platform:** iOS (physical device)  
 **Build:** Release build via `npx expo run:ios --device`
 
-### Changelog from v4.0 (this release — v5.0)
+### Changelog from v5.0 (this release — v6.0)
+| Change | Affected Tests |
+|---|---|
+| All onboarding screens now have a "← Back" button at top-left (Fix 71) | UAT-01 (updated), UAT-37 (new) |
+| Add Document modal now includes optional "Document Date" and "Expiry Date" fields with DD/MM/YYYY validation (Suggestion 13) | UAT-07 (updated), UAT-09 (updated), UAT-36 (new) |
+| Family Kit and Personal Recovery Kit wizards show "Processing document X of Y…" during generation (Suggestion 18) | UAT-12 (updated), UAT-14 (updated), UAT-38 (new) |
+| Vault Switcher shows error message with Retry button if vault loading fails (Suggestion 19) | UAT-18 (updated) |
+| "I Have a Legacy Kit" and "Restore My Vault" now pass distinct modes to the survivor screen (Fix 70) | UAT-13 (updated), UAT-20 (updated) |
+| Personal Recovery Wizard modal resets state when swiped down on iOS (Fix 74) | UAT-14 (updated) |
+| Manual key entry fallback if QR scanning fails in survivor flow (Fix 14) | UAT-13 (updated) |
+| iCloud card hidden on Android in How It Works screen — iOS only (Fix 61) | UAT-23 (note added) |
+| Settings screen split into distinct sections (Fix 62) | UAT-16 (updated), UAT-19 (updated) |
+| Accessibility improvements — new VoiceOver labels for date fields, progress text, and error states (Suggestion 16) | UAT-21 (updated) |
+| Premium status cached in SecureStore with HMAC tamper detection (Suggestion 10) | UAT-10 (note), UAT-11 (note) |
+| Product cache TTL of 1 hour — StoreKit products refresh after 60 minutes (Fix 64) | UAT-11 (note) |
+| Internal security: key zeroing, AAD binding, atomic vault operations — regression coverage | UAT-35 (new) |
+
+### Changelog from v4.0 (v5.0 changes)
 | Change | Affected Tests |
 |---|---|
 | Family Kit wizard now guards against empty vault — dismisses immediately with a clear Alert if no documents exist | UAT-12 (updated), UAT-24 (updated), UAT-34 (new) |
@@ -67,19 +84,23 @@
 24. [UAT-20 · Restore My Vault (Device Loss Recovery)](#uat-20--restore-my-vault-device-loss-recovery)
 25. [UAT-21 · Accessibility](#uat-21--accessibility)
 26. [UAT-22 · Reset & Re-Onboarding](#uat-22--reset--re-onboarding)
-27. [UAT-23 · Onboarding — How It Works Screen *(new)*](#uat-23--onboarding--how-it-works-screen)
-28. [UAT-24 · Safety Net — Family Kit Path *(new)*](#uat-24--safety-net--family-kit-path)
-29. [UAT-25 · Safety Net — iCloud Path *(new)*](#uat-25--safety-net--icloud-path)
-30. [UAT-26 · Safety Net — Defer Path *(new)*](#uat-26--safety-net--defer-path)
-31. [UAT-27 · Settings → Support Content *(new)*](#uat-27--settings--support-content)
-32. [UAT-28 · Website — How It Works Page *(new)*](#uat-28--website--how-it-works-page)
-33. [UAT-29 · Premium Gate — Family Kit from Onboarding *(new)*](#uat-29--premium-gate--family-kit-from-onboarding)
-34. [UAT-30 · Paywall UX — Lifetime Hero, Break-Even & Death-Risk *(new)*](#uat-30--paywall-ux--lifetime-hero-break-even--death-risk)
-35. [UAT-31 · Annual Plan Purchase via Paywall *(new)*](#uat-31--annual-plan-purchase-via-paywall)
-36. [UAT-32 · Settings — Annual Subscriber Upgrade Card *(new)*](#uat-32--settings--annual-subscriber-upgrade-card)
-37. [UAT-33 · Website — Pricing Section *(new)*](#uat-33--website--pricing-section)
-38. [UAT-34 · Family Kit — Empty Vault Guard *(new)*](#uat-34--family-kit--empty-vault-guard)
-38. [Pass/Fail Summary Sheet](#passfail-summary-sheet)
+27. [UAT-23 · Onboarding — How It Works Screen](#uat-23--onboarding--how-it-works-screen)
+28. [UAT-24 · Safety Net — Family Kit Path](#uat-24--safety-net--family-kit-path)
+29. [UAT-25 · Safety Net — iCloud Path](#uat-25--safety-net--icloud-path)
+30. [UAT-26 · Safety Net — Defer Path](#uat-26--safety-net--defer-path)
+31. [UAT-27 · Settings → Support Content](#uat-27--settings--support-content)
+32. [UAT-28 · Website — How It Works Page](#uat-28--website--how-it-works-page)
+33. [UAT-29 · Premium Gate — Family Kit from Onboarding](#uat-29--premium-gate--family-kit-from-onboarding)
+34. [UAT-30 · Paywall UX — Lifetime Hero, Break-Even & Death-Risk](#uat-30--paywall-ux--lifetime-hero-break-even--death-risk)
+35. [UAT-31 · Annual Plan Purchase via Paywall](#uat-31--annual-plan-purchase-via-paywall)
+36. [UAT-32 · Settings — Annual Subscriber Upgrade Card](#uat-32--settings--annual-subscriber-upgrade-card)
+37. [UAT-33 · Website — Pricing Section](#uat-33--website--pricing-section)
+38. [UAT-34 · Family Kit — Empty Vault Guard](#uat-34--family-kit--empty-vault-guard)
+39. [UAT-35 · Security Regression Testing *(new v6.0)*](#uat-35--security-regression-testing)
+40. [UAT-36 · Date Input Validation *(new v6.0)*](#uat-36--date-input-validation)
+41. [UAT-37 · Onboarding Back Navigation *(new v6.0)*](#uat-37--onboarding-back-navigation)
+42. [UAT-38 · Kit Generation Progress *(new v6.0)*](#uat-38--kit-generation-progress)
+43. [Pass/Fail Summary Sheet](#passfail-summary-sheet)
 
 ---
 
@@ -94,6 +115,7 @@ This document provides step-by-step manual UAT test scripts for the After Me mob
 - **Phase 5:** Onboarding, iCloud backup, in-app purchases
 - **Phase 6:** Personal Recovery Kit, multi-vault, Help screen
 - **Post-launch changes:** Safety Net redesign, onboarding explainer screen, survivor flow clean-up, support content corrections, website how-it-works page
+- **v1.0.1 fixes:** Onboarding back navigation, date input fields, kit generation progress, vault switcher error handling, survivor flow differentiation, modal swipe-to-dismiss state reset, manual key entry fallback, settings section layout, accessibility labels, SecureStore premium caching with HMAC, product cache TTL, security hardening (key zeroing, AAD, atomic operations)
 
 Each test case includes: preconditions, numbered steps, and explicit expected results. Record **PASS**, **FAIL**, or **BLOCKED** with notes.
 
@@ -141,29 +163,29 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 | Suite | Test ID | Description | Priority |
 |---|---|---|---|
-| Onboarding | UAT-01 | First launch, full onboarding flow (8 screens) | CRITICAL |
+| Onboarding | UAT-01 | First launch, full onboarding flow (8 screens) with back navigation | CRITICAL |
 | Auth | UAT-02 | Face ID / Touch ID lock and unlock | CRITICAL |
 | Legal | UAT-03 | Legal disclaimer, correct privacy URL | HIGH |
 | Safety Net | UAT-04 | Safety Net screen — card layout and messaging | CRITICAL |
 | Dashboard | UAT-05 | Vault dashboard, progress rings, categories | HIGH |
 | Scanning | UAT-06 | Camera document scanning | CRITICAL |
-| Import | UAT-07 | Import from Files and Photos | HIGH |
+| Import | UAT-07 | Import from Files and Photos with date fields | HIGH |
 | Library | UAT-08 | Search, sort, filter, long-press | HIGH |
-| Viewer | UAT-09 | View, edit metadata, delete | HIGH |
-| Free Tier | UAT-10 | **5-document** free tier enforcement | CRITICAL |
-| Purchases | UAT-11 | Premium upgrade — lifetime & annual, new paywall UX | CRITICAL |
-| Family Kit | UAT-12 | Create Family Kit, QR card, PDF | CRITICAL |
-| Survivor | UAT-13 | Open a Family Kit as a survivor (updated flow) | CRITICAL |
-| Recovery Kit | UAT-14 | Personal Recovery Kit creation | HIGH |
+| Viewer | UAT-09 | View, edit metadata (including dates), delete | HIGH |
+| Free Tier | UAT-10 | **5-document** free tier enforcement (SecureStore-backed) | CRITICAL |
+| Purchases | UAT-11 | Premium upgrade — lifetime & annual, new paywall UX (1-hr cache TTL) | CRITICAL |
+| Family Kit | UAT-12 | Create Family Kit, QR card, PDF — with progress reporting | CRITICAL |
+| Survivor | UAT-13 | Open a Family Kit as a survivor (distinct mode, manual key fallback) | CRITICAL |
+| Recovery Kit | UAT-14 | Personal Recovery Kit creation — with progress reporting and swipe reset | HIGH |
 | iCloud | UAT-15 | iCloud backup and full restore | CRITICAL |
-| Security | UAT-16 | Biometric toggle, session lock | HIGH |
+| Security | UAT-16 | Biometric toggle, session lock — sectioned settings layout | HIGH |
 | Integrity | UAT-17 | Vault integrity scan | MEDIUM |
-| Multi-Vault | UAT-18 | Create and switch vaults | MEDIUM |
-| Help | UAT-19 | Help & FAQ screen | LOW |
-| Device Loss | UAT-20 | Restore My Vault from Welcome screen | CRITICAL |
-| Accessibility | UAT-21 | VoiceOver, Dynamic Type | HIGH |
+| Multi-Vault | UAT-18 | Create and switch vaults — with error/retry handling | MEDIUM |
+| Help | UAT-19 | Help & FAQ screen — sectioned settings layout | LOW |
+| Device Loss | UAT-20 | Restore My Vault from Welcome screen (distinct mode) | CRITICAL |
+| Accessibility | UAT-21 | VoiceOver (expanded labels), Dynamic Type | HIGH |
 | Reset | UAT-22 | Full reset and re-onboarding | HIGH |
-| How It Works | UAT-23 | New onboarding explainer screen | HIGH |
+| How It Works | UAT-23 | Onboarding explainer screen (iOS: iCloud card visible) | HIGH |
 | Safety Net — Kit | UAT-24 | Safety Net: Family Kit path (primary) | CRITICAL |
 | Safety Net — iCloud | UAT-25 | Safety Net: iCloud path (personal recovery) | HIGH |
 | Safety Net — Defer | UAT-26 | Safety Net: defer path | HIGH |
@@ -174,7 +196,11 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 | Annual Purchase | UAT-31 | Annual Plan Purchase via Paywall | CRITICAL |
 | Upgrade Card | UAT-32 | Settings → Upgrade Card for Annual Subscribers | HIGH |
 | Website Pricing | UAT-33 | Website Pricing Section — Lifetime Hero + Annual | HIGH |
-| Family Kit Guard | UAT-34 | Family Kit — Empty Vault Guard *(new v5.0)* | CRITICAL |
+| Family Kit Guard | UAT-34 | Family Kit — Empty Vault Guard | CRITICAL |
+| Security Regression | UAT-35 | Key rotation, vault integrity after backgrounding, session key eviction *(new v6.0)* | HIGH |
+| Date Validation | UAT-36 | DD/MM/YYYY format validation in Add Document flow *(new v6.0)* | HIGH |
+| Back Navigation | UAT-37 | Onboarding back button on all 8 screens *(new v6.0)* | HIGH |
+| Kit Progress | UAT-38 | Progress reporting during kit creation *(new v6.0)* | HIGH |
 
 ---
 
@@ -182,23 +208,26 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 **Priority:** CRITICAL  
 **Precondition:** Fresh install. App has never been opened on this device.  
-**Note (v3.0):** Onboarding now has 8 screens — a new "How Your Family Will Access This" screen is inserted between Screen 4 (QR reveal) and the Legal Disclaimer. Total progress dots = 8.
+**Note (v3.0):** Onboarding now has 8 screens — a new "How Your Family Will Access This" screen is inserted between Screen 4 (QR reveal) and the Legal Disclaimer. Total progress dots = 8.  
+**Note (v6.0):** Every onboarding screen now has a "← Back" button at top-left. See UAT-37 for dedicated back navigation coverage.
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
 | 01.1 | Launch the app | Welcome screen appears with After Me logo, tagline "Your legacy. Their peace of mind.", and 3 buttons | ☐ |
 | 01.2 | Verify button layout | "I'm Planning My Legacy" (amber, primary), "I Have a Legacy Kit" (secondary, border), "Restore My Vault" (subtle, lowest) | ☐ |
 | 01.3 | Tap "I'm Planning My Legacy" | First onboarding screen appears — emotional, warm tone | ☐ |
-| 01.4 | Read and advance through Screens 1–4 | Each screen loads without crash; back navigation works | ☐ |
-| 01.5 | After Screen 4 (QR reveal), note the next screen | **New: "How Your Family Will Access This" explainer screen appears** (not the Legal Disclaimer yet) | ☐ |
-| 01.6 | Read explainer screen and tap "I understand — continue" | App proceeds to Legal Disclaimer screen | ☐ |
-| 01.7 | Verify Legal Disclaimer screen | Legal disclaimer appears with full text and Privacy Policy link | ☐ |
-| 01.8 | Tap "I Accept & Continue" | App proceeds to biometric setup screen | ☐ |
-| 01.9 | Tap primary CTA on biometric screen | iOS Face ID / Touch ID system prompt appears | ☐ |
-| 01.10 | Authenticate successfully | Success animation plays; screen advances to Screen 8 (Safety Net) | ☐ |
-| 01.11 | Complete Safety Net screen (see UAT-24/25/26) | App transitions to the main vault dashboard | ☐ |
-| 01.12 | Verify main tabs | Four tabs visible: Vault, Documents, Family Kit, Settings | ☐ |
-| 01.13 | Verify progress dot count throughout onboarding | 8 dots shown in total; active dot advances correctly on each screen | ☐ |
+| 01.4 | Verify "← Back" button is present on Screen 1 | A "← Back" button is visible at the top-left of the screen | ☐ |
+| 01.5 | Read and advance through Screens 1–4 | Each screen loads without crash; "← Back" button visible on every screen | ☐ |
+| 01.6 | On Screen 2, tap "← Back" | Returns to Screen 1 without data loss or crash | ☐ |
+| 01.7 | Re-advance to Screen 4 and note the next screen | After Screen 4 (QR reveal), **"How Your Family Will Access This" explainer screen appears** (not the Legal Disclaimer yet) | ☐ |
+| 01.8 | Read explainer screen and tap "I understand — continue" | App proceeds to Legal Disclaimer screen | ☐ |
+| 01.9 | Verify Legal Disclaimer screen | Legal disclaimer appears with full text and Privacy Policy link | ☐ |
+| 01.10 | Tap "I Accept & Continue" | App proceeds to biometric setup screen | ☐ |
+| 01.11 | Tap primary CTA on biometric screen | iOS Face ID / Touch ID system prompt appears | ☐ |
+| 01.12 | Authenticate successfully | Success animation plays; screen advances to Screen 8 (Safety Net) | ☐ |
+| 01.13 | Complete Safety Net screen (see UAT-24/25/26) | App transitions to the main vault dashboard | ☐ |
+| 01.14 | Verify main tabs | Four tabs visible: Vault, Documents, Family Kit, Settings | ☐ |
+| 01.15 | Verify progress dot count throughout onboarding | 8 dots shown in total; active dot advances correctly on each screen | ☐ |
 
 ---
 
@@ -312,7 +341,8 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 ## UAT-07 · Document Import (Files & Photos)
 
 **Priority:** HIGH  
-**Precondition:** Test PDF and test JPEG available on device.
+**Precondition:** Test PDF and test JPEG available on device.  
+**Note (v6.0):** The Add Document modal now includes optional "Document Date" and "Expiry Date" fields (DD/MM/YYYY) shown on the category selection step. See UAT-36 for dedicated date validation coverage.
 
 ### Import from Files
 
@@ -321,23 +351,27 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 | 07.1 | Open Add Document → select a category → tap "Pick from Files" | iOS Files picker opens | ☐ |
 | 07.2 | Navigate to a PDF file | File is selectable | ☐ |
 | 07.3 | Select the PDF | Returns to app; title pre-populated from filename | ☐ |
-| 07.4 | Confirm and save | PDF document appears in the library | ☐ |
-| 07.5 | Open the document | PDF renders in the viewer | ☐ |
+| 07.4 | Verify "Document Date" and "Expiry Date" fields visible | Two side-by-side input fields with DD/MM/YYYY placeholder shown on category step | ☐ |
+| 07.5 | Enter a valid Document Date (e.g. "15/03/2024") | Field accepts input; no error shown on blur | ☐ |
+| 07.6 | Leave Expiry Date blank | Field remains empty — this is optional | ☐ |
+| 07.7 | Confirm and save | PDF document appears in the library with the document date set | ☐ |
+| 07.8 | Open the document | PDF renders in the viewer; metadata shows the entered document date | ☐ |
 
 ### Import from Photos
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
-| 07.6 | Open Add Document → select a category → tap "Pick from Photos" | iOS photo picker opens | ☐ |
-| 07.7 | Select a photo | Returns to app; title editable | ☐ |
-| 07.8 | Enter a title and save | Image document saved with thumbnail | ☐ |
+| 07.9 | Open Add Document → select a category → tap "Pick from Photos" | iOS photo picker opens | ☐ |
+| 07.10 | Select a photo | Returns to app; title editable | ☐ |
+| 07.11 | Enter a Document Date and Expiry Date | Both fields accept DD/MM/YYYY input | ☐ |
+| 07.12 | Enter a title and save | Image document saved with thumbnail and both dates | ☐ |
 
 ### Unsupported File Type
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
-| 07.9 | Try importing a `.docx` or `.mp4` file | App shows an error: "Unsupported file type" | ☐ |
-| 07.10 | Verify app does not crash | App remains stable; no crash | ☐ |
+| 07.13 | Try importing a `.docx` or `.mp4` file | App shows an error: "Unsupported file type" | ☐ |
+| 07.14 | Verify app does not crash | App remains stable; no crash | ☐ |
 
 ---
 
@@ -366,23 +400,25 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 ## UAT-09 · Document Viewer & Metadata Editing
 
 **Priority:** HIGH  
-**Precondition:** At least 1 document exists in vault.
+**Precondition:** At least 1 document exists in vault.  
+**Note (v6.0):** Date fields now use DD/MM/YYYY format with validation. The viewer displays document date and expiry date if set.
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
 | 09.1 | Tap a document in the library | Document viewer opens | ☐ |
 | 09.2 | Verify document renders | Image: photo shown. PDF: PDF viewer renders document. | ☐ |
-| 09.3 | Verify metadata shown | Title, category, date added, provider (if set) visible | ☐ |
+| 09.3 | Verify metadata shown | Title, category, date added, provider (if set), document date (if set), expiry date (if set) visible | ☐ |
 | 09.4 | Tap "Edit" button | Edit mode activates; text fields become editable | ☐ |
 | 09.5 | Change the title | New title entered in text input | ☐ |
-| 09.6 | Set a document date | Date field accepts date input | ☐ |
+| 09.6 | Set a document date using DD/MM/YYYY format | Date field accepts "15/06/2024" without error | ☐ |
 | 09.7 | Set a provider name (e.g. "Home Office") | Text input accepts value | ☐ |
-| 09.8 | Set an expiry date (e.g. 5 years from today) | Date input accepted | ☐ |
-| 09.9 | Tap "Save" | Success feedback shown; viewer displays updated metadata immediately | ☐ |
-| 09.10 | Close and reopen the document | Updated metadata persists correctly | ☐ |
-| 09.11 | Tap "Delete Document" button | Confirmation dialog appears | ☐ |
-| 09.12 | Cancel delete | Document remains | ☐ |
-| 09.13 | Delete via long-press context menu | Document removed from library; thumbnail removed | ☐ |
+| 09.8 | Set an expiry date using DD/MM/YYYY format (e.g. "15/06/2034") | Date input accepted without error | ☐ |
+| 09.9 | Enter an invalid date (e.g. "32/13/2024") | Inline error message shown: "Invalid month" or "Invalid day" | ☐ |
+| 09.10 | Correct the date and tap "Save" | Success feedback shown; viewer displays updated metadata immediately | ☐ |
+| 09.11 | Close and reopen the document | Updated metadata persists correctly including dates | ☐ |
+| 09.12 | Tap "Delete Document" button | Confirmation dialog appears | ☐ |
+| 09.13 | Cancel delete | Document remains | ☐ |
+| 09.14 | Delete via long-press context menu | Document removed from library; thumbnail removed | ☐ |
 
 ---
 
@@ -390,7 +426,8 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 **Priority:** CRITICAL  
 **Precondition:** Not yet upgraded to Premium. Fresh vault (or reset).  
-**Note (v4.0):** Free tier limit is now **5 documents** (reduced from 10). All hardcoded references in UI use the `FREE_TIER_DOCUMENT_LIMIT` constant — verify the number shown in-app matches 5.
+**Note (v4.0):** Free tier limit is now **5 documents** (reduced from 10). All hardcoded references in UI use the `FREE_TIER_DOCUMENT_LIMIT` constant — verify the number shown in-app matches 5.  
+**Note (v6.0):** Premium status is now stored in SecureStore with HMAC tamper detection. The cached status is verified against a signed hash — manually tampering with the SecureStore value will not bypass the paywall.
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
@@ -409,7 +446,8 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 **Priority:** CRITICAL  
 **Precondition:** Sandbox tester account signed in on device (Settings → App Store → Sandbox Account). Both IAP products created in App Store Connect.  
-**Note (v4.0):** The paywall has been fully rebuilt. See UAT-30 for detailed paywall UX verification. This suite covers the lifetime purchase flow specifically.
+**Note (v4.0):** The paywall has been fully rebuilt. See UAT-30 for detailed paywall UX verification. This suite covers the lifetime purchase flow specifically.  
+**Note (v6.0):** Products are cached for 1 hour (TTL = 3,600,000ms). After 1 hour, StoreKit is re-queried. Premium status is persisted in SecureStore with HMAC signing for tamper resistance.
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
@@ -423,13 +461,22 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 | 11.8 | Verify no upgrade card is shown | Annual subscriber upgrade card does **not** appear (user is lifetime) | ☐ |
 | 11.9 | Verify document limit removed | Can add a 6th document without paywall appearing | ☐ |
 | 11.10 | Verify Family Kit unlocked | Family Kit creation wizard opens without paywall | ☐ |
+| 11.11 | Force-close and reopen app | Premium status persists from SecureStore — no re-purchase needed | ☐ |
 
 ### Restore Purchases
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
-| 11.11 | Sign out from sandbox account; sign back in | — | ☐ |
-| 11.12 | Settings → Subscription → "Restore Purchases" | Loading spinner; then "Lifetime access — no renewals, ever" confirmation restored | ☐ |
+| 11.12 | Sign out from sandbox account; sign back in | — | ☐ |
+| 11.13 | Settings → Subscription → "Restore Purchases" | Loading spinner; then "Lifetime access — no renewals, ever" confirmation restored | ☐ |
+
+### Product Cache TTL
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 11.14 | Note the time after opening the paywall | Products load from StoreKit and are cached | ☐ |
+| 11.15 | Close and reopen paywall within 60 minutes | Products load instantly from cache (no StoreKit delay) | ☐ |
+| 11.16 | Wait > 60 minutes and reopen paywall | Products re-fetched from StoreKit (may show brief loading state) | ☐ |
 
 ---
 
@@ -437,25 +484,27 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 **Priority:** CRITICAL  
 **Precondition:** Premium account. **At least 1 document in vault** — the wizard immediately dismisses with an Alert if the vault is empty (see UAT-34).  
-**Note (v5.0):** The kit wizard now guards against an empty vault at entry. If triggered with zero documents, the user sees an alert and is returned to the dashboard. Test that guard in UAT-34.
+**Note (v5.0):** The kit wizard now guards against an empty vault at entry. If triggered with zero documents, the user sees an alert and is returned to the dashboard. Test that guard in UAT-34.  
+**Note (v6.0):** The generating step now shows "Processing document X of Y…" progress text. See UAT-38 for dedicated progress coverage.
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
 | 12.1 | Tap "Family Kit" tab | Family Kit screen shows history / create button | ☐ |
-| 12.2 | Tap "Create Family Kit" | Kit Creation Wizard opens — Step 1: Introduction | ☐ |
-| 12.3 | Read introduction and tap "Get Started" | Step 2: owner name and emergency contact form | ☐ |
+| 12.2 | Tap "Create Family Kit" | Kit Creation Wizard opens — Step 1 of 4: Introduction | ☐ |
+| 12.3 | Read introduction and tap "Get Started" | Step 2 of 4: owner name and emergency contact form | ☐ |
 | 12.4 | Enter your name and an emergency contact name | Fields accept text | ☐ |
-| 12.5 | Tap "Generate Kit" | Step 3: Loading / generating state shown | ☐ |
-| 12.6 | Wait for generation to complete | Step 4: Validating (auto-validation); then Step 5: Complete | ☐ |
-| 12.7 | Verify QR code is shown | A QR code is visible on the success screen | ☐ |
-| 12.8 | Tap "Save & Distribute" | Step 6: Distribution options shown | ☐ |
-| 12.9 | Tap "Save .afterme File" | iOS share sheet appears to save/AirDrop the file | ☐ |
-| 12.10 | Save file to Files app | File saved with `.afterme` extension | ☐ |
-| 12.11 | Tap "Print QR Key Card" | A PDF is generated and share/print sheet appears | ☐ |
-| 12.12 | Dismiss wizard | Wizard closes; Family Kit tab shows kit history entry | ☐ |
-| 12.13 | Verify freshness status | Kit shows "Fresh" status indicator | ☐ |
-| 12.14 | Add a new document to vault | Family Kit tab shows a "stale" or "update recommended" warning | ☐ |
-| 12.15 | **Verify both outputs exist** | You now have (a) the `.afterme` file saved to Files and (b) the printed/saved QR Key Card PDF — keep these for UAT-13 | ☐ |
+| 12.5 | Tap "Generate Kit" | Generating state shown with spinner and "Encrypting vault contents with a unique access key..." | ☐ |
+| 12.6 | Verify progress text during generation | **"Processing document X of Y…"** text appears and updates as each document is encrypted | ☐ |
+| 12.7 | Wait for generation to complete | Validating step (auto-validation); then Step 3 of 4: Complete | ☐ |
+| 12.8 | Verify QR code is shown | A QR code is visible on the success screen with "Kit Created & Verified" banner | ☐ |
+| 12.9 | Tap "Next: Distribution Tips" | Step 4 of 4: Distribution options shown | ☐ |
+| 12.10 | Tap "Save .afterme File" (from Step 3 actions grid) | iOS share sheet appears to save/AirDrop the file | ☐ |
+| 12.11 | Save file to Files app | File saved with `.afterme` extension | ☐ |
+| 12.12 | Tap "Print PDF" (from Step 3 actions grid) | A PDF is generated and share/print sheet appears | ☐ |
+| 12.13 | Tap "Done" on distribution step | Wizard closes; Family Kit tab shows kit history entry | ☐ |
+| 12.14 | Verify freshness status | Kit shows "Fresh" status indicator | ☐ |
+| 12.15 | Add a new document to vault | Family Kit tab shows a "stale" or "update recommended" warning | ☐ |
+| 12.16 | **Verify both outputs exist** | You now have (a) the `.afterme` file saved to Files and (b) the printed/saved QR Key Card PDF — keep these for UAT-13 | ☐ |
 
 ---
 
@@ -463,42 +512,51 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 **Priority:** CRITICAL  
 **Precondition:** A valid `.afterme` file and its QR code (from UAT-12) are available. Use a second device or fresh install.  
-**Note (v3.0):** The survivor flow no longer shows a bereavement support step at the end. After the vault imports successfully, the flow ends at the vault intro screen with an "Open the Vault" button. No external support links appear.
+**Note (v3.0):** The survivor flow no longer shows a bereavement support step at the end. After the vault imports successfully, the flow ends at the vault intro screen with an "Open the Vault" button. No external support links appear.  
+**Note (v6.0):** "I Have a Legacy Kit" now passes a `legacy_kit` mode to the survivor screen, distinct from the `restore_vault` mode used by "Restore My Vault". If QR scanning fails, a manual key entry option is available (Fix 14).
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
 | 13.1 | Fresh install (or use second device) and launch app | Welcome screen shown | ☐ |
-| 13.2 | Tap "I Have a Legacy Kit" | Survivor onboarding screen appears | ☐ |
+| 13.2 | Tap "I Have a Legacy Kit" | Survivor onboarding screen appears (mode is `legacy_kit` internally — UI flow is shared with restore mode) | ☐ |
 | 13.3 | Verify tone and language | Warm, compassionate language; no corporate or clinical tone; dove emoji; "Take your time. There's no rush." | ☐ |
 | 13.4 | Read the 3-step overview and tap "I'm Ready to Begin" | Camera opens for QR scanning | ☐ |
 | 13.5 | Scan the printed/displayed QR code from UAT-12 | Access key extracted; "QR Code Received" screen appears with prompt to select file | ☐ |
-| 13.6 | Tap "Select .afterme File" and choose the file from Files app | Decryption begins; "Importing Vault" loading screen shown | ☐ |
-| 13.7 | Wait for import to complete | **"Vault Imported Successfully"** screen shown with document count | ☐ |
-| 13.8 | Verify vault intro screen content | Shows document count, three info bullets (encryption, categories, Face ID protection) | ☐ |
-| 13.9 | **Verify no support links appear** | No external links, no bereavement resources, no phone numbers are shown anywhere in this flow | ☐ |
-| 13.10 | Tap "Open the Vault" | Main vault dashboard opens | ☐ |
-| 13.11 | Verify all documents present | All documents from original vault are visible in library | ☐ |
-| 13.12 | Open a document | Document content renders correctly | ☐ |
-| 13.13 | Verify vault is protected by own biometrics | Force-close and reopen — Face ID prompt from the survivor's own device appears | ☐ |
+| 13.6 | **Test manual key entry fallback:** Cover the camera or tap the manual entry option | A text input field appears allowing manual entry of the access key | ☐ |
+| 13.7 | Type/paste the access key string and confirm | Key accepted; same "QR Code Received" screen shown | ☐ |
+| 13.8 | Tap "Select .afterme File" and choose the file from Files app | Decryption begins; "Importing Vault" loading screen shown | ☐ |
+| 13.9 | Wait for import to complete | **"Vault Imported Successfully"** screen shown with document count | ☐ |
+| 13.10 | Verify vault intro screen content | Shows document count, three info bullets (encryption, categories, Face ID protection) | ☐ |
+| 13.11 | **Verify no support links appear** | No external links, no bereavement resources, no phone numbers are shown anywhere in this flow | ☐ |
+| 13.12 | Tap "Open the Vault" | Main vault dashboard opens | ☐ |
+| 13.13 | Verify all documents present | All documents from original vault are visible in library | ☐ |
+| 13.14 | Open a document | Document content renders correctly | ☐ |
+| 13.15 | Verify vault is protected by own biometrics | Force-close and reopen — Face ID prompt from the survivor's own device appears | ☐ |
 
 ---
 
 ## UAT-14 · Personal Recovery Kit
 
 **Priority:** HIGH  
-**Precondition:** At least 1 document in vault.
+**Precondition:** At least 1 document in vault.  
+**Note (v6.0):** The generating step now shows "Processing document X of Y…" progress text (see UAT-38). The modal uses `presentationStyle="pageSheet"` — swiping down on iOS dismisses the modal AND resets all wizard state (Fix 74).
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
 | 14.1 | Open Settings → "Personal Recovery" section | "Personal Recovery Kit" button visible | ☐ |
 | 14.2 | Tap "Personal Recovery Kit" | Wizard opens with introduction screen | ☐ |
 | 14.3 | Read the introduction and storage recommendations | Clear instructions about storing file and QR code separately | ☐ |
-| 14.4 | Tap "Generate Recovery Kit" | Loading screen with "Encrypting your vault…" | ☐ |
-| 14.5 | Wait for completion | QR code shown on completion screen | ☐ |
-| 14.6 | Tap "Save & Share" | Distribution screen shown | ☐ |
-| 14.7 | Tap "Save .afterme File" | Share sheet appears to save the file | ☐ |
-| 14.8 | Tap "Print QR Recovery Card" | PDF share sheet appears | ☐ |
-| 14.9 | Tap "Done" | Wizard closes | ☐ |
+| 14.4 | Tap "Generate Recovery Kit" | Loading screen with "Encrypting your vault…" and spinner | ☐ |
+| 14.5 | Verify progress text during generation | **"Processing document X of Y…"** text appears and updates | ☐ |
+| 14.6 | Wait for completion | QR code shown on completion screen with document count | ☐ |
+| 14.7 | Tap "Save & Share" | Distribution screen shown with two action cards | ☐ |
+| 14.8 | Tap "Save Encrypted Vault File" | Share sheet appears to save the .afterme file | ☐ |
+| 14.9 | Tap "Save / Print PDF Recovery Card" | PDF share sheet appears | ☐ |
+| 14.10 | Tap "Done" | Wizard closes | ☐ |
+| 14.11 | **Test swipe-to-dismiss reset:** Reopen the wizard | Wizard opens at introduction screen (step 1) | ☐ |
+| 14.12 | Advance to the generating step | Generation begins | ☐ |
+| 14.13 | Wait for completion, then swipe down on the modal | Modal dismisses via iOS page sheet gesture | ☐ |
+| 14.14 | Reopen the wizard | Wizard opens at introduction screen again — **all state is reset** (not stuck on complete/distribute) | ☐ |
 
 ---
 
@@ -533,17 +591,19 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 ## UAT-16 · Settings — Biometric Lock & Security
 
 **Priority:** HIGH  
-**Precondition:** Onboarding complete.
+**Precondition:** Onboarding complete.  
+**Note (v6.0):** Settings screen is now split into distinct sections with clear headings (Fix 62). Verify section headers are visible.
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
-| 16.1 | Open Settings → Security section | Biometric lock toggle shown; currently on | ☐ |
-| 16.2 | Toggle biometric lock OFF | Toggle state changes; preference saved | ☐ |
-| 16.3 | Background and reopen app | App reopens WITHOUT biometric prompt | ☐ |
-| 16.4 | Toggle biometric lock back ON | Toggle state changes; preference saved | ☐ |
-| 16.5 | Background and reopen app | Biometric prompt appears again | ☐ |
-| 16.6 | Open Settings → Storage section | Shows encrypted vault size and used percentage | ☐ |
-| 16.7 | Verify storage bar / display | Correct byte count displayed | ☐ |
+| 16.1 | Open Settings tab | Settings screen shows distinct section headers (e.g. "Security", "Vault Information", "Subscription", "iCloud Backup", "Personal Recovery", "Support") | ☐ |
+| 16.2 | Locate the "Security" section | Biometric lock toggle shown within the Security section; currently on | ☐ |
+| 16.3 | Toggle biometric lock OFF | Toggle state changes; preference saved | ☐ |
+| 16.4 | Background and reopen app | App reopens WITHOUT biometric prompt | ☐ |
+| 16.5 | Toggle biometric lock back ON | Toggle state changes; preference saved | ☐ |
+| 16.6 | Background and reopen app | Biometric prompt appears again | ☐ |
+| 16.7 | Locate the "Vault Information" section | Shows encrypted vault size and used percentage under a clear "Vault Information" heading | ☐ |
+| 16.8 | Verify storage bar / display | Correct byte count displayed | ☐ |
 
 ---
 
@@ -554,7 +614,7 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
-| 17.1 | Open Settings → Storage section | "Check Integrity" button visible | ☐ |
+| 17.1 | Open Settings → Vault Information section | "Check Integrity" button visible | ☐ |
 | 17.2 | Tap "Check Integrity" | Loading state; scan in progress | ☐ |
 | 17.3 | Wait for scan to complete | Result shown: "X of Y documents verified. No corruption found." | ☐ |
 | 17.4 | Verify no false positives | Normal, readable documents should all pass | ☐ |
@@ -564,7 +624,8 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 ## UAT-18 · Multi-Vault Management
 
 **Priority:** MEDIUM  
-**Precondition:** Premium account (required for multiple vaults).
+**Precondition:** Premium account (required for multiple vaults).  
+**Note (v6.0):** If vault loading fails, an error message is displayed with a "Retry" button (Suggestion 19). Verify error and recovery flow.
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
@@ -581,6 +642,8 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 | 18.11 | Try to delete "My Vault" (default) | Error shown: "Cannot delete the default vault" | ☐ |
 | 18.12 | Delete "Business Docs" vault | Confirmation alert shown; vault deleted after confirm | ☐ |
 | 18.13 | Attempt to create a 6th vault (create 5 total first) | Error shown: "Maximum of 5 vaults reached" | ☐ |
+| 18.14 | **Test error handling:** Disable network and open Manage Vaults (if loading depends on network), or simulate a load failure | Error message appears: "Failed to load vaults. Please try again." | ☐ |
+| 18.15 | Tap "Retry" button | Loading restarts; vaults load successfully once connectivity is restored | ☐ |
 
 ---
 
@@ -588,11 +651,12 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 **Priority:** LOW  
 **Precondition:** Onboarding complete.  
-**Note (v4.0):** The Account & Subscription FAQ section has been updated with correct free tier limits and new pricing Q&A.
+**Note (v4.0):** The Account & Subscription FAQ section has been updated with correct free tier limits and new pricing Q&A.  
+**Note (v6.0):** Settings screen now uses distinct sections (Fix 62). Verify "Help & FAQ" is accessible from the correct section.
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
-| 19.1 | Open Settings → "Help & FAQ" | Help screen opens in a modal | ☐ |
+| 19.1 | Open Settings → locate "Support" section → tap "Help & FAQ" | Help screen opens in a modal | ☐ |
 | 19.2 | Verify 5 FAQ sections visible | Security & Privacy, Recovery & Backup, Documents & Vault, Account & Subscription, The .afterme Format | ☐ |
 | 19.3 | Tap a question | Answer expands inline (accordion); chevron rotates | ☐ |
 | 19.4 | Tap the question again | Answer collapses | ☐ |
@@ -610,24 +674,28 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 ## UAT-20 · Restore My Vault (Device Loss Recovery)
 
 **Priority:** CRITICAL  
-**Precondition:** A Personal Recovery Kit `.afterme` file and its QR code are available (from UAT-14). Fresh install.
+**Precondition:** A Personal Recovery Kit `.afterme` file and its QR code are available (from UAT-14). Fresh install.  
+**Note (v6.0):** "Restore My Vault" now passes a `restore_vault` mode to the survivor screen, distinct from the `legacy_kit` mode used by "I Have a Legacy Kit" (Fix 70). Manual key entry fallback is also available in this flow.
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
 | 20.1 | Fresh install; launch app | Welcome screen shows 3 buttons | ☐ |
 | 20.2 | Verify "Restore My Vault" button is visible | Third button below "I Have a Legacy Kit" | ☐ |
-| 20.3 | Tap "Restore My Vault" | Survivor/Import flow opens | ☐ |
-| 20.4 | Scan the Personal Recovery Kit QR code | Access key scanned | ☐ |
-| 20.5 | Select the `.afterme` Recovery Kit file | Decryption begins | ☐ |
-| 20.6 | Wait for restore to complete | Success; all documents restored | ☐ |
-| 20.7 | Verify documents in library | All original documents present | ☐ |
+| 20.3 | Tap "Restore My Vault" | Survivor/Import flow opens (mode is `restore_vault` internally — shared UI with legacy kit flow) | ☐ |
+| 20.4 | Verify import screen messaging | Language uses warm, compassionate tone; the same survivor import flow is shared for both entry points | ☐ |
+| 20.5 | Scan the Personal Recovery Kit QR code | Access key scanned | ☐ |
+| 20.6 | **Test manual key entry:** Tap manual entry option instead of scanning | Text input appears for pasting/typing the access key | ☐ |
+| 20.7 | Select the `.afterme` Recovery Kit file | Decryption begins | ☐ |
+| 20.8 | Wait for restore to complete | Success; all documents restored | ☐ |
+| 20.9 | Verify documents in library | All original documents present | ☐ |
 
 ---
 
 ## UAT-21 · Accessibility
 
 **Priority:** HIGH  
-**Precondition:** Enable VoiceOver (Settings → Accessibility → VoiceOver) for steps 21.1–21.6. Enable Large Text for 21.7–21.11.
+**Precondition:** Enable VoiceOver (Settings → Accessibility → VoiceOver) for steps 21.1–21.10. Enable Large Text for 21.11–21.17.  
+**Note (v6.0):** New accessibility labels have been added for date input fields, progress text during kit generation, error states, and retry buttons (Suggestion 16).
 
 ### VoiceOver
 
@@ -635,22 +703,27 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 |---|---|---|---|
 | 21.1 | Enable VoiceOver; open app | VoiceOver reads the Welcome screen title and button labels | ☐ |
 | 21.2 | Navigate through the new How It Works onboarding screen | Three path cards are read correctly; "I understand — continue" button announced | ☐ |
-| 21.3 | Navigate to Document Library | Each document card announces title and category | ☐ |
-| 21.4 | Navigate to category filter badges | Badges are announced with correct accessibility labels | ☐ |
-| 21.5 | Navigate to Settings toggles | Biometric toggle announces "on/off" state | ☐ |
-| 21.6 | Open Help screen | FAQ questions are announced with "button, collapsed/expanded" state | ☐ |
-| 21.7 | Disable VoiceOver | — | ☐ |
+| 21.3 | Navigate through onboarding and verify "← Back" buttons | VoiceOver announces "Back" button on each onboarding screen | ☐ |
+| 21.4 | Navigate to Document Library | Each document card announces title and category | ☐ |
+| 21.5 | Navigate to category filter badges | Badges are announced with correct accessibility labels | ☐ |
+| 21.6 | Open Add Document modal → advance to category step | VoiceOver announces "Document date" and "Expiry date" input fields with DD/MM/YYYY format hint | ☐ |
+| 21.7 | Enter an invalid date and blur the field | VoiceOver announces the error text (e.g. "Use DD/MM/YYYY format") | ☐ |
+| 21.8 | Navigate to Settings toggles | Biometric toggle announces "on/off" state; section headers are announced | ☐ |
+| 21.9 | Open Help screen | FAQ questions are announced with "button, collapsed/expanded" state | ☐ |
+| 21.10 | Open Vault Switcher and trigger error state | VoiceOver announces error message and "Retry loading vaults" button | ☐ |
 
 ### Dynamic Type
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
-| 21.8 | Set font size to "Accessibility Extra Large" (Settings → Accessibility → Display & Text Size) | — | ☐ |
-| 21.9 | Open app — check onboarding screens including new How It Works screen | Text scales up; no truncation or overflow on any card | ☐ |
-| 21.10 | Open Document Library | Text in cards scales; layout remains usable | ☐ |
-| 21.11 | Open Help screen | FAQ answers scale; accordion still works | ☐ |
-| 21.12 | Open Settings → Support section | All links readable at large text | ☐ |
-| 21.13 | Reset font size to default | — | ☐ |
+| 21.11 | Disable VoiceOver | — | ☐ |
+| 21.12 | Set font size to "Accessibility Extra Large" (Settings → Accessibility → Display & Text Size) | — | ☐ |
+| 21.13 | Open app — check onboarding screens including new How It Works screen | Text scales up; no truncation or overflow on any card. Back buttons remain visible. | ☐ |
+| 21.14 | Open Document Library | Text in cards scales; layout remains usable | ☐ |
+| 21.15 | Open Add Document → category step | Date input fields scale; labels remain readable; error text scales | ☐ |
+| 21.16 | Open Help screen | FAQ answers scale; accordion still works | ☐ |
+| 21.17 | Open Settings → Support section | All links readable at large text; section headers scale | ☐ |
+| 21.18 | Reset font size to default | — | ☐ |
 
 ---
 
@@ -666,7 +739,7 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 | 22.3 | Cancel | App is unchanged | ☐ |
 | 22.4 | Tap Reset again and confirm | All data cleared; app returns to Welcome screen | ☐ |
 | 22.5 | Verify vault is empty | All documents gone; Welcome screen fresh | ☐ |
-| 22.6 | Complete full onboarding again | Onboarding flows correctly from scratch including new How It Works screen | ☐ |
+| 22.6 | Complete full onboarding again | Onboarding flows correctly from scratch including new How It Works screen and back buttons on every screen | ☐ |
 | 22.7 | Verify no residual data | No old documents appear | ☐ |
 
 ---
@@ -674,7 +747,8 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 ## UAT-23 · Onboarding — How It Works Screen
 
 **Priority:** HIGH  
-**Precondition:** Fresh install or reset. Reach the new explainer screen by advancing through Screens 1–4 of onboarding.
+**Precondition:** Fresh install or reset. Reach the new explainer screen by advancing through Screens 1–4 of onboarding.  
+**Note (v6.0 — Fix 61):** The iCloud card on this screen is hidden on Android. Since this is an iOS-only UAT, the iCloud card should be visible. If testing on Android in future, verify the card is hidden.
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
@@ -683,7 +757,7 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 | 23.3 | Verify headline | Reads "How your family will access this" | ☐ |
 | 23.4 | Verify subhead copy | Explains the concept of no phone / no password / no Apple ID needed | ☐ |
 | 23.5 | Verify Path 1 card — Family Kit | Card present; "Recommended" badge in amber; explains QR card + .afterme file; notes "Requires: QR card + .afterme file" | ☐ |
-| 23.6 | Verify Path 2 card — iCloud | Card present; "For your own recovery" badge; warning note that it does NOT give family access | ☐ |
+| 23.6 | Verify Path 2 card — iCloud | Card present (iOS only); "For your own recovery" badge; warning note that it does NOT give family access | ☐ |
 | 23.7 | Verify Path 3 card — No preparation | Card present; explains permanent inaccessibility | ☐ |
 | 23.8 | Verify amber note at bottom | Reads "You'll set up your Family Kit right after finishing this setup. It takes about two minutes." | ☐ |
 | 23.9 | Tap "I understand — continue" | App proceeds to Legal Disclaimer screen | ☐ |
@@ -749,7 +823,7 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 | Step | Action | Expected Result | Result |
 |---|---|---|---|
-| 27.1 | Open Settings → scroll to Support section | Support section is visible | ☐ |
+| 27.1 | Open Settings → scroll to Support section | Support section is visible with clear "Support" heading | ☐ |
 | 27.2 | Verify the Support section heading | Reads "Support" | ☐ |
 | 27.3 | Count the items in the Support section | Exactly 4 items — no more, no less | ☐ |
 | 27.4 | Verify item 1: Contact Support | Label "Contact Support" with hint "support@myafterme.co.uk" | ☐ |
@@ -893,7 +967,7 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 ---
 
-## UAT-34 · Family Kit — Empty Vault Guard *(new)*
+## UAT-34 · Family Kit — Empty Vault Guard
 
 **Priority:** CRITICAL  
 **Precondition:** Premium account. Vault must have **zero documents**.  
@@ -913,6 +987,168 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 ---
 
+## UAT-35 · Security Regression Testing *(new v6.0)*
+
+**Priority:** HIGH  
+**Precondition:** Premium account. At least 3 documents in vault. Onboarding complete.  
+**Note:** This test covers internal security improvements in v1.0.1 — key zeroing after use, AAD (Additional Authenticated Data) binding, and atomic vault operations. While these are largely invisible to the end user, regression testing confirms they don't break existing flows.
+
+### Key Rotation & Session Eviction
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 35.1 | Open app and authenticate with biometrics | Vault unlocks; dashboard shown | ☐ |
+| 35.2 | Open a document and verify it displays | Document content renders correctly (encryption keys working) | ☐ |
+| 35.3 | Background the app for 10 seconds | App moves to background | ☐ |
+| 35.4 | Return to the app | Biometric prompt appears (session key evicted after background period) | ☐ |
+| 35.5 | Authenticate and verify documents are still accessible | All documents open correctly after re-authentication | ☐ |
+
+### Vault Integrity After Backgrounding
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 35.6 | Open a document, then immediately background the app | App backgrounds mid-operation | ☐ |
+| 35.7 | Reopen and authenticate | No crash; document is intact | ☐ |
+| 35.8 | Run vault integrity check (Settings → Storage → Check Integrity) | All documents pass integrity verification — no corruption from background transition | ☐ |
+
+### Atomic Operations — Concurrent Access
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 35.9 | Begin adding a document (select source, pick category) | Add Document modal is open | ☐ |
+| 35.10 | While the import is processing, force-close the app | App terminates mid-import | ☐ |
+| 35.11 | Reopen and authenticate | Vault loads without corruption | ☐ |
+| 35.12 | Run vault integrity check | All previously saved documents pass. The interrupted import either completed atomically or was cleanly rolled back — no partial/corrupt entries. | ☐ |
+
+### Premium Tamper Resistance
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 35.13 | Verify premium status is active | Settings → Subscription shows premium | ☐ |
+| 35.14 | Force-close app, clear app cache (not app data) via device settings | — | ☐ |
+| 35.15 | Reopen app and authenticate | Premium status is still active (persisted in SecureStore, not cache) | ☐ |
+
+---
+
+## UAT-36 · Date Input Validation *(new v6.0)*
+
+**Priority:** HIGH  
+**Precondition:** Onboarding complete. At least 1 document can be added (not at free tier limit, or premium).  
+**Note:** Tests the DD/MM/YYYY date validation logic in the Add Document modal (Suggestion 13).
+
+### Valid Date Entry
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 36.1 | Open Add Document → choose a source → advance to category step | "Document Date" and "Expiry Date" fields visible side-by-side with DD/MM/YYYY placeholders | ☐ |
+| 36.2 | Tap "Document Date" field | Keyboard appears with numeric keypad (`keyboardType="numeric"`) | ☐ |
+| 36.3 | Enter "15/03/2024" | Field accepts input; no error shown | ☐ |
+| 36.4 | Tap away from the field (blur) | No error message appears — date is valid | ☐ |
+| 36.5 | Enter "01/01/2000" in Expiry Date field | Field accepts input; no error shown | ☐ |
+| 36.6 | Select a category and save | Document saves successfully with both dates recorded | ☐ |
+| 36.7 | Open the saved document | Metadata shows both Document Date and Expiry Date correctly | ☐ |
+
+### Invalid Date Entry
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 36.8 | Open Add Document → advance to category step | Date fields visible | ☐ |
+| 36.9 | Enter "32/01/2024" in Document Date | On blur, error shown: "Invalid day" | ☐ |
+| 36.10 | Enter "15/13/2024" in Document Date | On blur, error shown: "Invalid month" | ☐ |
+| 36.11 | Enter "15/06/1899" in Document Date | On blur, error shown: "Invalid year" (year < 1900) | ☐ |
+| 36.12 | Enter "15/06/2101" in Document Date | On blur, error shown: "Invalid year" (year > 2100) | ☐ |
+| 36.13 | Enter "29/02/2023" in Document Date (2023 is not a leap year) | On blur, error shown: "Invalid date" | ☐ |
+| 36.14 | Enter "29/02/2024" in Document Date (2024 is a leap year) | No error — date is valid | ☐ |
+| 36.15 | Enter "abc" in Document Date | On blur, error shown: "Use DD/MM/YYYY format" | ☐ |
+| 36.16 | Enter "15-03-2024" (dashes instead of slashes) | On blur, error shown: "Use DD/MM/YYYY format" | ☐ |
+
+### Boundary & Empty Behaviour
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 36.17 | Leave both date fields empty and save | Document saves successfully — dates are optional | ☐ |
+| 36.18 | Enter a valid Document Date but leave Expiry Date empty | Document saves with only Document Date set | ☐ |
+| 36.19 | Enter an invalid date and attempt to save (tap confirm button) | Save is blocked; error message remains on the invalid field | ☐ |
+| 36.20 | Correct the error and save | Document saves successfully | ☐ |
+| 36.21 | Verify max input length | Date fields accept at most 10 characters (DD/MM/YYYY) | ☐ |
+
+### Error Styling
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 36.22 | Enter an invalid date and blur | Field border turns red (danger colour); error text appears below in red | ☐ |
+| 36.23 | Start editing the field again (type a character) | Error text clears immediately as user types | ☐ |
+
+---
+
+## UAT-37 · Onboarding Back Navigation *(new v6.0)*
+
+**Priority:** HIGH  
+**Precondition:** Fresh install or reset.  
+**Note:** Tests the "← Back" button added to all 8 onboarding screens (Fix 71).
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 37.1 | Launch app and tap "I'm Planning My Legacy" | Screen 1 of onboarding appears | ☐ |
+| 37.2 | Verify "← Back" button on Screen 1 | Button present at top-left | ☐ |
+| 37.3 | Tap "← Back" on Screen 1 | Returns to the Welcome screen | ☐ |
+| 37.4 | Re-enter onboarding; advance to Screen 2 | Screen 2 loads | ☐ |
+| 37.5 | Tap "← Back" on Screen 2 | Returns to Screen 1 | ☐ |
+| 37.6 | Advance to Screen 3 | Screen 3 loads | ☐ |
+| 37.7 | Tap "← Back" on Screen 3 | Returns to Screen 2 | ☐ |
+| 37.8 | Advance to Screen 4 (QR reveal) | Screen 4 loads | ☐ |
+| 37.9 | Tap "← Back" on Screen 4 | Returns to Screen 3 | ☐ |
+| 37.10 | Advance to Screen 5 (How It Works) | Explainer screen loads | ☐ |
+| 37.11 | Tap "← Back" on Screen 5 | Returns to Screen 4 | ☐ |
+| 37.12 | Advance to Screen 6 (Legal Disclaimer) | Legal screen loads | ☐ |
+| 37.13 | Tap "← Back" on Screen 6 | Returns to Screen 5 (How It Works) | ☐ |
+| 37.14 | Advance to Screen 7 (Biometric setup) | Biometric screen loads | ☐ |
+| 37.15 | Tap "← Back" on Screen 7 | Returns to Screen 6 (Legal) — does NOT trigger biometric prompt | ☐ |
+| 37.16 | Advance to Screen 8 (Safety Net) | Safety Net screen loads | ☐ |
+| 37.17 | Tap "← Back" on Screen 8 | Returns to Screen 7 (Biometric) | ☐ |
+| 37.18 | Verify progress dots update correctly when navigating back | Active dot decrements when going back | ☐ |
+| 37.19 | Complete onboarding by advancing forward through all screens | Onboarding completes normally despite previous back navigation — no stuck state | ☐ |
+| 37.20 | Verify no data loss | Any previously entered data (e.g. accepted legal disclaimer) persists through back/forward navigation | ☐ |
+
+---
+
+## UAT-38 · Kit Generation Progress *(new v6.0)*
+
+**Priority:** HIGH  
+**Precondition:** Premium account. At least 3 documents in vault (so progress is visible across multiple items).  
+**Note:** Tests the "Processing document X of Y…" progress reporting during Family Kit and Personal Recovery Kit generation (Suggestion 18).
+
+### Family Kit Progress
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 38.1 | Open Family Kit tab → Create Family Kit | Wizard opens | ☐ |
+| 38.2 | Complete steps 1–2 (intro + details) and tap "Generate Kit" | Generating screen appears with spinner | ☐ |
+| 38.3 | Observe the progress text | **"Processing document X of Y…"** appears below the spinner, where X increments from 1 to Y | ☐ |
+| 38.4 | Verify X increments for each document | Progress updates in real time as each document is processed | ☐ |
+| 38.5 | Verify Y matches total document count | The "of Y" value matches the number of documents in the vault | ☐ |
+| 38.6 | Wait for generation to complete | Progress text disappears; "Verifying Kit Integrity" validating step appears, then success screen | ☐ |
+| 38.7 | Verify progress text styling | Text is amber-coloured, 14px, medium weight — visible and readable | ☐ |
+
+### Personal Recovery Kit Progress
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 38.8 | Open Settings → Personal Recovery → Personal Recovery Kit | Wizard opens | ☐ |
+| 38.9 | Tap "Generate Recovery Kit" | Generating screen appears with "Encrypting your vault…" text and spinner | ☐ |
+| 38.10 | Observe the progress text | **"Processing document X of Y…"** appears below the hint text | ☐ |
+| 38.11 | Verify X increments for each document | Progress updates as each document is encrypted | ☐ |
+| 38.12 | Wait for generation to complete | QR code shown on completion screen | ☐ |
+
+### Edge Cases
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 38.13 | Generate a kit with exactly 1 document in vault | Progress shows "Processing document 1 of 1…" briefly before completion | ☐ |
+| 38.14 | Generate a kit with many documents (10+) | Progress increments smoothly; no UI freeze; app remains responsive | ☐ |
+
+---
+
 ## Pass/Fail Summary Sheet
 
 **Tester Name:** ___________________________  
@@ -926,27 +1162,27 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 | Suite | Test ID | Test Name | Result | Notes |
 |---|---|---|---|---|
-| Onboarding | UAT-01 | First Launch & Onboarding (8 screens) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Onboarding | UAT-01 | First Launch & Onboarding (8 screens, with back nav) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Auth | UAT-02 | Biometric Authentication | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Legal | UAT-03 | Legal Disclaimer & Privacy (`myafterme.co.uk/privacy`) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Safety Net | UAT-04 | Safety Net Screen — Content & Messaging | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Dashboard | UAT-05 | Vault Dashboard | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Scanning | UAT-06 | Document Scanning | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Import | UAT-07 | Document Import | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Import | UAT-07 | Document Import (with date fields) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Library | UAT-08 | Search, Sort & Filter | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Viewer | UAT-09 | Document Viewer & Editing | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Free Tier | UAT-10 | Free Tier & Paywall | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Purchases | UAT-11 | In-App Purchase | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Family Kit | UAT-12 | Family Kit Creation | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Survivor | UAT-13 | Survivor Import (no support links) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Recovery Kit | UAT-14 | Personal Recovery Kit | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Viewer | UAT-09 | Document Viewer & Editing (with date validation) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Free Tier | UAT-10 | Free Tier & Paywall (SecureStore-backed) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Purchases | UAT-11 | In-App Purchase (1-hr cache TTL) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Family Kit | UAT-12 | Family Kit Creation (with progress) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Survivor | UAT-13 | Survivor Import (distinct mode, manual key) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Recovery Kit | UAT-14 | Personal Recovery Kit (with progress, swipe reset) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | iCloud | UAT-15 | iCloud Backup & Restore | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Security | UAT-16 | Biometric Lock & Security | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Security | UAT-16 | Biometric Lock & Security (sectioned settings) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Integrity | UAT-17 | Vault Integrity Check | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Multi-Vault | UAT-18 | Multi-Vault Management | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Help | UAT-19 | Help & FAQ Screen | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Device Loss | UAT-20 | Restore My Vault | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Accessibility | UAT-21 | VoiceOver & Dynamic Type | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Multi-Vault | UAT-18 | Multi-Vault Management (with error/retry) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Help | UAT-19 | Help & FAQ Screen (sectioned settings) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Device Loss | UAT-20 | Restore My Vault (distinct mode) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Accessibility | UAT-21 | VoiceOver (expanded labels) & Dynamic Type | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Reset | UAT-22 | Reset & Re-Onboarding | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | How It Works | UAT-23 | Onboarding — How It Works Screen | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Safety Net — Kit | UAT-24 | Safety Net: Family Kit Path | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
@@ -960,6 +1196,10 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 | Upgrade Card | UAT-32 | Settings → Upgrade Card for Annual Subscribers | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Website Pricing | UAT-33 | Website Pricing Section — Lifetime Hero + Annual | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 | Family Kit Guard | UAT-34 | Family Kit — Empty Vault Guard | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Security Regression | UAT-35 | Security Regression — Key Rotation, Integrity, Tamper Resistance | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Date Validation | UAT-36 | Date Input Validation — DD/MM/YYYY | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Back Navigation | UAT-37 | Onboarding Back Navigation — All 8 Screens | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Kit Progress | UAT-38 | Kit Generation Progress Reporting | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 
 ---
 
@@ -967,7 +1207,7 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 | Metric | Count |
 |---|---|
-| Total test suites | 34 |
+| Total test suites | 38 |
 | PASS | |
 | FAIL | |
 | BLOCKED | |
@@ -986,4 +1226,4 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 
 ---
 
-*After Me UAT v5.0 — Covers Phases 1–6 plus all post-launch changes: Safety Net redesign, onboarding How It Works explainer, survivor flow clean-up, support content corrections, website how-it-works page, premium gate verification, free tier reduced to 5 documents, paywall rebuild (lifetime hero, break-even maths, death-risk callout), annual plan and upgrade path, Family Kit empty-vault guard (wizard blocks and alerts if no documents exist).*
+*After Me UAT v6.0 — Covers Phases 1–6 plus all post-launch changes: Safety Net redesign, onboarding How It Works explainer, survivor flow clean-up, support content corrections, website how-it-works page, premium gate verification, free tier reduced to 5 documents, paywall rebuild (lifetime hero, break-even maths, death-risk callout), annual plan and upgrade path, Family Kit empty-vault guard. v1.0.1 additions: onboarding back navigation on all 8 screens, DD/MM/YYYY date input fields in Add Document modal, kit generation progress reporting ("Processing document X of Y…"), vault switcher error handling with retry, distinct survivor flow modes (legacy kit vs. restore vault), manual key entry fallback for QR scanning, Personal Recovery Wizard swipe-to-dismiss state reset, settings split into distinct sections, expanded VoiceOver accessibility labels, SecureStore premium caching with HMAC tamper detection, 1-hour product cache TTL, security hardening (key zeroing, AAD binding, atomic vault operations).*

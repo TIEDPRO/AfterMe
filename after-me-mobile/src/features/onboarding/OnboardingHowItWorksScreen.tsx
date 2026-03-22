@@ -14,7 +14,9 @@ import {
   Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CLOUD_PROVIDER_NAME } from '../../services/CloudBackupService';
 import { onboardingStyles } from './shared/onboardingStyles';
+import { SERIF_FONT } from '../../theme/fonts';
 
 interface OnboardingHowItWorksScreenProps {
   onContinue: () => void;
@@ -90,7 +92,7 @@ export function OnboardingHowItWorksScreen({ onContinue, onBack }: OnboardingHow
           <Text style={styles.subhead} maxFontSizeMultiplier={1.4}>
             After Me is built around a simple idea: your loved ones
             should be able to access what you leave them — without
-            needing your phone, your password, or your Apple ID.
+            needing your phone, your password, or your account.
           </Text>
           <Text style={styles.subhead} maxFontSizeMultiplier={1.4}>
             Here&apos;s how it works in practice.
@@ -122,29 +124,27 @@ export function OnboardingHowItWorksScreen({ onContinue, onBack }: OnboardingHow
           </View>
         </Animated.View>
 
-        {/* Path 2 — iCloud (personal recovery only, iOS only) */}
-        {Platform.OS === 'ios' && (
-          <Animated.View style={[styles.pathCard, { opacity: path2Opacity, transform: [{ translateY: path2Y }] }]}>
-            <View style={styles.pathBadgeRow}>
-              <View style={styles.pathBadgeSecondary}>
-                <Text style={styles.pathBadgeSecondaryText}>For your own recovery</Text>
-              </View>
+        {/* Path 2 — Cloud backup (personal recovery only) */}
+        <Animated.View style={[styles.pathCard, { opacity: path2Opacity, transform: [{ translateY: path2Y }] }]}>
+          <View style={styles.pathBadgeRow}>
+            <View style={styles.pathBadgeSecondary}>
+              <Text style={styles.pathBadgeSecondaryText}>For your own recovery</Text>
             </View>
-            <Text style={styles.pathTitle} maxFontSizeMultiplier={1.4}>iCloud Backup</Text>
-            <Text style={styles.pathBody} maxFontSizeMultiplier={1.4}>
-              An encrypted copy of your vault is stored in your personal
-              iCloud account. Useful if you lose or replace this phone —
-              you can restore your own vault on a new device.
+          </View>
+          <Text style={styles.pathTitle} maxFontSizeMultiplier={1.4}>{CLOUD_PROVIDER_NAME} Backup</Text>
+          <Text style={styles.pathBody} maxFontSizeMultiplier={1.4}>
+            An encrypted copy of your vault is stored in your personal
+            {' '}{CLOUD_PROVIDER_NAME} account. Useful if you lose or replace this phone —
+            you can restore your own vault on a new device.
+          </Text>
+          <View style={styles.pathWarning}>
+            <Text style={styles.pathWarningText} maxFontSizeMultiplier={1.4}>
+              This does not give your family access. Accessing
+              another person&apos;s cloud account after death is a complex
+              legal process that can take weeks.
             </Text>
-            <View style={styles.pathWarning}>
-              <Text style={styles.pathWarningText} maxFontSizeMultiplier={1.4}>
-                This does not give your family access. Accessing
-                another person&apos;s iCloud after death requires Apple&apos;s
-                Digital Legacy process, which can take weeks.
-              </Text>
-            </View>
-          </Animated.View>
-        )}
+          </View>
+        </Animated.View>
 
         {/* Path 3 — No preparation */}
         <Animated.View style={[styles.pathCard, styles.pathCardDanger, { opacity: path3Opacity, transform: [{ translateY: path3Y }] }]}>
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   headline: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 28,
     fontWeight: '700',
     color: '#FAF9F6',
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   pathTitle: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 17,
     fontWeight: '700',
     color: '#FAF9F6',

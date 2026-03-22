@@ -4,24 +4,24 @@
  * Falls back gracefully on Android (no StoreKit) and in dev/simulator.
  */
 import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { ALL_PRODUCT_IDS } from '../constants/products';
 import { CryptoService } from '../core/crypto/CryptoService';
 import { AnalyticsService } from './AnalyticsService';
+import { safeAsync } from '../utils/safeAsync';
 
 const PREMIUM_CACHE_KEY = 'afterme_premium_status';
 const CACHE_HMAC_KEY = 'afterme_premium_hmac';
 const ACTIVE_PRODUCT_KEY = 'afterme_active_product_id';
 
 async function signCache(value: string): Promise<void> {
-  const hmac = CryptoService.generateSecureId(value);
-  await AsyncStorage.setItem(CACHE_HMAC_KEY, hmac);
+  await SecureStore.setItemAsync(CACHE_HMAC_KEY, CryptoService.generateSecureId(value));
 }
 
 async function verifyCachedPremium(): Promise<boolean> {
-  const cached = await AsyncStorage.getItem(PREMIUM_CACHE_KEY);
+  const cached = await SecureStore.getItemAsync(PREMIUM_CACHE_KEY);
   if (cached !== 'true') return false;
-  const hmac = await AsyncStorage.getItem(CACHE_HMAC_KEY);
+  const hmac = await SecureStore.getItemAsync(CACHE_HMAC_KEY);
   return hmac !== null && hmac.startsWith('true_');
 }
 
@@ -85,16 +85,16 @@ export class PurchaseService {
       return { status: 'unknown' };
     }
 
-    AnalyticsService.trackEvent(AnalyticsService.Events.PURCHASE_STARTED, { productId }).catch(() => {});
+    safeAsync(AnalyticsService.trackEvent(AnalyticsService.Events.PURCHASE_STARTED, { productId }), 'trackEvent:purchase_started');
 
     try {
       const result = await StoreKit.purchase(productId);
 
       if (result.status === 'success') {
-        await AsyncStorage.setItem(PREMIUM_CACHE_KEY, 'true');
-        await AsyncStorage.setItem(ACTIVE_PRODUCT_KEY, productId);
+        await SecureStore.setItemAsync(PREMIUM_CACHE_KEY, 'true');
+        await SecureStore.setItemAsync(ACTIVE_PRODUCT_KEY, productId);
         await signCache('true');
-        AnalyticsService.trackEvent(AnalyticsService.Events.PURCHASE_COMPLETED, { productId }).catch(() => {});
+        safeAsync(AnalyticsService.trackEvent(AnalyticsService.Events.PURCHASE_COMPLETED, { productId }), 'trackEvent:purchase_completed');
       }
 
       return result;
@@ -111,10 +111,10 @@ export class PurchaseService {
     try {
       const purchased = await StoreKit.getPurchasedProducts();
       const isPremium = ALL_PRODUCT_IDS.some((id) => purchased.includes(id));
-      await AsyncStorage.setItem(PREMIUM_CACHE_KEY, isPremium ? 'true' : 'false');
+      await SecureStore.setItemAsync(PREMIUM_CACHE_KEY, isPremium ? 'true' : 'false');
       await signCache(isPremium ? 'true' : 'false');
       const activeId = ALL_PRODUCT_IDS.find((id) => purchased.includes(id)) ?? null;
-      await AsyncStorage.setItem(ACTIVE_PRODUCT_KEY, activeId ?? '');
+      await SecureStore.setItemAsync(ACTIVE_PRODUCT_KEY, activeId ?? '');
       return isPremium;
     } catch {
       return verifyCachedPremium();
@@ -124,14 +124,14 @@ export class PurchaseService {
   /** Returns the product ID that granted premium (lifetime or annual), or null if free. */
   static async getActiveProductId(): Promise<string | null> {
     if (!StoreKit) {
-      const cached = await AsyncStorage.getItem(ACTIVE_PRODUCT_KEY);
+      const cached = await SecureStore.getItemAsync(ACTIVE_PRODUCT_KEY);
       return cached || null;
     }
     try {
       const purchased = await StoreKit.getPurchasedProducts();
       return ALL_PRODUCT_IDS.find((id) => purchased.includes(id)) ?? null;
     } catch {
-      const cached = await AsyncStorage.getItem(ACTIVE_PRODUCT_KEY);
+      const cached = await SecureStore.getItemAsync(ACTIVE_PRODUCT_KEY);
       return cached || null;
     }
   }

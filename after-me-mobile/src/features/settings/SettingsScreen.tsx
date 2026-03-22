@@ -13,7 +13,7 @@ import { KeyManager } from '../../core/auth/KeyManager';
 import { OnboardingStorage } from '../../services/OnboardingStorage';
 import { DocumentService } from '../../services/DocumentService';
 import { BackupService } from '../../services/BackupService';
-import { CloudBackupService } from '../../services/CloudBackupService';
+import { CloudBackupService, CLOUD_PROVIDER_NAME } from '../../services/CloudBackupService';
 import { KitHistoryService, type FreshnessLevel } from '../../services/KitHistoryService';
 import { KitCreationWizard } from '../familykit/KitCreationWizard';
 import { KitHistoryScreen } from '../familykit/KitHistoryScreen';
@@ -113,8 +113,8 @@ export function SettingsScreen() {
   const refreshBackupStatus = useCallback(async () => {
     try {
       const [enabled, available, lastDate] = await Promise.all([
-        BackupService.isIcloudBackupEnabled(),
-        BackupService.isIcloudAvailable(),
+        BackupService.isCloudBackupEnabled(),
+        BackupService.isCloudAvailable(),
         BackupService.getLastBackupDate(),
       ]);
       setIcloudEnabled(enabled);
@@ -129,20 +129,20 @@ export function SettingsScreen() {
     refreshBackupStatus();
   }, [refreshBackupStatus]);
 
-  const handleIcloudToggle = async (value: boolean) => {
+  const handleCloudToggle = async (value: boolean) => {
     const previous = icloudEnabled;
     setIcloudEnabled(value);
     try {
       if (value) {
-        await BackupService.enableIcloudBackup();
+        await BackupService.enableCloudBackup();
       } else {
-        await BackupService.disableIcloudBackup();
+        await BackupService.disableCloudBackup();
       }
     } catch (e) {
       setIcloudEnabled(previous);
       Alert.alert(
         'Error',
-        (e as Error).message ?? 'Could not update iCloud backup. Please try again.',
+        (e as Error).message ?? `Could not update ${CLOUD_PROVIDER_NAME} backup. Please try again.`,
       );
     }
   };
@@ -152,10 +152,10 @@ export function SettingsScreen() {
     try {
       const success = await BackupService.backupNow();
       if (success) {
-        Alert.alert('Backup Complete', 'Your vault has been backed up to iCloud.');
+        Alert.alert('Backup Complete', `Your vault has been backed up to ${CLOUD_PROVIDER_NAME}.`);
         await refreshBackupStatus();
       } else {
-        Alert.alert('Backup Failed', 'Could not back up to iCloud. Make sure you\'re signed in to iCloud.');
+        Alert.alert('Backup Failed', `Could not back up to ${CLOUD_PROVIDER_NAME}. Make sure you're signed in.`);
       }
     } catch (e) {
       Alert.alert('Error', (e as Error).message);
@@ -166,8 +166,8 @@ export function SettingsScreen() {
 
   const handleRestoreFromBackup = () => {
     Alert.alert(
-      'Restore from iCloud',
-      'This will restore documents from your latest iCloud backup. Existing documents will not be deleted.',
+      `Restore from ${CLOUD_PROVIDER_NAME}`,
+      `This will restore documents from your latest ${CLOUD_PROVIDER_NAME} backup. Existing documents will not be deleted.`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -177,10 +177,10 @@ export function SettingsScreen() {
             try {
               const result = await CloudBackupService.restore();
               if (result.success) {
-                Alert.alert('Restored', `Successfully restored ${result.documentCount} document(s) from iCloud.`);
+                Alert.alert('Restored', `Successfully restored ${result.documentCount} document(s) from ${CLOUD_PROVIDER_NAME}.`);
                 refreshInit();
               } else {
-                Alert.alert('Restore Failed', 'Could not restore from iCloud. No backup found or decryption failed.');
+                Alert.alert('Restore Failed', `Could not restore from ${CLOUD_PROVIDER_NAME}. No backup found or decryption failed.`);
               }
             } catch (e) {
               Alert.alert('Error', (e as Error).message);
@@ -307,12 +307,12 @@ export function SettingsScreen() {
       />
 
       <BackupSection
-        icloudEnabled={icloudEnabled}
-        icloudAvailable={icloudAvailable}
+        cloudEnabled={icloudEnabled}
+        cloudAvailable={icloudAvailable}
         lastBackupDate={lastBackupDate}
         backingUp={backingUp}
         restoringBackup={restoringBackup}
-        onIcloudToggle={handleIcloudToggle}
+        onCloudToggle={handleCloudToggle}
         onBackupNow={handleBackupNow}
         onRestoreFromBackup={handleRestoreFromBackup}
       />

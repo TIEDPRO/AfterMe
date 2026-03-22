@@ -21,6 +21,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { KeyManager } from '../../core/auth/KeyManager';
 import { colors } from '../../theme/colors';
 import { onboardingStyles } from './shared/onboardingStyles';
+import { SERIF_FONT } from '../../theme/fonts';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -433,13 +434,13 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   headline1: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 28,
     fontWeight: '700',
     color: colors.amWhite,
   },
   headline2: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 28,
     fontWeight: '700',
     color: colors.amAmber,
@@ -470,7 +471,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ctaPrimary: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 18,
     fontWeight: '700',
     color: colors.amBackground,

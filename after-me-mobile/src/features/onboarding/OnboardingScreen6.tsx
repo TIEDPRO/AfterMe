@@ -19,8 +19,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Haptics from 'expo-haptics';
 import { BackupService } from '../../services/BackupService';
 import { OnboardingStorage } from '../../services/OnboardingStorage';
+import { CLOUD_PROVIDER_NAME } from '../../services/CloudBackupService';
 import { KeyManager } from '../../core/auth/KeyManager';
 import { onboardingStyles } from './shared/onboardingStyles';
+import { SERIF_FONT } from '../../theme/fonts';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -265,11 +267,9 @@ export function OnboardingScreen6({ onComplete, onBack }: OnboardingScreen6Props
             <Text style={styles.headline}>One last step.</Text>
           </Animated.View>
           <View style={styles.subheadGap} />
-          {Platform.OS === 'ios' && (
-            <Animated.View style={{ opacity: subheadOpacity, transform: [{ translateY: subheadY }] }}>
-              <Text style={styles.subhead}>Two very different things.</Text>
-            </Animated.View>
-          )}
+          <Animated.View style={{ opacity: subheadOpacity, transform: [{ translateY: subheadY }] }}>
+            <Text style={styles.subhead}>Two very different things.</Text>
+          </Animated.View>
           <View style={styles.bodyGap} />
           <Animated.View
             style={[
@@ -279,11 +279,8 @@ export function OnboardingScreen6({ onComplete, onBack }: OnboardingScreen6Props
           >
             <Text style={styles.bodyCopy}>
               A Family Kit gives your loved ones access.{'\n'}
-              {Platform.OS === 'ios'
-                ? 'iCloud Backup protects you if you lose this device.'
-                : 'Create your kit now, or set it up once you have added documents.'}
-              {'\n'}
-              {Platform.OS === 'ios' ? 'They are not the same thing.' : ''}
+              {CLOUD_PROVIDER_NAME} Backup protects you if you lose this device.{'\n'}
+              They are not the same thing.
             </Text>
           </Animated.View>
         </View>
@@ -323,43 +320,39 @@ export function OnboardingScreen6({ onComplete, onBack }: OnboardingScreen6Props
             </Pressable>
           </Animated.View>
 
-          {Platform.OS === 'ios' && (
-            <>
-              <View style={styles.cardGap} />
+          <View style={styles.cardGap} />
 
-              {/* Card 2 — iCloud (iOS only — for personal device recovery) */}
-              <Animated.View
-                style={{
-                  opacity: card2Opacity,
-                  transform: [{ translateY: card2Y }],
-                }}
-              >
-                <Pressable
-                  onPress={() => handleChoice('icloud')}
-                  disabled={processing}
-                  style={({ pressed }) => [
-                    styles.card,
-                    styles.cardKit,
-                    { opacity: processing ? 0.5 : 1 },
-                    pressed && styles.cardPressedKit,
-                  ]}
-                  accessible
-                  accessibilityLabel="Enable iCloud Backup. For you only. Does not give your family access to this vault."
-                  accessibilityRole="button"
-                >
-                  <View style={styles.cardBadgeSecondary}>
-                    <Text style={styles.cardBadgeSecondaryText}>For you only</Text>
-                  </View>
-                  <View style={styles.cardContentKit}>
-                    <Text style={styles.cardPrimary}>Enable iCloud Backup</Text>
-                    <Text style={styles.cardSecondary}>
-                      If YOU lose this device. Does not give{'\n'}your family access to the vault.
-                    </Text>
-                  </View>
-                </Pressable>
-              </Animated.View>
-            </>
-          )}
+          {/* Card 2 — Cloud backup (iCloud on iOS, Google Drive on Android) */}
+          <Animated.View
+            style={{
+              opacity: card2Opacity,
+              transform: [{ translateY: card2Y }],
+            }}
+          >
+            <Pressable
+              onPress={() => handleChoice('icloud')}
+              disabled={processing}
+              style={({ pressed }) => [
+                styles.card,
+                styles.cardKit,
+                { opacity: processing ? 0.5 : 1 },
+                pressed && styles.cardPressedKit,
+              ]}
+              accessible
+              accessibilityLabel={`Enable ${CLOUD_PROVIDER_NAME} Backup. For you only. Does not give your family access to this vault.`}
+              accessibilityRole="button"
+            >
+              <View style={styles.cardBadgeSecondary}>
+                <Text style={styles.cardBadgeSecondaryText}>For you only</Text>
+              </View>
+              <View style={styles.cardContentKit}>
+                <Text style={styles.cardPrimary}>Enable {CLOUD_PROVIDER_NAME} Backup</Text>
+                <Text style={styles.cardSecondary}>
+                  If YOU lose this device. Does not give{'\n'}your family access to the vault.
+                </Text>
+              </View>
+            </Pressable>
+          </Animated.View>
         </View>
 
         {/* Defer option */}
@@ -426,7 +419,7 @@ const styles = StyleSheet.create({
   },
   headlineGap: { height: 16 },
   headline: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 22,
     fontWeight: '700',
     color: '#FAF9F6',
@@ -434,7 +427,7 @@ const styles = StyleSheet.create({
   },
   subheadGap: { height: 8 },
   subhead: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 22,
     fontWeight: '700',
     color: '#C9963A',
@@ -524,7 +517,7 @@ const styles = StyleSheet.create({
     color: 'rgba(250,249,246,0.4)',
   },
   cardPrimary: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 16,
     fontWeight: '700',
     color: '#FAF9F6',

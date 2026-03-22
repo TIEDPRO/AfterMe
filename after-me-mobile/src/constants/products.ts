@@ -1,6 +1,7 @@
 /**
  * In-App Purchase product identifiers, pricing display, and free tier limits.
- * Product IDs must match exactly what is configured in App Store Connect.
+ * Product IDs must match exactly what is configured in App Store Connect (iOS)
+ * and Google Play Console (Android).
  */
 
 export const PRODUCT_IDS = {
@@ -26,12 +27,16 @@ export const FALLBACK_PRICES = {
  */
 export const FREE_TIER_DOCUMENT_LIMIT = 5;
 
+import { Platform } from 'react-native';
+
+const cloudBackupLabel = Platform.OS === 'ios' ? 'Encrypted iCloud backup' : 'Encrypted Google Drive backup';
+
 export const PREMIUM_FEATURES_LIFETIME = [
   'Unlimited documents — stored forever',
   'Family Kit creation & unlimited updates',
   'All future features included — no upgrade fees',
   'No renewal risk at death — your family inherits access, not the invoice',
-  'Encrypted iCloud backup',
+  cloudBackupLabel,
   'Open format guarantee — your data is yours, permanently',
   'Priority support',
 ] as const;
@@ -40,7 +45,7 @@ export const PREMIUM_FEATURES_ANNUAL = [
   'Unlimited document storage',
   'Family Kit creation & updates',
   'All 8 document categories',
-  'Encrypted iCloud backup',
+  cloudBackupLabel,
   'Cancel any time — data always exportable',
 ] as const;
 
@@ -48,7 +53,7 @@ export const PREMIUM_FEATURES_ANNUAL = [
 export const PREMIUM_FEATURES = [
   'Unlimited document storage',
   'Family Kit creation & sharing',
-  'Encrypted iCloud backup',
+  cloudBackupLabel,
   'All future features included',
   'Priority support',
 ] as const;

@@ -4,6 +4,7 @@
  */
 import JSZip from 'jszip';
 import { Buffer } from 'buffer';
+import Constants from 'expo-constants';
 import {
   cacheDirectory,
   writeAsStringAsync,
@@ -15,6 +16,8 @@ import { EncryptedStorageService } from '../core/storage/EncryptedStorageService
 import * as DocumentRepository from '../db/DocumentRepository';
 import { CATEGORY_LABELS, type DocumentCategory } from '../models/DocumentCategory';
 import { KitHistoryService } from './KitHistoryService';
+
+const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';
 
 const EXPORT_DOC_LIMIT = 100;
 const EXPORT_SIZE_LIMIT_BYTES = 200 * 1024 * 1024; // 200 MB in-memory ceiling
@@ -126,6 +129,7 @@ function generateManifest(
   return JSON.stringify(
     {
       version: '1.0',
+      app_version: APP_VERSION,
       created_at: new Date().toISOString(),
       vault_id: CryptoService.generateSecureId('vault'),
       owner_name: ownerName ?? null,
@@ -155,6 +159,7 @@ export class FamilyKitExportService {
   static async generateKit(
     ownerName: string | null = null,
     emergencyContact: string | null = null,
+    onProgress?: (current: number, total: number) => void,
   ): Promise<KitGenerationResult> {
     const docs = await DocumentRepository.getAllDocuments();
 
@@ -177,7 +182,9 @@ export class FamilyKitExportService {
     };
 
     let totalPayloadBytes = 0;
-    for (const doc of docs) {
+    for (let i = 0; i < docs.length; i++) {
+      const doc = docs[i];
+      onProgress?.(i + 1, docs.length);
       const content = await EncryptedStorageService.readFile(doc.fileRef);
       totalPayloadBytes += content.length;
       if (totalPayloadBytes > EXPORT_SIZE_LIMIT_BYTES) {
@@ -202,6 +209,9 @@ export class FamilyKitExportService {
     }
 
     const vaultJson = Buffer.from(JSON.stringify(vaultPayload), 'utf8');
+    vaultPayload.documents.length = 0;
+    (vaultPayload as any).documents = null;
+
     const vaultEnc = CryptoService.encrypt(vaultJson, cek);
 
     const salt = Buffer.from(QuickCrypto.randomBytes(SALT_SIZE));

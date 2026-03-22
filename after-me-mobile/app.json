@@ -2,7 +2,7 @@
   "expo": {
     "name": "After Me",
     "slug": "after-me-mobile",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -14,9 +14,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.afterme.app",
+      "buildNumber": "3",
       "infoPlist": {
         "NSFaceIDUsageDescription": "After Me uses Face ID to securely access your encrypted vault.",
-        "ITSAppUsesNonExemptEncryption": true
+        "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
         "com.apple.developer.icloud-services": [
@@ -32,7 +33,7 @@
     },
     "android": {
       "package": "com.afterme.app",
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "backgroundColor": "#2D3142",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -77,7 +78,8 @@
           "project": "after-me-mobile"
         }
       ],
-      "expo-font"
+      "expo-font",
+      "@react-native-google-signin/google-signin"
     ],
     "extra": {
       "eas": {

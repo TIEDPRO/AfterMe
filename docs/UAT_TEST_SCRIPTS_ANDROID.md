@@ -1,14 +1,10 @@
-# After Me — Android UAT Test Scripts
+# After Me — Comprehensive UAT Test Scripts (Android)
 
 **Document Version:** 1.0  
 **Last Updated:** March 2026  
-**App Version:** After Me Mobile v1.0  
-**Platform:** Android (physical device or emulator)  
-**Build:** Debug build via `npx expo run:android` · Production AAB via EAS
-
-> **This document is for the Android test team only.**  
-> A separate iOS UAT script document exists for the iOS test team.  
-> Do not mix these documents — several flows, labels, and features differ between platforms.
+**App Version:** After Me Mobile v1.0.1  
+**Platform:** Android (physical device)  
+**Build:** Release build via `npx expo run:android --device` or EAS Build
 
 ---
 
@@ -18,110 +14,116 @@
 2. [Test Environment Setup](#2-test-environment-setup)
 3. [Test Accounts & Prerequisites](#3-test-accounts--prerequisites)
 4. [Test Suite Overview](#4-test-suite-overview)
-5. [AND-01 · First Launch & Onboarding](#and-01--first-launch--onboarding)
-6. [AND-02 · Biometric Authentication](#and-02--biometric-authentication)
-7. [AND-03 · Legal Disclaimer & Privacy](#and-03--legal-disclaimer--privacy)
-8. [AND-04 · Safety Net Setup — Android Layout](#and-04--safety-net-setup--android-layout)
-9. [AND-05 · Vault Dashboard](#and-05--vault-dashboard)
-10. [AND-06 · Document Scanning](#and-06--document-scanning)
-11. [AND-07 · Document Import (Files & Photos)](#and-07--document-import-files--photos)
-12. [AND-08 · Document Library — Search, Sort & Filter](#and-08--document-library--search-sort--filter)
-13. [AND-09 · Document Viewer & Metadata Editing](#and-09--document-viewer--metadata-editing)
-14. [AND-10 · Free Tier Limit & Paywall](#and-10--free-tier-limit--paywall)
-15. [AND-11 · In-App Purchase — Premium Upgrade (Lifetime)](#and-11--in-app-purchase--premium-upgrade-lifetime)
-16. [AND-12 · Family Kit Creation](#and-12--family-kit-creation)
-17. [AND-13 · Family Kit — Survivor Import](#and-13--family-kit--survivor-import)
-18. [AND-14 · Personal Recovery Kit](#and-14--personal-recovery-kit)
-19. [AND-15 · Settings — Biometric Lock & Security](#and-15--settings--biometric-lock--security)
-20. [AND-16 · Vault Integrity Check](#and-16--vault-integrity-check)
-21. [AND-17 · Multi-Vault Management](#and-17--multi-vault-management)
-22. [AND-18 · Help & FAQ Screen — Android Content](#and-18--help--faq-screen--android-content)
-23. [AND-19 · Restore My Vault (Device Loss Recovery)](#and-19--restore-my-vault-device-loss-recovery)
-24. [AND-20 · Accessibility — TalkBack & Font Scaling](#and-20--accessibility--talkback--font-scaling)
-25. [AND-21 · Reset & Re-Onboarding](#and-21--reset--re-onboarding)
-26. [AND-22 · Onboarding — How It Works Screen](#and-22--onboarding--how-it-works-screen)
-27. [AND-23 · Safety Net — Family Kit Path](#and-23--safety-net--family-kit-path)
-28. [AND-24 · Safety Net — Defer Path](#and-24--safety-net--defer-path)
-29. [AND-25 · Settings → Support Content](#and-25--settings--support-content)
-30. [AND-26 · Website — How It Works Page](#and-26--website--how-it-works-page)
-31. [AND-27 · Premium Gate — Family Kit from Onboarding](#and-27--premium-gate--family-kit-from-onboarding)
-32. [AND-28 · Paywall UX — Lifetime Hero, Break-Even & Death-Risk](#and-28--paywall-ux--lifetime-hero-break-even--death-risk)
-33. [AND-29 · Annual Plan Purchase via Paywall](#and-29--annual-plan-purchase-via-paywall)
-34. [AND-30 · Settings — Annual Subscriber Upgrade Card](#and-30--settings--annual-subscriber-upgrade-card)
-35. [AND-31 · Website — Pricing Section](#and-31--website--pricing-section)
-36. [AND-32 · Family Kit — Empty Vault Guard](#and-32--family-kit--empty-vault-guard)
-37. [AND-33 · Android Back Gesture Behaviour](#and-33--android-back-gesture-behaviour)
-38. [AND-34 · iCloud UI Absent on Android](#and-34--icloud-ui-absent-on-android)
-39. [AND-35 · Google Play Billing — Restore & Cancel Wording](#and-35--google-play-billing--restore--cancel-wording)
-40. [AND-36 · Android Keystore Label & Key Storage](#and-36--android-keystore-label--key-storage)
-41. [AND-37 · Android-Specific Permission Prompts](#and-37--android-specific-permission-prompts)
-42. [Pass/Fail Summary Sheet](#passfail-summary-sheet)
+5. [UAT-01 · First Launch & Onboarding](#uat-01--first-launch--onboarding)
+6. [UAT-02 · Biometric Authentication](#uat-02--biometric-authentication)
+7. [UAT-03 · Legal Disclaimer & Privacy](#uat-03--legal-disclaimer--privacy)
+8. [UAT-04 · Safety Net Setup — Redesigned](#uat-04--safety-net-setup--redesigned)
+9. [UAT-05 · Vault Dashboard](#uat-05--vault-dashboard)
+10. [UAT-06 · Document Scanning](#uat-06--document-scanning)
+11. [UAT-07 · Document Import (Files & Photos)](#uat-07--document-import-files--photos)
+12. [UAT-08 · Document Library — Search, Sort & Filter](#uat-08--document-library--search-sort--filter)
+13. [UAT-09 · Document Viewer & Metadata Editing](#uat-09--document-viewer--metadata-editing)
+14. [UAT-10 · Free Tier Limit & Paywall](#uat-10--free-tier-limit--paywall)
+15. [UAT-11 · In-App Purchase — Premium Upgrade](#uat-11--in-app-purchase--premium-upgrade)
+16. [UAT-12 · Family Kit Creation](#uat-12--family-kit-creation)
+17. [UAT-13 · Family Kit — Survivor Import](#uat-13--family-kit--survivor-import)
+18. [UAT-14 · Personal Recovery Kit](#uat-14--personal-recovery-kit)
+19. [UAT-15 · Google Drive Backup & Restore](#uat-15--google-drive-backup--restore)
+20. [UAT-16 · Settings — Biometric Lock & Security](#uat-16--settings--biometric-lock--security)
+21. [UAT-17 · Vault Integrity Check](#uat-17--vault-integrity-check)
+22. [UAT-18 · Multi-Vault Management](#uat-18--multi-vault-management)
+23. [UAT-19 · Help & FAQ Screen](#uat-19--help--faq-screen)
+24. [UAT-20 · Restore My Vault (Device Loss Recovery)](#uat-20--restore-my-vault-device-loss-recovery)
+25. [UAT-21 · Accessibility](#uat-21--accessibility)
+26. [UAT-22 · Reset & Re-Onboarding](#uat-22--reset--re-onboarding)
+27. [UAT-23 · Onboarding — How It Works Screen](#uat-23--onboarding--how-it-works-screen)
+28. [UAT-24 · Safety Net — Family Kit Path](#uat-24--safety-net--family-kit-path)
+29. [UAT-25 · Safety Net — Google Drive Path](#uat-25--safety-net--google-drive-path)
+30. [UAT-26 · Safety Net — Defer Path](#uat-26--safety-net--defer-path)
+31. [UAT-27 · Settings → Support Content](#uat-27--settings--support-content)
+32. [UAT-28 · Website — How It Works Page](#uat-28--website--how-it-works-page)
+33. [UAT-29 · Premium Gate — Family Kit from Onboarding](#uat-29--premium-gate--family-kit-from-onboarding)
+34. [UAT-30 · Paywall UX — Lifetime Hero, Break-Even & Death-Risk](#uat-30--paywall-ux--lifetime-hero-break-even--death-risk)
+35. [UAT-31 · Annual Plan Purchase via Paywall](#uat-31--annual-plan-purchase-via-paywall)
+36. [UAT-32 · Settings — Annual Subscriber Upgrade Card](#uat-32--settings--annual-subscriber-upgrade-card)
+37. [UAT-33 · Website — Pricing Section](#uat-33--website--pricing-section)
+38. [UAT-34 · Family Kit — Empty Vault Guard](#uat-34--family-kit--empty-vault-guard)
+39. [UAT-35 · Security Regression Testing](#uat-35--security-regression-testing)
+40. [UAT-36 · Date Input Validation](#uat-36--date-input-validation)
+41. [UAT-37 · Onboarding Back Navigation](#uat-37--onboarding-back-navigation)
+42. [UAT-38 · Kit Generation Progress](#uat-38--kit-generation-progress)
+43. [UAT-39 · Google Drive Sign-In Flow (Android)](#uat-39--google-drive-sign-in-flow-android)
+44. [UAT-40 · Custom Bottom Sheet (Android)](#uat-40--custom-bottom-sheet-android)
+45. [UAT-41 · Typography Verification (Android)](#uat-41--typography-verification-android)
+46. [Pass/Fail Summary Sheet](#passfail-summary-sheet)
 
 ---
 
 ## 1. Introduction
 
-This document provides step-by-step manual UAT test scripts for the After Me mobile application on **Android only**. It covers all implemented phases adapted for the Android platform:
+This document provides step-by-step manual UAT test scripts for the After Me mobile application **on Android**. It covers all implemented phases and subsequent changes:
 
-- **Phase 1:** Encryption, Android Keystore key management, biometric authentication
+- **Phase 1:** Encryption, key management, biometric authentication
 - **Phase 2:** Document ingestion, scanning, import
 - **Phase 3:** UI/UX, categories, document library
 - **Phase 4:** Family Kit creation and survivor import
-- **Phase 5:** Onboarding, Google Play Billing in-app purchases
+- **Phase 5:** Onboarding, Google Drive backup, in-app purchases
 - **Phase 6:** Personal Recovery Kit, multi-vault, Help screen
-- **Android-specific:** Back gesture behaviour, permission prompts, iCloud UI absence, Google Play wording, Android Keystore label
+- **Post-launch changes:** Safety Net redesign, onboarding explainer screen, survivor flow clean-up, support content corrections, website how-it-works page
+- **v1.0.1 fixes:** Onboarding back navigation, date input fields, kit generation progress, vault switcher error handling, survivor flow differentiation, modal back-button state reset, manual key entry fallback, settings section layout, accessibility labels, SecureStore premium caching with HMAC, product cache TTL, security hardening (key zeroing, AAD, atomic operations)
 
-### Key Android differences from iOS — read before starting
+### Android-Specific Differences from iOS
 
-| Feature | iOS | Android |
-|---------|-----|---------|
-| Biometric label | Face ID / Touch ID | Fingerprint / Biometric |
-| Key storage label | Secure Enclave | Android Keystore |
-| iCloud Backup | Available in Settings | **Not present** — section hidden |
-| Safety Net screen | 2 cards (Family Kit + iCloud) | **1 card only** (Family Kit) + Defer |
-| How It Works screen | Shows iCloud path (Path 2) | iCloud path not applicable |
-| Restore purchases alert | "Apple ID" | "Google account" |
-| Cancel subscription | "Cancel in App Store Settings" | "Cancel in Google Play Settings" |
-| IAP system | StoreKit (iOS system sheet) | Google Play Billing (Play sheet) |
-| Accessibility tool | VoiceOver | TalkBack |
-| TestFlight invite | In Settings → Beta | **Not present** |
-| Back navigation | Swipe from left edge | System back gesture / button |
-| Device recovery | iCloud Keychain + QR kit | QR kit + .afterme file only |
+| Area | iOS | Android |
+|---|---|---|
+| Cloud Backup | iCloud Backup | Google Drive Backup |
+| Biometrics | Face ID / Touch ID | Fingerprint / Face Unlock |
+| Biometric Permission | "After Me would like to use Face ID" | "After Me requires biometric authentication" |
+| Action Sheet | Native `ActionSheetIOS` | Custom bottom sheet (slides up from bottom) |
+| Typography | Georgia serif font | Libre Baskerville serif font |
+| In-App Purchases | StoreKit / App Store | Google Play Billing |
+| Share | iOS Share Sheet | Android Share Sheet |
+| Haptics | iOS Haptic Engine (Taptic) | Device vibration feedback |
+| Modal Dismiss | Swipe-to-dismiss (page sheet) | Android back button / back gesture |
+| Accessibility | VoiceOver | TalkBack |
+| How It Works | iCloud card visible | iCloud card **hidden** |
+| Browser | Safari | Chrome / default browser |
+| Backup Sign-In | Implicit (Apple ID) | Google account picker |
+
+Each test case includes: preconditions, numbered steps, and explicit expected results. Record **PASS**, **FAIL**, or **BLOCKED** with notes.
 
 ---
 
 ## 2. Test Environment Setup
 
 | Item | Requirement |
-|------|-------------|
-| Device | Physical Android device **or** Android emulator (Pixel 7 recommended) |
-| Android Version | Android 9 (API 28) minimum · Android 13+ recommended |
-| Google Play | Signed into a Google account (for IAP testing) |
-| Network | Active internet connection (for Google Play Billing) |
-| Build type | Debug build for development testing · Release AAB for Play Console testing |
-| Camera | Camera permission granted to After Me |
-| Storage | At least 200 MB free |
-| Biometrics | Fingerprint enrolled on device (or PIN/pattern as fallback) |
-| Second device | Required for AND-13 (Survivor Import) — OR use same device after full reset |
-| Printed QR card | Required for AND-13, AND-19 — print or display from AND-12 / AND-14 |
-| .afterme file | Required for AND-13, AND-19 — save during AND-12 / AND-14 |
+|---|---|
+| Device | Physical Android device (fingerprint or face unlock configured) |
+| Android Version | Android 13+ (Android 14+ recommended) |
+| Google Account | Signed in with Google account; Google Drive enabled |
+| Google Play | Signed in (for IAP testing with licence testers) |
+| Network | Active internet connection for Google Drive and Google Play Billing |
+| Build type | Release build installed on device |
+| Camera | Camera access granted to After Me |
+| Photos | Photo/media access granted to After Me |
+| Second device | Required for UAT-13 (Survivor Import) — OR use same device after full reset |
+| Printed QR card | Required for UAT-13, UAT-20 — print from UAT-12 / UAT-14 |
+| .afterme file | Required for UAT-13, UAT-20 — save to device storage or Google Drive during UAT-12 / UAT-14 |
 
 ### Install the test build
 
-```bash
-# Connect Android device via USB with USB debugging enabled, then:
+```
+# From project root, with Android device connected via USB (USB debugging enabled):
 cd after-me-mobile
-npx expo run:android
-
-# OR for emulator:
-npx expo run:android  # auto-detects running emulator
+npx expo run:android --device --variant release
 ```
 
-### Fix emulator network connection (if Metro bundler not connecting)
+Or via EAS Build:
 
-```bash
-# Run this once after emulator boots — forwards Metro port to emulator:
-adb reverse tcp:8081 tcp:8081
+```
+cd after-me-mobile
+eas build --platform android --profile preview
+# Install the resulting APK on the device
 ```
 
 ---
@@ -129,174 +131,177 @@ adb reverse tcp:8081 tcp:8081
 ## 3. Test Accounts & Prerequisites
 
 | Item | Details |
-|------|---------|
-| Google Play test account | Use a **licence tester** account added in Play Console → Setup → Licence Testing |
-| Licence tester email | Add your Google account as a licence tester so purchases are free in testing |
-| IAP Products required | `com.afterme.app.premium.lifetime` (in-app product) and `com.afterme.app.premium.annual` (subscription) must be **Active** in Google Play Console |
+|---|---|
+| Google Play Licence Tester | Add the test Google account as a licence tester in [Google Play Console](https://play.google.com/console) → Setup → Licence Testing |
+| Test email | e.g. `uat-tester@gmail.com` (must be added as licence tester) |
+| IAP Products required | `com.afterme.app.premium.lifetime` and `com.afterme.app.premium.annual` must exist in Google Play Console as in-app products / subscriptions |
+| Google Drive | Google Drive app installed and signed in on the test device |
 | Test documents | Have 2–3 real documents ready to photograph (passport photo page, any ID, any utility bill) |
-| .afterme file | Save one during AND-12; needed for AND-13 and AND-19 |
-| QR Key Card | Print or screenshot from AND-12; needed for AND-13 and AND-19 |
-
-> **Note on Google Play IAP in testing:** Unlike iOS sandbox, Google Play licence testers make real purchases that are immediately refunded. You must be signed into the **same Google account** on the device that is registered as a licence tester in Play Console.
 
 ---
 
 ## 4. Test Suite Overview
 
 | Suite | Test ID | Description | Priority |
-|-------|---------|-------------|----------|
-| Onboarding | AND-01 | First launch, full onboarding flow (8 screens) | CRITICAL |
-| Auth | AND-02 | Fingerprint / biometric lock and unlock | CRITICAL |
-| Legal | AND-03 | Legal disclaimer, correct privacy URL | HIGH |
-| Safety Net | AND-04 | Safety Net screen — Android layout (1 card only) | CRITICAL |
-| Dashboard | AND-05 | Vault dashboard, progress rings, categories | HIGH |
-| Scanning | AND-06 | Camera document scanning | CRITICAL |
-| Import | AND-07 | Import from Files and Photos | HIGH |
-| Library | AND-08 | Search, sort, filter, long-press | HIGH |
-| Viewer | AND-09 | View, edit metadata, delete | HIGH |
-| Free Tier | AND-10 | 5-document free tier enforcement | CRITICAL |
-| Purchases | AND-11 | Premium upgrade — lifetime (Google Play Billing) | CRITICAL |
-| Family Kit | AND-12 | Create Family Kit, QR card, PDF | CRITICAL |
-| Survivor | AND-13 | Open a Family Kit as a survivor | CRITICAL |
-| Recovery Kit | AND-14 | Personal Recovery Kit creation | HIGH |
-| Security | AND-15 | Biometric toggle, session lock | HIGH |
-| Integrity | AND-16 | Vault integrity scan | MEDIUM |
-| Multi-Vault | AND-17 | Create and switch vaults | MEDIUM |
-| Help | AND-18 | Help & FAQ — Android-specific answers | HIGH |
-| Device Loss | AND-19 | Restore My Vault from Welcome screen | CRITICAL |
-| Accessibility | AND-20 | TalkBack, font scaling | HIGH |
-| Reset | AND-21 | Full reset and re-onboarding | HIGH |
-| How It Works | AND-22 | Onboarding explainer screen | HIGH |
-| Safety Net — Kit | AND-23 | Safety Net: Family Kit path (primary) | CRITICAL |
-| Safety Net — Defer | AND-24 | Safety Net: defer path | HIGH |
-| Support Content | AND-25 | Settings → Support — correct links only | HIGH |
-| Website | AND-26 | How It Works web page | MEDIUM |
-| Premium Gate | AND-27 | Family Kit premium gate from onboarding | CRITICAL |
-| Paywall UX | AND-28 | Paywall Layout — Lifetime Hero, Break-Even, Death-Risk | CRITICAL |
-| Annual Purchase | AND-29 | Annual Plan via Google Play Billing | CRITICAL |
-| Upgrade Card | AND-30 | Settings → Upgrade Card for Annual Subscribers | HIGH |
-| Website Pricing | AND-31 | Website Pricing Section — Lifetime Hero + Annual | HIGH |
-| Family Kit Guard | AND-32 | Family Kit — Empty Vault Guard | CRITICAL |
-| Back Gesture | AND-33 | Android system back gesture throughout app | HIGH |
-| iCloud Absent | AND-34 | iCloud UI is fully absent on Android | CRITICAL |
-| Play Billing Text | AND-35 | Google Play wording in alerts and legal text | HIGH |
-| Keystore Label | AND-36 | Android Keystore label in Settings | MEDIUM |
-| Permissions | AND-37 | Android permission prompt flows | HIGH |
+|---|---|---|---|
+| Onboarding | UAT-01 | First launch, full onboarding flow (8 screens) with back navigation | CRITICAL |
+| Auth | UAT-02 | Fingerprint / Face Unlock lock and unlock | CRITICAL |
+| Legal | UAT-03 | Legal disclaimer, correct privacy URL | HIGH |
+| Safety Net | UAT-04 | Safety Net screen — card layout and messaging | CRITICAL |
+| Dashboard | UAT-05 | Vault dashboard, progress rings, categories | HIGH |
+| Scanning | UAT-06 | Camera document scanning | CRITICAL |
+| Import | UAT-07 | Import from Files and Photos with date fields | HIGH |
+| Library | UAT-08 | Search, sort, filter, long-press | HIGH |
+| Viewer | UAT-09 | View, edit metadata (including dates), delete | HIGH |
+| Free Tier | UAT-10 | **5-document** free tier enforcement (SecureStore-backed) | CRITICAL |
+| Purchases | UAT-11 | Premium upgrade — lifetime & annual, new paywall UX (1-hr cache TTL) | CRITICAL |
+| Family Kit | UAT-12 | Create Family Kit, QR card, PDF — with progress reporting | CRITICAL |
+| Survivor | UAT-13 | Open a Family Kit as a survivor (distinct mode, manual key fallback) | CRITICAL |
+| Recovery Kit | UAT-14 | Personal Recovery Kit creation — with progress reporting and back-button reset | HIGH |
+| Google Drive | UAT-15 | Google Drive backup and full restore | CRITICAL |
+| Security | UAT-16 | Biometric toggle, session lock — sectioned settings layout | HIGH |
+| Integrity | UAT-17 | Vault integrity scan | MEDIUM |
+| Multi-Vault | UAT-18 | Create and switch vaults — with error/retry handling | MEDIUM |
+| Help | UAT-19 | Help & FAQ screen — sectioned settings layout | LOW |
+| Device Loss | UAT-20 | Restore My Vault from Welcome screen (distinct mode) | CRITICAL |
+| Accessibility | UAT-21 | TalkBack, font scaling | HIGH |
+| Reset | UAT-22 | Full reset and re-onboarding | HIGH |
+| How It Works | UAT-23 | Onboarding explainer screen (Android: iCloud card hidden) | HIGH |
+| Safety Net — Kit | UAT-24 | Safety Net: Family Kit path (primary) | CRITICAL |
+| Safety Net — Google Drive | UAT-25 | Safety Net: Google Drive path (personal recovery) | HIGH |
+| Safety Net — Defer | UAT-26 | Safety Net: defer path | HIGH |
+| Support Content | UAT-27 | Settings → Support — correct links only | HIGH |
+| Website | UAT-28 | How It Works web page | MEDIUM |
+| Premium Gate | UAT-29 | Family Kit premium gate from onboarding flow | CRITICAL |
+| Paywall UX | UAT-30 | Paywall Layout — Lifetime Hero, Break-Even, Death-Risk | CRITICAL |
+| Annual Purchase | UAT-31 | Annual Plan Purchase via Paywall | CRITICAL |
+| Upgrade Card | UAT-32 | Settings → Upgrade Card for Annual Subscribers | HIGH |
+| Website Pricing | UAT-33 | Website Pricing Section — Lifetime Hero + Annual | HIGH |
+| Family Kit Guard | UAT-34 | Family Kit — Empty Vault Guard | CRITICAL |
+| Security Regression | UAT-35 | Key rotation, vault integrity after backgrounding, session key eviction | HIGH |
+| Date Validation | UAT-36 | DD/MM/YYYY format validation in Add Document flow | HIGH |
+| Back Navigation | UAT-37 | Onboarding back button on all 8 screens | HIGH |
+| Kit Progress | UAT-38 | Progress reporting during kit creation | HIGH |
+| Google Drive Sign-In | UAT-39 | Google Drive sign-in flow — account picker on first backup enable | HIGH |
+| Custom Bottom Sheet | UAT-40 | Document long-press shows sliding bottom sheet | HIGH |
+| Typography | UAT-41 | Libre Baskerville serif font renders correctly | MEDIUM |
 
 ---
 
-## AND-01 · First Launch & Onboarding
+## UAT-01 · First Launch & Onboarding
 
 **Priority:** CRITICAL  
-**Precondition:** Fresh install. App has never been opened on this device.
+**Precondition:** Fresh install. App has never been opened on this device.  
+**Note:** Onboarding has 8 screens — a "How Your Family Will Access This" screen is inserted between Screen 4 (QR reveal) and the Legal Disclaimer. Total progress dots = 8. Every onboarding screen has a "← Back" button at top-left. See UAT-37 for dedicated back navigation coverage.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 01.1 | Launch the app | Welcome screen appears with After Me logo, tagline "Your legacy. Their peace of mind.", and 3 buttons | ☐ |
 | 01.2 | Verify button layout | "I'm Planning My Legacy" (amber, primary), "I Have a Legacy Kit" (secondary, border), "Restore My Vault" (subtle, lowest) | ☐ |
 | 01.3 | Tap "I'm Planning My Legacy" | First onboarding screen appears — emotional, warm tone | ☐ |
-| 01.4 | Read and advance through Screens 1–4 | Each screen loads without crash; back navigation works via system back gesture | ☐ |
-| 01.5 | After Screen 4 (QR reveal), note the next screen | "How Your Family Will Access This" explainer screen appears before the Legal Disclaimer | ☐ |
-| 01.6 | Read explainer screen and tap "I understand — continue" | App proceeds to Legal Disclaimer screen | ☐ |
-| 01.7 | Verify Legal Disclaimer screen | Legal disclaimer appears with full text and Privacy Policy link | ☐ |
-| 01.8 | Tap "I Accept & Continue" | App proceeds to biometric setup screen | ☐ |
-| 01.9 | Tap primary CTA on biometric screen | Android fingerprint / biometric system prompt appears | ☐ |
-| 01.10 | Authenticate successfully | Success animation plays; screen advances to Screen 8 (Safety Net) | ☐ |
-| 01.11 | Verify Safety Net screen shows **1 card only** | Only the "Create a Family Kit" card and the defer option are visible — **no iCloud card** | ☐ |
-| 01.12 | Complete Safety Net screen (see AND-23/AND-24) | App transitions to the main vault dashboard | ☐ |
-| 01.13 | Verify main tabs | Four tabs visible: Vault, Documents, Family Kit, Settings | ☐ |
-| 01.14 | Verify progress dot count throughout onboarding | 8 dots shown in total; active dot advances correctly on each screen | ☐ |
-| 01.15 | Verify no crash on any screen | All 8 onboarding screens load and animate without crash or ANR | ☐ |
+| 01.4 | Verify "← Back" button is present on Screen 1 | A "← Back" button is visible at the top-left of the screen | ☐ |
+| 01.5 | Read and advance through Screens 1–4 | Each screen loads without crash; "← Back" button visible on every screen | ☐ |
+| 01.6 | On Screen 2, tap "← Back" | Returns to Screen 1 without data loss or crash | ☐ |
+| 01.7 | Re-advance to Screen 4 and note the next screen | After Screen 4 (QR reveal), **"How Your Family Will Access This" explainer screen appears** (not the Legal Disclaimer yet) | ☐ |
+| 01.8 | Read explainer screen and tap "I understand — continue" | App proceeds to Legal Disclaimer screen | ☐ |
+| 01.9 | Verify Legal Disclaimer screen | Legal disclaimer appears with full text and Privacy Policy link | ☐ |
+| 01.10 | Tap "I Accept & Continue" | App proceeds to biometric setup screen | ☐ |
+| 01.11 | Tap primary CTA on biometric screen | Android biometric prompt appears (fingerprint / face unlock) | ☐ |
+| 01.12 | Authenticate successfully | Success animation plays; screen advances to Screen 8 (Safety Net) | ☐ |
+| 01.13 | Complete Safety Net screen (see UAT-24/25/26) | App transitions to the main vault dashboard | ☐ |
+| 01.14 | Verify main tabs | Four tabs visible: Vault, Documents, Family Kit, Settings | ☐ |
+| 01.15 | Verify progress dot count throughout onboarding | 8 dots shown in total; active dot advances correctly on each screen | ☐ |
+| 01.16 | Verify Libre Baskerville serif font is used | Body text on onboarding screens uses Libre Baskerville (serif), not a sans-serif fallback | ☐ |
 
 ---
 
-## AND-02 · Biometric Authentication
+## UAT-02 · Biometric Authentication
 
 **Priority:** CRITICAL  
-**Precondition:** App has completed onboarding. Fingerprint enrolled on device.  
-**Note:** On Android the label will show "Fingerprint", "Biometric", or the device-specific equivalent — not "Face ID" or "Touch ID".
+**Precondition:** App has completed onboarding. App is in foreground.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 02.1 | Background the app (press Home or swipe up) | App moves to background | ☐ |
+|---|---|---|---|
+| 02.1 | Background the app (press Home / swipe up) | App moves to background | ☐ |
 | 02.2 | Wait 3 seconds, then reopen app | Biometric lock screen appears (vault is locked) | ☐ |
-| 02.3 | Authenticate with fingerprint | Vault unlocks; dashboard is shown | ☐ |
-| 02.4 | Background again; return immediately | App may or may not require re-auth (session cached for a short period) | ☐ |
+| 02.3 | Authenticate with fingerprint / face unlock | Vault unlocks; dashboard is shown | ☐ |
+| 02.4 | Background again; return immediately | App may or may not require re-auth (session is cached for short period) | ☐ |
 | 02.5 | Force-close app from recent apps | — | ☐ |
 | 02.6 | Reopen app | Biometric prompt appears again immediately | ☐ |
-| 02.7 | Cancel / fail biometric twice | Error animation plays; option to use device PIN / pattern shown | ☐ |
-| 02.8 | Use device PIN fallback | Vault unlocks successfully | ☐ |
-| 02.9 | Verify biometric label on lock screen | Label reads "Fingerprint", "Biometric", or similar — **not** "Face ID" | ☐ |
+| 02.7 | Cancel / fail biometric twice | Error animation plays; option to use device PIN/pattern/password shown | ☐ |
+| 02.8 | Use device PIN/pattern/password fallback | Vault unlocks successfully | ☐ |
 
 ---
 
-## AND-03 · Legal Disclaimer & Privacy
+## UAT-03 · Legal Disclaimer & Privacy
 
 **Priority:** HIGH  
-**Precondition:** Fresh install (or after reset).
+**Precondition:** Fresh install (or after reset).  
+**Note:** Privacy Policy URL is `myafterme.co.uk/privacy` — verify this is the URL that opens.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 03.1 | Advance onboarding past the How It Works screen | Legal Disclaimer screen appears | ☐ |
 | 03.2 | Verify disclaimer text is readable | No truncation; scrollable if content is long | ☐ |
-| 03.3 | Tap "View our Privacy Policy" link | Chrome / browser opens **`https://myafterme.co.uk/privacy`** (verify the URL exactly) | ☐ |
-| 03.4 | Use system back or close browser tab | App / disclaimer screen is still showing | ☐ |
+| 03.3 | Tap "View our Privacy Policy" link | Default browser opens **`https://myafterme.co.uk/privacy`** (verify the URL matches exactly) | ☐ |
+| 03.4 | Return to app | Disclaimer screen is still showing | ☐ |
 | 03.5 | Tap "I Accept & Continue" | Acceptance saved; app proceeds | ☐ |
 | 03.6 | Verify acceptance persists | Complete onboarding. Go to Settings. No re-prompt for disclaimer. | ☐ |
 
 ---
 
-## AND-04 · Safety Net Setup — Android Layout
+## UAT-04 · Safety Net Setup — Redesigned
 
 **Priority:** CRITICAL  
 **Precondition:** Reached the Safety Net screen (Screen 8) of onboarding.  
-**Android-specific:** On Android this screen shows **only one card** (Family Kit). The iCloud card is absent. The subhead "Two very different things." and the body copy about iCloud are also absent.
+**Note:** This screen has been redesigned. Two cards serve clearly different purposes:
+- **Card 1 (amber border, "For your family"):** "Create a Family Kit" — the only way your loved ones can access the vault
+- **Card 2 (grey border, "For you only"):** "Enable Google Drive Backup" — for personal device recovery; does NOT give family access
+- **Defer option:** "Living dangerously — remind me later" (unchanged)
 
 ### Verify screen content before testing scenarios
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 04.0 | Reach Safety Net screen | Headline reads "One last step." | ☐ |
-| 04.0a | Verify body copy | Body reads: "Create your kit now, or set it up once you have added documents." — **no mention of iCloud** | ☐ |
-| 04.0b | Count the cards visible | **Only 1 card** — "Create a Family Kit" with amber accent. The iCloud card does **not** appear. | ☐ |
-| 04.0c | Inspect the Family Kit card | "Create a Family Kit" with amber border and "For your family" badge | ☐ |
-| 04.0d | Inspect card secondary text | Reads: "The only way your loved ones can access this vault. Add documents first, then generate your kit." | ☐ |
-| 04.0e | Verify no "Two very different things." subhead | That subhead is iOS-only — it must **not** appear on Android | ☐ |
-| 04.0f | Verify no iCloud card | No card labelled "Enable iCloud Backup" or "For you only" is present | ☐ |
-| 04.0g | Verify defer option present | "Living dangerously — remind me later" link is visible below the card | ☐ |
+|---|---|---|---|
+| 04.0 | Reach Safety Net screen | Headline reads "One last step." with subhead "Two very different things." | ☐ |
+| 04.0a | Read body copy | Body reads: "A Family Kit gives your loved ones access. Google Drive Backup protects you if you lose this device. They are not the same thing." | ☐ |
+| 04.0b | Inspect Card 1 | "Create a Family Kit" with amber accent bar and "For your family" badge | ☐ |
+| 04.0c | Inspect Card 1 secondary text | Reads: "The only way your loved ones can access this vault. Add documents first, then generate your kit." | ☐ |
+| 04.0d | Inspect Card 2 | "Enable Google Drive Backup" with grey "For you only" badge | ☐ |
+| 04.0e | Inspect Card 2 secondary text | Reads: "If YOU lose this device. Does not give your family access to the vault." | ☐ |
 
-*For full scenario testing of each option, see AND-23 (Family Kit path) and AND-24 (defer path).*
+*For full scenario testing of each option, see UAT-24, UAT-25, and UAT-26 below.*
 
 ---
 
-## AND-05 · Vault Dashboard
+## UAT-05 · Vault Dashboard
 
 **Priority:** HIGH  
 **Precondition:** Onboarding complete. At least 0 documents in vault.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 05.1 | Open Vault tab | Dashboard shows overall vault completeness ring | ☐ |
 | 05.2 | Verify 8 category cards | Identity, Financial, Property, Insurance, Medical, Legal, Digital, Personal | ☐ |
 | 05.3 | Verify category progress rings | Each category shows a small circular progress ring with count | ☐ |
 | 05.4 | Tap a category card | Navigates to Document Library filtered to that category | ☐ |
-| 05.5 | Use system back gesture | Returns to Dashboard | ☐ |
-| 05.6 | Add 3 documents (see AND-06) and return to Dashboard | Progress rings update to reflect added documents | ☐ |
+| 05.5 | Tap back (Android back button or gesture) | Returns to Dashboard | ☐ |
+| 05.6 | Add 3 documents (see UAT-06) and return to Dashboard | Progress rings update to reflect added documents | ☐ |
 | 05.7 | Verify completeness score increases | Overall ring and percentage updates | ☐ |
 | 05.8 | If safety net was deferred, verify warning card | A warning banner prompting to set up a safety net is visible | ☐ |
-| 05.9 | If Family Kit was not created, verify nudge card | Dashboard shows a prompt to create or update the Family Kit | ☐ |
+| 05.9 | If Family Kit was not created, verify staleness card | Dashboard shows a prompt to create or update the Family Kit | ☐ |
 
 ---
 
-## AND-06 · Document Scanning
+## UAT-06 · Document Scanning
 
 **Priority:** CRITICAL  
-**Precondition:** Onboarding complete. Camera permission granted (see AND-37 for permission flow).
+**Precondition:** Onboarding complete. Camera permission granted.
 
 ### Single-Page Scan
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 06.1 | Tap Documents tab → tap "+" button | Add Document modal appears | ☐ |
 | 06.2 | Select a document category (e.g. "Identity") | Category picker with icons and descriptions shown | ☐ |
 | 06.3 | Tap "Scan with Camera" | Document scanner opens with real-time edge detection | ☐ |
@@ -310,52 +315,57 @@ adb reverse tcp:8081 tcp:8081
 ### Multi-Page Scan
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 06.10 | Open Add Document → select "Scan with Camera" | Scanner opens | ☐ |
 | 06.11 | Scan a document, then add additional pages if supported | Multiple pages captured | ☐ |
 | 06.12 | Save the multi-page document | Document saved with a descriptive title | ☐ |
 
 ---
 
-## AND-07 · Document Import (Files & Photos)
+## UAT-07 · Document Import (Files & Photos)
 
 **Priority:** HIGH  
-**Precondition:** Test PDF and test JPEG available on device.
+**Precondition:** Test PDF and test JPEG available on device.  
+**Note:** The Add Document modal includes optional "Document Date" and "Expiry Date" fields (DD/MM/YYYY) shown on the category selection step. See UAT-36 for dedicated date validation coverage.
 
 ### Import from Files
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 07.1 | Open Add Document → select a category → tap "Pick from Files" | Android file picker (DocumentsUI) opens | ☐ |
+|---|---|---|---|
+| 07.1 | Open Add Document → select a category → tap "Pick from Files" | Android file picker (SAF / document provider) opens | ☐ |
 | 07.2 | Navigate to a PDF file | File is selectable | ☐ |
 | 07.3 | Select the PDF | Returns to app; title pre-populated from filename | ☐ |
-| 07.4 | Confirm and save | PDF document appears in the library | ☐ |
-| 07.5 | Open the document | PDF renders in the viewer | ☐ |
+| 07.4 | Verify "Document Date" and "Expiry Date" fields visible | Two side-by-side input fields with DD/MM/YYYY placeholder shown on category step | ☐ |
+| 07.5 | Enter a valid Document Date (e.g. "15/03/2024") | Field accepts input; no error shown on blur | ☐ |
+| 07.6 | Leave Expiry Date blank | Field remains empty — this is optional | ☐ |
+| 07.7 | Confirm and save | PDF document appears in the library with the document date set | ☐ |
+| 07.8 | Open the document | PDF renders in the viewer; metadata shows the entered document date | ☐ |
 
 ### Import from Photos
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 07.6 | Open Add Document → select a category → tap "Pick from Photos" | Android photo picker opens | ☐ |
-| 07.7 | Select a photo | Returns to app; title editable | ☐ |
-| 07.8 | Enter a title and save | Image document saved with thumbnail | ☐ |
+|---|---|---|---|
+| 07.9 | Open Add Document → select a category → tap "Pick from Photos" | Android photo picker opens | ☐ |
+| 07.10 | Select a photo | Returns to app; title editable | ☐ |
+| 07.11 | Enter a Document Date and Expiry Date | Both fields accept DD/MM/YYYY input | ☐ |
+| 07.12 | Enter a title and save | Image document saved with thumbnail and both dates | ☐ |
 
 ### Unsupported File Type
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 07.9 | Try importing a `.docx` or `.mp4` file | App shows an error: "Unsupported file type" | ☐ |
-| 07.10 | Verify app does not crash | App remains stable; no crash or ANR | ☐ |
+|---|---|---|---|
+| 07.13 | Try importing a `.docx` or `.mp4` file | App shows an error: "Unsupported file type" | ☐ |
+| 07.14 | Verify app does not crash | App remains stable; no crash | ☐ |
 
 ---
 
-## AND-08 · Document Library — Search, Sort & Filter
+## UAT-08 · Document Library — Search, Sort & Filter
 
 **Priority:** HIGH  
 **Precondition:** At least 5 documents in vault across 2+ categories.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 08.1 | Open Documents tab | 2-column grid of document thumbnails shown | ☐ |
 | 08.2 | Tap the search bar | Keyboard appears; search field is focused | ☐ |
 | 08.3 | Type part of a document title | Library filters in real time to matching documents | ☐ |
@@ -363,655 +373,899 @@ adb reverse tcp:8081 tcp:8081
 | 08.5 | Tap the sort button | Sort mode toggles (Newest → Oldest → Name) | ☐ |
 | 08.6 | Sort by Name | Documents reorder alphabetically | ☐ |
 | 08.7 | Tap a category filter badge | Library filters to that category only | ☐ |
-| 08.8 | Verify filter badge tap target | Badge is large enough to tap easily | ☐ |
+| 08.8 | Verify filter badge tap target | Badge is large enough to tap easily (≥ 48dp height per Android guidelines) | ☐ |
 | 08.9 | Tap "All" filter | All documents shown again | ☐ |
-| 08.10 | Long-press a document card | Context menu appears with "Rename" and "Delete" options | ☐ |
+| 08.10 | Long-press a document card | **Custom bottom sheet** slides up from bottom with "Rename" and "Delete" options (see UAT-40 for dedicated coverage) | ☐ |
 | 08.11 | Tap "Rename" | A rename dialog/modal appears | ☐ |
 | 08.12 | Enter a new name and confirm | Document renamed; library updates immediately | ☐ |
 
 ---
 
-## AND-09 · Document Viewer & Metadata Editing
+## UAT-09 · Document Viewer & Metadata Editing
 
 **Priority:** HIGH  
-**Precondition:** At least 1 document exists in vault.
+**Precondition:** At least 1 document exists in vault.  
+**Note:** Date fields use DD/MM/YYYY format with validation. The viewer displays document date and expiry date if set.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 09.1 | Tap a document in the library | Document viewer opens | ☐ |
 | 09.2 | Verify document renders | Image: photo shown. PDF: PDF viewer renders document. | ☐ |
-| 09.3 | Verify metadata shown | Title, category, date added, provider (if set) visible | ☐ |
+| 09.3 | Verify metadata shown | Title, category, date added, provider (if set), document date (if set), expiry date (if set) visible | ☐ |
 | 09.4 | Tap "Edit" button | Edit mode activates; text fields become editable | ☐ |
 | 09.5 | Change the title | New title entered in text input | ☐ |
-| 09.6 | Set a document date | Date field accepts date input | ☐ |
+| 09.6 | Set a document date using DD/MM/YYYY format | Date field accepts "15/06/2024" without error | ☐ |
 | 09.7 | Set a provider name (e.g. "Home Office") | Text input accepts value | ☐ |
-| 09.8 | Set an expiry date (e.g. 5 years from today) | Date input accepted | ☐ |
-| 09.9 | Tap "Save" | Success feedback shown; viewer displays updated metadata immediately | ☐ |
-| 09.10 | Use system back; reopen the document | Updated metadata persists correctly | ☐ |
-| 09.11 | Tap "Delete Document" button | Confirmation dialog appears | ☐ |
-| 09.12 | Cancel delete | Document remains | ☐ |
-| 09.13 | Delete via long-press context menu | Document removed from library; thumbnail removed | ☐ |
+| 09.8 | Set an expiry date using DD/MM/YYYY format (e.g. "15/06/2034") | Date input accepted without error | ☐ |
+| 09.9 | Enter an invalid date (e.g. "32/13/2024") | Inline error message shown: "Invalid month" or "Invalid day" | ☐ |
+| 09.10 | Correct the date and tap "Save" | Success feedback shown; viewer displays updated metadata immediately | ☐ |
+| 09.11 | Close and reopen the document | Updated metadata persists correctly including dates | ☐ |
+| 09.12 | Tap "Delete Document" button | Confirmation dialog appears | ☐ |
+| 09.13 | Cancel delete | Document remains | ☐ |
+| 09.14 | Delete via long-press bottom sheet | Document removed from library; thumbnail removed | ☐ |
 
 ---
 
-## AND-10 · Free Tier Limit & Paywall
+## UAT-10 · Free Tier Limit & Paywall
 
 **Priority:** CRITICAL  
 **Precondition:** Not yet upgraded to Premium. Fresh vault (or reset).  
-**Note:** Free tier limit is **5 documents**. Verify all in-app references show "5", not any other number.
+**Note:** Free tier limit is **5 documents**. All hardcoded references in UI use the `FREE_TIER_DOCUMENT_LIMIT` constant — verify the number shown in-app matches 5. Premium status is stored in SecureStore with HMAC tamper detection.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 10.1 | Add documents until 4 are in the vault | Each document adds normally | ☐ |
 | 10.2 | Open Add Document modal with 4 documents stored | Free tier banner shows "1 of 5 free documents remaining" | ☐ |
-| 10.3 | Add the 5th document | Document saves; banner shows "Free limit reached (5 documents). Upgrade to add more." | ☐ |
-| 10.4 | Attempt to add a 6th document | Paywall screen appears automatically | ☐ |
+| 10.3 | Add the 5th document | Document saves; banner now shows "Free limit reached (5 documents). Upgrade to add more." | ☐ |
+| 10.4 | Attempt to add a 6th document | Paywall screen appears automatically with `document_limit` trigger | ☐ |
 | 10.5 | Verify paywall headline | "You've reached the free limit of 5 documents." | ☐ |
-| 10.6 | Dismiss paywall | Returns to document library; no document added; still 5 documents | ☐ |
+| 10.6 | Dismiss paywall (Android back button or gesture) | Returns to document library; no document added; still 5 documents | ☐ |
 | 10.7 | Open Settings → Subscription section | Shows "Free" status and "Upgrade to Premium" amber button | ☐ |
-| 10.8 | Tap "Upgrade to Premium" in Settings | Paywall appears | ☐ |
+| 10.8 | Tap "Upgrade to Premium" in Settings | Paywall appears with `settings` trigger | ☐ |
 
 ---
 
-## AND-11 · In-App Purchase — Premium Upgrade (Lifetime)
+## UAT-11 · In-App Purchase — Premium Upgrade (Lifetime)
 
 **Priority:** CRITICAL  
-**Precondition:** Licence tester Google account signed into device. Both IAP products active in Google Play Console.  
-**Android-specific:** The purchase sheet is the **Google Play Billing** system UI, not StoreKit. The sheet will show the Google Play payment UI with your Google account.
+**Precondition:** Google Play licence tester account configured on device. Both IAP products created in Google Play Console.  
+**Note:** The paywall has been fully rebuilt. See UAT-30 for detailed paywall UX verification. This suite covers the lifetime purchase flow specifically. Products are cached for 1 hour (TTL = 3,600,000ms). After 1 hour, Google Play Billing is re-queried. Premium status is persisted in SecureStore with HMAC signing for tamper resistance.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 11.1 | Open paywall from any trigger (Settings or document limit) | Paywall opens with Lifetime card displayed **first and prominently** as the hero product | ☐ |
 | 11.2 | Verify Lifetime is pre-selected | Lifetime product has amber border, radio filled, and "BEST VALUE · RECOMMENDED" badge visible | ☐ |
-| 11.3 | Verify Lifetime price displayed | Shows real price from Google Play — expected £79.99 | ☐ |
+| 11.3 | Verify Lifetime price displayed | Shows real price from Google Play Billing — expected £79.99 (or local equivalent) | ☐ |
 | 11.4 | Verify "Pay once. Then never again." subtitle appears under lifetime price | Text present on lifetime card | ☐ |
-| 11.5 | Tap "Get Lifetime — £79.99" CTA | **Google Play Billing** purchase sheet appears (system UI) | ☐ |
+| 11.5 | Tap "Get Lifetime — £79.99" CTA | Google Play purchase dialog appears (system UI) | ☐ |
 | 11.6 | Confirm purchase with licence tester account | Purchase completes; paywall dismisses automatically | ☐ |
-| 11.7 | Verify premium status in Settings | Settings → Subscription shows "Lifetime access — no renewals, ever" | ☐ |
+| 11.7 | Verify premium status in Settings | Settings → Subscription shows "Lifetime access — no renewals, ever" confirmation text | ☐ |
 | 11.8 | Verify no upgrade card is shown | Annual subscriber upgrade card does **not** appear (user is lifetime) | ☐ |
 | 11.9 | Verify document limit removed | Can add a 6th document without paywall appearing | ☐ |
 | 11.10 | Verify Family Kit unlocked | Family Kit creation wizard opens without paywall | ☐ |
+| 11.11 | Force-close and reopen app | Premium status persists from SecureStore — no re-purchase needed | ☐ |
 
 ### Restore Purchases
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 11.11 | Open Settings → Subscription → "Restore Purchases" | Loading spinner; Google Play is queried | ☐ |
-| 11.12 | Verify restore result | "Lifetime access — no renewals, ever" restored; **no mention of Apple ID** | ☐ |
-| 11.13 | Verify no purchases found alert (with empty account) | Alert reads: "We couldn't find any previous purchases for this **Google account**." — not "Apple ID" | ☐ |
+|---|---|---|---|
+| 11.12 | Clear app data (Settings → Apps → After Me → Clear Data) | App resets fully | ☐ |
+| 11.13 | Complete onboarding; go to Settings → Subscription → "Restore Purchases" | Loading spinner; then "Lifetime access — no renewals, ever" confirmation restored via Google Play | ☐ |
+
+### Product Cache TTL
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 11.14 | Note the time after opening the paywall | Products load from Google Play Billing and are cached | ☐ |
+| 11.15 | Close and reopen paywall within 60 minutes | Products load instantly from cache (no Billing delay) | ☐ |
+| 11.16 | Wait > 60 minutes and reopen paywall | Products re-fetched from Google Play Billing (may show brief loading state) | ☐ |
 
 ---
 
-## AND-12 · Family Kit Creation
+## UAT-12 · Family Kit Creation
 
 **Priority:** CRITICAL  
-**Precondition:** Premium account. **At least 1 document in vault** — the wizard immediately dismisses with an Alert if the vault is empty (see AND-32).
+**Precondition:** Premium account. **At least 1 document in vault** — the wizard immediately dismisses with an Alert if the vault is empty (see UAT-34).  
+**Note:** The kit wizard guards against an empty vault at entry. The generating step shows "Processing document X of Y…" progress text. See UAT-38 for dedicated progress coverage.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 12.1 | Tap "Family Kit" tab | Family Kit screen shows history / create button | ☐ |
-| 12.2 | Tap "Create Family Kit" | Kit Creation Wizard opens — Step 1: Introduction | ☐ |
-| 12.3 | Read introduction and tap "Get Started" | Step 2: owner name and emergency contact form | ☐ |
-| 12.4 | Enter your name and an emergency contact name | Fields accept text; Android keyboard appears | ☐ |
-| 12.5 | Tap "Generate Kit" | Step 3: Loading / generating state shown | ☐ |
-| 12.6 | Wait for generation to complete | Step 4: Validating; then Step 5: Complete | ☐ |
-| 12.7 | Verify QR code is shown | A QR code is visible on the success screen | ☐ |
-| 12.8 | Tap "Save & Distribute" | Step 6: Distribution options shown | ☐ |
-| 12.9 | Tap "Save .afterme File" | Android share sheet appears (Files, Drive, email, etc.) | ☐ |
-| 12.10 | Save file to Downloads or Google Drive | File saved with `.afterme` extension | ☐ |
-| 12.11 | Tap "Print QR Key Card" | PDF is generated; Android share sheet appears (print, save, share) | ☐ |
-| 12.12 | Dismiss wizard | Wizard closes; Family Kit tab shows kit history entry | ☐ |
-| 12.13 | Verify freshness status | Kit shows "Fresh" status indicator | ☐ |
-| 12.14 | Add a new document to vault | Family Kit tab shows a "stale" or "update recommended" warning | ☐ |
-| 12.15 | **Verify both outputs exist** | You now have (a) the `.afterme` file and (b) the printed/saved QR Key Card PDF — keep both for AND-13 | ☐ |
+| 12.2 | Tap "Create Family Kit" | Kit Creation Wizard opens — Step 1 of 4: Introduction | ☐ |
+| 12.3 | Read introduction and tap "Get Started" | Step 2 of 4: owner name and emergency contact form | ☐ |
+| 12.4 | Enter your name and an emergency contact name | Fields accept text | ☐ |
+| 12.5 | Tap "Generate Kit" | Generating state shown with spinner and "Encrypting vault contents with a unique access key..." | ☐ |
+| 12.6 | Verify progress text during generation | **"Processing document X of Y…"** text appears and updates as each document is encrypted | ☐ |
+| 12.7 | Wait for generation to complete | Validating step (auto-validation); then Step 3 of 4: Complete | ☐ |
+| 12.8 | Verify QR code is shown | A QR code is visible on the success screen with "Kit Created & Verified" banner | ☐ |
+| 12.9 | Tap "Next: Distribution Tips" | Step 4 of 4: Distribution options shown | ☐ |
+| 12.10 | Tap "Save .afterme File" (from Step 3 actions grid) | Android share sheet appears to save/share the file | ☐ |
+| 12.11 | Save file to device storage or Google Drive | File saved with `.afterme` extension | ☐ |
+| 12.12 | Tap "Print PDF" (from Step 3 actions grid) | A PDF is generated and Android share/print sheet appears | ☐ |
+| 12.13 | Tap "Done" on distribution step | Wizard closes; Family Kit tab shows kit history entry | ☐ |
+| 12.14 | Verify freshness status | Kit shows "Fresh" status indicator | ☐ |
+| 12.15 | Add a new document to vault | Family Kit tab shows a "stale" or "update recommended" warning | ☐ |
+| 12.16 | **Verify both outputs exist** | You now have (a) the `.afterme` file saved to storage and (b) the printed/saved QR Key Card PDF — keep these for UAT-13 | ☐ |
 
 ---
 
-## AND-13 · Family Kit — Survivor Import
+## UAT-13 · Family Kit — Survivor Import
 
 **Priority:** CRITICAL  
-**Precondition:** A valid `.afterme` file and its QR code (from AND-12) are available. Use a second Android device or fresh install.  
-**Note:** The survivor flow does not show bereavement support links at any point. After import, the flow ends at an "Open the Vault" button.
+**Precondition:** A valid `.afterme` file and its QR code (from UAT-12) are available. Use a second device or fresh install.  
+**Note:** The survivor flow no longer shows a bereavement support step at the end. "I Have a Legacy Kit" passes a `legacy_kit` mode to the survivor screen, distinct from the `restore_vault` mode used by "Restore My Vault". If QR scanning fails, a manual key entry option is available.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 13.1 | Fresh install (or use second device) and launch app | Welcome screen shown | ☐ |
-| 13.2 | Tap "I Have a Legacy Kit" | Survivor onboarding screen appears | ☐ |
-| 13.3 | Verify tone and language | Warm, compassionate language; dove emoji; "Take your time. There's no rush." | ☐ |
+| 13.2 | Tap "I Have a Legacy Kit" | Survivor onboarding screen appears (mode is `legacy_kit` internally) | ☐ |
+| 13.3 | Verify tone and language | Warm, compassionate language; no corporate or clinical tone; dove emoji; "Take your time. There's no rush." | ☐ |
 | 13.4 | Read the 3-step overview and tap "I'm Ready to Begin" | Camera opens for QR scanning | ☐ |
-| 13.5 | Grant camera permission if prompted | Camera permission granted | ☐ |
-| 13.6 | Scan the printed/displayed QR code from AND-12 | Access key extracted; "QR Code Received" screen appears | ☐ |
-| 13.7 | Tap "Select .afterme File" and choose the file via Android file picker | Decryption begins; "Importing Vault" loading screen shown | ☐ |
-| 13.8 | Wait for import to complete | "Vault Imported Successfully" screen shown with document count | ☐ |
-| 13.9 | Verify vault intro screen content | Shows document count, three info bullets (encryption, categories, biometric protection) | ☐ |
-| 13.10 | **Verify no support links appear** | No external links, no bereavement resources, no phone numbers appear anywhere | ☐ |
-| 13.11 | Tap "Open the Vault" | Main vault dashboard opens | ☐ |
-| 13.12 | Verify all documents present | All documents from original vault are visible in library | ☐ |
-| 13.13 | Open a document | Document content renders correctly | ☐ |
-| 13.14 | Verify vault is protected by own biometrics | Force-close and reopen — fingerprint prompt from the survivor's own device appears | ☐ |
+| 13.5 | Scan the printed/displayed QR code from UAT-12 | Access key extracted; "QR Code Received" screen appears with prompt to select file | ☐ |
+| 13.6 | **Test manual key entry fallback:** Cover the camera or tap the manual entry option | A text input field appears allowing manual entry of the access key | ☐ |
+| 13.7 | Type/paste the access key string and confirm | Key accepted; same "QR Code Received" screen shown | ☐ |
+| 13.8 | Tap "Select .afterme File" and choose the file from storage | Decryption begins; "Importing Vault" loading screen shown | ☐ |
+| 13.9 | Wait for import to complete | **"Vault Imported Successfully"** screen shown with document count | ☐ |
+| 13.10 | Verify vault intro screen content | Shows document count, three info bullets (encryption, categories, biometric protection) | ☐ |
+| 13.11 | **Verify no support links appear** | No external links, no bereavement resources, no phone numbers are shown anywhere in this flow | ☐ |
+| 13.12 | Tap "Open the Vault" | Main vault dashboard opens | ☐ |
+| 13.13 | Verify all documents present | All documents from original vault are visible in library | ☐ |
+| 13.14 | Open a document | Document content renders correctly | ☐ |
+| 13.15 | Verify vault is protected by own biometrics | Force-close and reopen — biometric prompt from the survivor's own device appears | ☐ |
 
 ---
 
-## AND-14 · Personal Recovery Kit
+## UAT-14 · Personal Recovery Kit
 
 **Priority:** HIGH  
-**Precondition:** At least 1 document in vault.
+**Precondition:** At least 1 document in vault.  
+**Note:** The generating step shows "Processing document X of Y…" progress text (see UAT-38). On Android, pressing the back button or gesture while the modal is open dismisses it AND resets all wizard state (analogous to iOS swipe-to-dismiss behaviour).
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
+|---|---|---|---|
 | 14.1 | Open Settings → "Personal Recovery" section | "Personal Recovery Kit" button visible | ☐ |
 | 14.2 | Tap "Personal Recovery Kit" | Wizard opens with introduction screen | ☐ |
 | 14.3 | Read the introduction and storage recommendations | Clear instructions about storing file and QR code separately | ☐ |
-| 14.4 | Tap "Generate Recovery Kit" | Loading screen with "Encrypting your vault…" | ☐ |
-| 14.5 | Wait for completion | QR code shown on completion screen | ☐ |
-| 14.6 | Tap "Save & Share" | Distribution screen shown | ☐ |
-| 14.7 | Tap "Save .afterme File" | Android share sheet appears | ☐ |
-| 14.8 | Tap "Print QR Recovery Card" | PDF share sheet appears | ☐ |
-| 14.9 | Tap "Done" | Wizard closes | ☐ |
+| 14.4 | Tap "Generate Recovery Kit" | Loading screen with "Encrypting your vault…" and spinner | ☐ |
+| 14.5 | Verify progress text during generation | **"Processing document X of Y…"** text appears and updates | ☐ |
+| 14.6 | Wait for completion | QR code shown on completion screen with document count | ☐ |
+| 14.7 | Tap "Save & Share" | Distribution screen shown with two action cards | ☐ |
+| 14.8 | Tap "Save Encrypted Vault File" | Android share sheet appears to save the .afterme file | ☐ |
+| 14.9 | Tap "Save / Print PDF Recovery Card" | PDF share sheet appears | ☐ |
+| 14.10 | Tap "Done" | Wizard closes | ☐ |
+| 14.11 | **Test back-button dismiss reset:** Reopen the wizard | Wizard opens at introduction screen (step 1) | ☐ |
+| 14.12 | Advance to the generating step | Generation begins | ☐ |
+| 14.13 | Wait for completion, then press Android back button/gesture | Modal dismisses | ☐ |
+| 14.14 | Reopen the wizard | Wizard opens at introduction screen again — **all state is reset** (not stuck on complete/distribute) | ☐ |
 
 ---
 
-## AND-15 · Settings — Biometric Lock & Security
+## UAT-15 · Google Drive Backup & Restore
+
+**Priority:** CRITICAL  
+**Precondition:** Signed into Google account. Google Drive available. At least 3 documents in vault.  
+**Note (Android-specific):** If the user has not previously authorised Google Drive access, a Google account picker / sign-in prompt may appear when enabling backup. See UAT-39 for dedicated sign-in flow coverage.
+
+### Backup
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 15.1 | Open Settings → Google Drive Backup | Section shows toggle and buttons | ☐ |
+| 15.2 | Enable "Auto Backup" toggle | Toggle turns on; Google Drive backup enabled. If first time, Google account picker may appear (see UAT-39). | ☐ |
+| 15.3 | Tap "Back Up Now" | Loading spinner on button; backup in progress | ☐ |
+| 15.4 | Wait for completion | Success message or spinner stops; last backup date updates | ☐ |
+| 15.5 | Verify only "Back Up Now" button was loading (not Restore) | The "Restore from Backup" button was not spinning | ☐ |
+
+### Restore (Simulated Device Loss)
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 15.6 | Uninstall and reinstall the app (or clear app data) | App launches fresh; Welcome screen shown | ☐ |
+| 15.7 | Complete biometric setup (brief onboarding) | Key set up fresh on new install | ☐ |
+| 15.8 | Go to Settings → Google Drive Backup → "Restore from Backup" | Google account picker may appear if not already signed in; then loading spinner on Restore button only | ☐ |
+| 15.9 | Wait for restore to complete | All documents restored from Google Drive | ☐ |
+| 15.10 | Verify documents in library | All original documents visible with correct metadata | ☐ |
+| 15.11 | Open a restored document | Document content renders correctly | ☐ |
+
+---
+
+## UAT-16 · Settings — Biometric Lock & Security
 
 **Priority:** HIGH  
 **Precondition:** Onboarding complete.  
-**Android-specific:** There is **no iCloud Backup section** in Settings on Android. Verify it is absent.
+**Note:** Settings screen is split into distinct sections with clear headings.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 15.1 | Open Settings → Security section | Biometric lock toggle shown; currently on | ☐ |
-| 15.2 | Toggle biometric lock OFF | Toggle state changes; preference saved | ☐ |
-| 15.3 | Background and reopen app | App reopens WITHOUT biometric prompt | ☐ |
-| 15.4 | Toggle biometric lock back ON | Toggle state changes; preference saved | ☐ |
-| 15.5 | Background and reopen app | Biometric prompt appears again | ☐ |
-| 15.6 | Open Settings → Storage section | Shows encrypted vault size and used percentage | ☐ |
-| 15.7 | Verify storage bar / display | Correct byte count displayed | ☐ |
-| 15.8 | **Verify NO iCloud Backup section** | Scroll through entire Settings screen — no "iCloud Backup" section, toggle, "Back Up Now" button, or "Restore from Backup" button is present | ☐ |
+|---|---|---|---|
+| 16.1 | Open Settings tab | Settings screen shows distinct section headers (e.g. "Security", "Vault Information", "Subscription", "Google Drive Backup", "Personal Recovery", "Support") | ☐ |
+| 16.2 | Locate the "Security" section | Biometric lock toggle shown within the Security section; currently on | ☐ |
+| 16.3 | Toggle biometric lock OFF | Toggle state changes; preference saved | ☐ |
+| 16.4 | Background and reopen app | App reopens WITHOUT biometric prompt | ☐ |
+| 16.5 | Toggle biometric lock back ON | Toggle state changes; preference saved | ☐ |
+| 16.6 | Background and reopen app | Biometric prompt appears again | ☐ |
+| 16.7 | Locate the "Vault Information" section | Shows encrypted vault size and used percentage under a clear "Vault Information" heading | ☐ |
+| 16.8 | Verify storage bar / display | Correct byte count displayed | ☐ |
 
 ---
 
-## AND-16 · Vault Integrity Check
+## UAT-17 · Vault Integrity Check
 
 **Priority:** MEDIUM  
 **Precondition:** At least 3 documents in vault.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 16.1 | Open Settings → Storage section | "Check Integrity" button visible | ☐ |
-| 16.2 | Tap "Check Integrity" | Loading state; scan in progress | ☐ |
-| 16.3 | Wait for scan to complete | Result shown: "X of Y documents verified. No corruption found." | ☐ |
-| 16.4 | Verify no false positives | Normal, readable documents should all pass | ☐ |
+|---|---|---|---|
+| 17.1 | Open Settings → Vault Information section | "Check Integrity" button visible | ☐ |
+| 17.2 | Tap "Check Integrity" | Loading state; scan in progress | ☐ |
+| 17.3 | Wait for scan to complete | Result shown: "X of Y documents verified. No corruption found." | ☐ |
+| 17.4 | Verify no false positives | Normal, readable documents should all pass | ☐ |
 
 ---
 
-## AND-17 · Multi-Vault Management
+## UAT-18 · Multi-Vault Management
 
 **Priority:** MEDIUM  
-**Precondition:** Premium account (required for multiple vaults).
+**Precondition:** Premium account (required for multiple vaults).  
+**Note:** If vault loading fails, an error message is displayed with a "Retry" button. Verify error and recovery flow.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 17.1 | Open Settings → "Manage Vaults" | Vault Manager screen opens in a modal | ☐ |
-| 17.2 | Verify default vault | "My Vault" shown with a "Default" badge | ☐ |
-| 17.3 | Tap "Create New Vault" (dashed card) | Name input dialog appears | ☐ |
-| 17.4 | Enter "Work Documents" and create | New vault appears in list | ☐ |
-| 17.5 | Tap "Work Documents" vault | "Active" badge moves to Work Documents vault | ☐ |
-| 17.6 | Go to Documents tab | Library is empty (new vault has no documents) | ☐ |
-| 17.7 | Add a document to Work Documents vault | Document saved in separate vault | ☐ |
-| 17.8 | Switch back to "My Vault" | Original documents reappear in library | ☐ |
-| 17.9 | Long-press "Work Documents" vault | Rename dialog appears | ☐ |
-| 17.10 | Rename vault to "Business Docs" | Vault name updated | ☐ |
-| 17.11 | Try to delete "My Vault" (default) | Error shown: "Cannot delete the default vault" | ☐ |
-| 17.12 | Delete "Business Docs" vault | Confirmation alert shown; vault deleted after confirm | ☐ |
-| 17.13 | Attempt to create a 6th vault (create 5 total first) | Error shown: "Maximum of 5 vaults reached" | ☐ |
+|---|---|---|---|
+| 18.1 | Open Settings → "Manage Vaults" | Vault Manager screen opens in a modal | ☐ |
+| 18.2 | Verify default vault | "My Vault" shown with a "Default" badge | ☐ |
+| 18.3 | Tap "Create New Vault" (dashed card) | Name input dialog appears | ☐ |
+| 18.4 | Enter "Work Documents" and create | New vault appears in list | ☐ |
+| 18.5 | Tap "Work Documents" vault | "Active" badge moves to Work Documents vault | ☐ |
+| 18.6 | Go to Documents tab | Library is empty (new vault has no documents) | ☐ |
+| 18.7 | Add a document to Work Documents vault | Document saved in separate vault | ☐ |
+| 18.8 | Switch back to "My Vault" | Original documents reappear in library | ☐ |
+| 18.9 | Long-press "Work Documents" vault | Rename dialog appears | ☐ |
+| 18.10 | Rename vault to "Business Docs" | Vault name updated | ☐ |
+| 18.11 | Try to delete "My Vault" (default) | Error shown: "Cannot delete the default vault" | ☐ |
+| 18.12 | Delete "Business Docs" vault | Confirmation alert shown; vault deleted after confirm | ☐ |
+| 18.13 | Attempt to create a 6th vault (create 5 total first) | Error shown: "Maximum of 5 vaults reached" | ☐ |
+| 18.14 | **Test error handling:** Disable network and open Manage Vaults (if loading depends on network), or simulate a load failure | Error message appears: "Failed to load vaults. Please try again." | ☐ |
+| 18.15 | Tap "Retry" button | Loading restarts; vaults load successfully once connectivity is restored | ☐ |
 
 ---
 
-## AND-18 · Help & FAQ Screen — Android Content
+## UAT-19 · Help & FAQ Screen
 
-**Priority:** HIGH  
+**Priority:** LOW  
 **Precondition:** Onboarding complete.  
-**Android-specific:** Several FAQ answers are different on Android. The "What if I lose my phone?" and "Is my data backed up?" answers must reflect the Android experience (no iCloud).
+**Note:** The Account & Subscription FAQ section has been updated with correct free tier limits and new pricing Q&A. Settings screen uses distinct sections. Verify "Help & FAQ" is accessible from the correct section.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 18.1 | Open Settings → "Help & FAQ" | Help screen opens in a modal | ☐ |
-| 18.2 | Verify 5 FAQ sections visible | Security & Privacy, Recovery & Backup, Documents & Vault, Account & Subscription, The .afterme Format | ☐ |
-| 18.3 | Tap a question | Answer expands inline (accordion); chevron rotates | ☐ |
-| 18.4 | Open "What if I lose my phone?" in Recovery & Backup | Answer describes **Personal Recovery Kit and Family Kit** as the recovery paths — no mention of iCloud as a recovery method | ☐ |
-| 18.5 | Verify the answer does **not** say "iCloud Keychain" or "iCloud Documents" | Those are iOS-only recovery methods and must not appear in the Android answer | ☐ |
-| 18.6 | Open "Is my data backed up to any cloud?" | Answer states: "No automatic cloud backup exists on Android. Your vault lives on your device. Use a Personal Recovery Kit or Family Kit to protect against device loss." | ☐ |
-| 18.7 | Verify the answer does **not** say "Enable iCloud backup in Settings" | That option does not exist on Android | ☐ |
-| 18.8 | Open "Is there a storage limit?" in Documents & Vault | Answer reads "The free tier allows up to **5 documents**…" | ☐ |
-| 18.9 | Open "What do I get with Premium?" | Answer mentions 5-document free tier limit, £34.99/year annual, £79.99 lifetime | ☐ |
-| 18.10 | Open "How do I restore my purchase?" | Answer references **Google Play account** (not Apple ID) | ☐ |
-| 18.11 | Scroll to bottom | "Contact Support" button and privacy/terms links visible | ☐ |
-| 18.12 | Tap "Contact Support" | Email app opens with `support@myafterme.co.uk` pre-filled | ☐ |
-| 18.13 | Tap "Privacy Policy" | Browser opens `https://myafterme.co.uk/privacy` | ☐ |
-| 18.14 | Tap "Terms of Service" | Browser opens `https://myafterme.co.uk/terms` | ☐ |
+|---|---|---|---|
+| 19.1 | Open Settings → locate "Support" section → tap "Help & FAQ" | Help screen opens in a modal | ☐ |
+| 19.2 | Verify 5 FAQ sections visible | Security & Privacy, Recovery & Backup, Documents & Vault, Account & Subscription, The .afterme Format | ☐ |
+| 19.3 | Tap a question | Answer expands inline (accordion); chevron rotates | ☐ |
+| 19.4 | Tap the question again | Answer collapses | ☐ |
+| 19.5 | Open "Is there a storage limit?" in Documents & Vault | Answer reads "The free tier allows up to **5 documents**…" (not 10) | ☐ |
+| 19.6 | Open "What do I get with Premium?" in Account & Subscription | Answer mentions **5-document** free tier limit, **£34.99/year** annual, **£79.99** lifetime | ☐ |
+| 19.7 | Verify new "What is the difference between annual and lifetime?" question exists | Answer explains break-even in 2.5 years and upgrade path | ☐ |
+| 19.8 | Scroll to bottom | "Contact Support" button and privacy/terms links visible | ☐ |
+| 19.9 | Tap "Contact Support" | Email app opens with `support@myafterme.co.uk` pre-filled | ☐ |
+| 19.10 | Tap "Privacy Policy" | Default browser opens `https://myafterme.co.uk/privacy` | ☐ |
+| 19.11 | Tap "Terms of Service" | Default browser opens `https://myafterme.co.uk/terms` | ☐ |
+| 19.12 | Tap "Done" or press Android back button | Modal dismisses; back in Settings | ☐ |
 
 ---
 
-## AND-19 · Restore My Vault (Device Loss Recovery)
+## UAT-20 · Restore My Vault (Device Loss Recovery)
 
 **Priority:** CRITICAL  
-**Precondition:** A Personal Recovery Kit `.afterme` file and its QR code are available (from AND-14). Fresh install.  
-**Android-specific:** Recovery on Android uses the QR card + .afterme file only. There is no iCloud restore path.
+**Precondition:** A Personal Recovery Kit `.afterme` file and its QR code are available (from UAT-14). Fresh install.  
+**Note:** "Restore My Vault" passes a `restore_vault` mode to the survivor screen, distinct from the `legacy_kit` mode used by "I Have a Legacy Kit". Manual key entry fallback is also available in this flow. On Android, restoring from Google Drive backup is also an option — this test covers the Recovery Kit path specifically.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 19.1 | Fresh install; launch app | Welcome screen shows 3 buttons | ☐ |
-| 19.2 | Verify "Restore My Vault" button is visible | Third button below "I Have a Legacy Kit" | ☐ |
-| 19.3 | Tap "Restore My Vault" | Survivor/Import flow opens | ☐ |
-| 19.4 | Scan the Personal Recovery Kit QR code | Access key scanned | ☐ |
-| 19.5 | Select the `.afterme` Recovery Kit file via file picker | Decryption begins | ☐ |
-| 19.6 | Wait for restore to complete | Success; all documents restored | ☐ |
-| 19.7 | Verify documents in library | All original documents present | ☐ |
+|---|---|---|---|
+| 20.1 | Fresh install; launch app | Welcome screen shows 3 buttons | ☐ |
+| 20.2 | Verify "Restore My Vault" button is visible | Third button below "I Have a Legacy Kit" | ☐ |
+| 20.3 | Tap "Restore My Vault" | Survivor/Import flow opens (mode is `restore_vault` internally — shared UI with legacy kit flow) | ☐ |
+| 20.4 | Verify import screen messaging | Language uses warm, compassionate tone; the same survivor import flow is shared for both entry points | ☐ |
+| 20.5 | Scan the Personal Recovery Kit QR code | Access key scanned | ☐ |
+| 20.6 | **Test manual key entry:** Tap manual entry option instead of scanning | Text input appears for pasting/typing the access key | ☐ |
+| 20.7 | Select the `.afterme` Recovery Kit file from device storage | Decryption begins | ☐ |
+| 20.8 | Wait for restore to complete | Success; all documents restored | ☐ |
+| 20.9 | Verify documents in library | All original documents present | ☐ |
 
 ---
 
-## AND-20 · Accessibility — TalkBack & Font Scaling
+## UAT-21 · Accessibility
 
 **Priority:** HIGH  
-**Precondition:** Enable TalkBack (Settings → Accessibility → TalkBack) for steps 20.1–20.7. Enable large font for 20.8–20.12.
+**Precondition:** Enable TalkBack (Settings → Accessibility → TalkBack) for steps 21.1–21.10. Enable large font for 21.11–21.17.  
+**Note:** Accessibility labels have been added for date input fields, progress text during kit generation, error states, and retry buttons.
 
 ### TalkBack
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 20.1 | Enable TalkBack; open app | TalkBack reads the Welcome screen title and button labels | ☐ |
-| 20.2 | Navigate through the How It Works onboarding screen | Path cards are read correctly; "I understand — continue" button announced | ☐ |
-| 20.3 | Navigate to Document Library | Each document card announces title and category | ☐ |
-| 20.4 | Navigate to category filter badges | Badges are announced with correct accessibility labels | ☐ |
-| 20.5 | Navigate to Settings toggles | Biometric toggle announces "on/off" state | ☐ |
-| 20.6 | Open Help screen | FAQ questions are announced with "button, collapsed/expanded" state | ☐ |
-| 20.7 | Disable TalkBack | — | ☐ |
+|---|---|---|---|
+| 21.1 | Enable TalkBack; open app | TalkBack reads the Welcome screen title and button labels | ☐ |
+| 21.2 | Navigate through the new How It Works onboarding screen | Path cards are read correctly; "I understand — continue" button announced | ☐ |
+| 21.3 | Navigate through onboarding and verify "← Back" buttons | TalkBack announces "Back" button on each onboarding screen | ☐ |
+| 21.4 | Navigate to Document Library | Each document card announces title and category | ☐ |
+| 21.5 | Navigate to category filter badges | Badges are announced with correct accessibility labels | ☐ |
+| 21.6 | Open Add Document modal → advance to category step | TalkBack announces "Document date" and "Expiry date" input fields with DD/MM/YYYY format hint | ☐ |
+| 21.7 | Enter an invalid date and blur the field | TalkBack announces the error text (e.g. "Use DD/MM/YYYY format") | ☐ |
+| 21.8 | Navigate to Settings toggles | Biometric toggle announces "on/off" state; section headers are announced | ☐ |
+| 21.9 | Open Help screen | FAQ questions are announced with "button, collapsed/expanded" state | ☐ |
+| 21.10 | Open Vault Switcher and trigger error state | TalkBack announces error message and "Retry loading vaults" button | ☐ |
 
 ### Font Scaling
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 20.8 | Set font size to largest available (Settings → Display → Font size) | — | ☐ |
-| 20.9 | Open app — check onboarding screens including How It Works | Text scales up; no truncation or overflow on any card | ☐ |
-| 20.10 | Open Document Library | Text in cards scales; layout remains usable | ☐ |
-| 20.11 | Open Help screen | FAQ answers scale; accordion still works | ☐ |
-| 20.12 | Open Settings → Support section | All links readable at large text | ☐ |
-| 20.13 | Reset font size to default | — | ☐ |
+|---|---|---|---|
+| 21.11 | Disable TalkBack | — | ☐ |
+| 21.12 | Set font size to largest option (Settings → Display → Font size → Largest) | — | ☐ |
+| 21.13 | Open app — check onboarding screens including How It Works screen | Text scales up; no truncation or overflow on any card. Back buttons remain visible. | ☐ |
+| 21.14 | Open Document Library | Text in cards scales; layout remains usable | ☐ |
+| 21.15 | Open Add Document → category step | Date input fields scale; labels remain readable; error text scales | ☐ |
+| 21.16 | Open Help screen | FAQ answers scale; accordion still works | ☐ |
+| 21.17 | Open Settings → Support section | All links readable at large text; section headers scale | ☐ |
+| 21.18 | Reset font size to default | — | ☐ |
 
 ---
 
-## AND-21 · Reset & Re-Onboarding
+## UAT-22 · Reset & Re-Onboarding
 
 **Priority:** HIGH  
 **Precondition:** App is fully set up with at least 3 documents.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 21.1 | Open Settings → scroll to bottom | "Reset Vault" or "Reset App" button visible | ☐ |
-| 21.2 | Tap Reset | A confirmation dialog appears warning about data loss | ☐ |
-| 21.3 | Cancel | App is unchanged | ☐ |
-| 21.4 | Tap Reset again and confirm | All data cleared; app returns to Welcome screen | ☐ |
-| 21.5 | Verify vault is empty | All documents gone; Welcome screen fresh | ☐ |
-| 21.6 | Complete full onboarding again | Onboarding flows correctly from scratch; Safety Net screen shows 1 card (Family Kit) | ☐ |
-| 21.7 | Verify no residual data | No old documents appear | ☐ |
+|---|---|---|---|
+| 22.1 | Open Settings → scroll to bottom | "Reset Vault" or "Reset App" button visible | ☐ |
+| 22.2 | Tap Reset | A confirmation dialog appears warning about data loss | ☐ |
+| 22.3 | Cancel | App is unchanged | ☐ |
+| 22.4 | Tap Reset again and confirm | All data cleared; app returns to Welcome screen | ☐ |
+| 22.5 | Verify vault is empty | All documents gone; Welcome screen fresh | ☐ |
+| 22.6 | Complete full onboarding again | Onboarding flows correctly from scratch including How It Works screen and back buttons on every screen | ☐ |
+| 22.7 | Verify no residual data | No old documents appear | ☐ |
 
 ---
 
-## AND-22 · Onboarding — How It Works Screen
+## UAT-23 · Onboarding — How It Works Screen
 
 **Priority:** HIGH  
-**Precondition:** Fresh install or reset. Reach the explainer screen by advancing through Screens 1–4 of onboarding.  
-**Android-specific:** Path 2 (iCloud) on this screen is not applicable to Android. Verify the screen is still readable and the content makes sense for an Android user.
+**Precondition:** Fresh install or reset. Reach the new explainer screen by advancing through Screens 1–4 of onboarding.  
+**Note (Android-specific):** The iCloud card on this screen is **hidden on Android**. Only the Family Kit and "No preparation" path cards should be visible. Verify the iCloud card does NOT appear.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 22.1 | Advance through Screens 1–4 of onboarding | After Screen 4 (QR reveal), a new screen appears before the Legal Disclaimer | ☐ |
-| 22.2 | Verify screen eyebrow text | Reads "Before you set up" in amber uppercase | ☐ |
-| 22.3 | Verify headline | Reads "How your family will access this" | ☐ |
-| 22.4 | Verify subhead copy | Explains the concept of no phone / no password needed | ☐ |
-| 22.5 | Verify Path 1 card — Family Kit | Card present; "Recommended" badge in amber; explains QR card + .afterme file | ☐ |
-| 22.6 | Verify Path 3 card — No preparation | Card present; explains permanent inaccessibility | ☐ |
-| 22.7 | Verify amber note at bottom | Text about setting up Family Kit after onboarding | ☐ |
-| 22.8 | Tap "I understand — continue" | App proceeds to Legal Disclaimer screen | ☐ |
-| 22.9 | Verify progress dot count | 8 dots total; dot 5 is active on this screen | ☐ |
-| 22.10 | Verify animations load without crash | Cards stagger in; CTA fades in last; no ANR | ☐ |
+|---|---|---|---|
+| 23.1 | Advance through Screens 1–4 of onboarding | After Screen 4 (QR reveal), a new screen appears before the Legal Disclaimer | ☐ |
+| 23.2 | Verify screen eyebrow text | Reads "Before you set up" in amber uppercase | ☐ |
+| 23.3 | Verify headline | Reads "How your family will access this" | ☐ |
+| 23.4 | Verify subhead copy | Explains the concept of no phone / no password / no account needed | ☐ |
+| 23.5 | Verify Path 1 card — Family Kit | Card present; "Recommended" badge in amber; explains QR card + .afterme file; notes "Requires: QR card + .afterme file" | ☐ |
+| 23.6 | **Verify iCloud card is NOT shown** | No iCloud / cloud backup path card is visible on this screen (hidden on Android) | ☐ |
+| 23.7 | Verify Path 3 card — No preparation | Card present; explains permanent inaccessibility | ☐ |
+| 23.8 | Verify amber note at bottom | Reads "You'll set up your Family Kit right after finishing this setup. It takes about two minutes." | ☐ |
+| 23.9 | Tap "I understand — continue" | App proceeds to Legal Disclaimer screen | ☐ |
+| 23.10 | Verify progress dot count | 8 dots in total shown; dot 5 is active on this screen | ☐ |
+| 23.11 | Verify animation | Cards stagger in with fade + slide; CTA fades in last | ☐ |
+| 23.12 | Verify no crash on physical device | Screen loads and animates without any crash or error | ☐ |
 
 ---
 
-## AND-23 · Safety Net — Family Kit Path
+## UAT-24 · Safety Net — Family Kit Path
 
 **Priority:** CRITICAL  
-**Precondition:** Reached the Safety Net screen (Screen 8) of onboarding. **Premium account required to actually create a kit** — if not premium, verify paywall gate (see AND-27).  
-**Note:** If vault is empty when onboarding completes, the wizard will NOT auto-launch. See AND-32 for empty vault guard testing.
+**Precondition:** Reached the Safety Net screen (Screen 8) of onboarding. **Premium account required to actually create a kit** — if not premium, verify the paywall gate (see UAT-29).  
+**Note:** If the vault is empty when onboarding completes via this path, the wizard will NOT auto-launch. The dashboard will instead show the "No safety net yet" nudge card. See UAT-34 for empty-vault guard testing.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 23.1 | On Safety Net screen, tap "Create a Family Kit" (amber border card) | App completes onboarding and navigates to the main vault dashboard | ☐ |
-| 23.2 | Verify the app opens to the dashboard | Onboarding marked complete; vault accessible | ☐ |
-| 23.3 | If premium AND vault has at least 1 document: Family Kit Wizard launches immediately | Kit creation wizard opens without a paywall | ☐ |
-| 23.3a | If premium BUT vault is empty: Wizard does NOT launch | Dashboard shown with "No safety net yet" nudge card; no wizard or error | ☐ |
-| 23.4 | If not premium: Paywall appears | Paywall shown before wizard; after purchase, wizard launches (see AND-27) | ☐ |
-| 23.5 | Verify Dashboard shows "No safety net yet" nudge card until kit is created | Dashboard card persists until a Family Kit has been successfully generated | ☐ |
+|---|---|---|---|
+| 24.1 | On Safety Net screen, tap "Create a Family Kit" (Card 1, amber border) | App completes onboarding and navigates to the main vault dashboard | ☐ |
+| 24.2 | Verify the app opens to the dashboard | Onboarding marked complete; vault accessible | ☐ |
+| 24.3 | If premium AND vault has at least 1 document: Family Kit Wizard launches immediately | Kit creation wizard opens without a paywall | ☐ |
+| 24.3a | If premium BUT vault is empty: Wizard does NOT launch | Dashboard shown with "No safety net yet" nudge card; no wizard or error | ☐ |
+| 24.4 | If not premium: Paywall appears | Paywall shown before wizard; after purchase, wizard launches (see UAT-29) | ☐ |
+| 24.5 | Open Settings → Google Drive Backup section | Google Drive backup is **not** automatically enabled (only the Kit path was chosen) | ☐ |
+| 24.6 | Verify Dashboard shows "No safety net yet" nudge card until kit is created | Dashboard card persists until a Family Kit has been successfully generated | ☐ |
 
 ---
 
-## AND-24 · Safety Net — Defer Path
+## UAT-25 · Safety Net — Google Drive Path
 
 **Priority:** HIGH  
 **Precondition:** Reached the Safety Net screen (Screen 8) of onboarding.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 24.1 | On Safety Net screen, tap "Living dangerously — remind me later" | A confirmation alert appears: "Are you sure? Without a safety net…" | ☐ |
-| 24.2 | Tap "Go Back" on the alert | Alert dismisses; Safety Net screen is still showing | ☐ |
-| 24.3 | Tap defer again, then tap "Continue without safety net" | App completes onboarding and enters the vault | ☐ |
-| 24.4 | Check Dashboard | A warning banner/card is visible prompting to set up a safety net | ☐ |
-| 24.5 | Verify no Family Kit exists | Family Kit tab shows no kits created | ☐ |
+|---|---|---|---|
+| 25.1 | On Safety Net screen, tap "Enable Google Drive Backup" (Card 2, grey border, "For you only" badge) | A loading indicator briefly shows; Google account picker may appear if not already signed in; then app completes onboarding | ☐ |
+| 25.2 | Open Settings → Google Drive Backup section | Toggle shows "Auto Backup: On" | ☐ |
+| 25.3 | Verify Dashboard shows a Family Kit creation prompt | Because Google Drive is personal-only, the Dashboard should still encourage creating a Family Kit for family access | ☐ |
+| 25.4 | Verify card 2 secondary text was accurate | Confirm that Google Drive backup is for personal recovery — test by verifying a family member on a separate device **cannot** access the vault from Google Drive without the owner's Google account | ☐ |
 
 ---
 
-## AND-25 · Settings → Support Content
+## UAT-26 · Safety Net — Defer Path
+
+**Priority:** HIGH  
+**Precondition:** Reached the Safety Net screen (Screen 8) of onboarding.
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 26.1 | On Safety Net screen, tap "Living dangerously — remind me later" | A confirmation alert appears: "Are you sure? Without a safety net…" | ☐ |
+| 26.2 | Tap "Go Back" on the alert | Alert dismisses; Safety Net screen is still showing | ☐ |
+| 26.3 | Tap defer again, then tap "Continue without safety net" | App completes onboarding and enters the vault | ☐ |
+| 26.4 | Check Dashboard | A warning banner/card is visible prompting to set up a safety net | ☐ |
+| 26.5 | Verify Google Drive backup is off | Settings → Google Drive Backup toggle is off | ☐ |
+| 26.6 | Verify no Family Kit exists | Family Kit tab shows no kits created | ☐ |
+
+---
+
+## UAT-27 · Settings → Support Content
 
 **Priority:** HIGH  
 **Precondition:** Onboarding complete.  
-**Note:** The Support section must contain only app support links. No bereavement resources. On Android, the TestFlight invite button must **not** appear.
+**Note:** The Support section in Settings previously contained bereavement resources. These have been removed. Only application support links should appear.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 25.1 | Open Settings → scroll to Support section | Support section is visible | ☐ |
-| 25.2 | Verify the Support section heading | Reads "Support" | ☐ |
-| 25.3 | Count the items in the Support section | Exactly 4 items | ☐ |
-| 25.4 | Verify item 1: Contact Support | Label "Contact Support" with hint "support@myafterme.co.uk" | ☐ |
-| 25.5 | Tap Contact Support | Email app opens with `support@myafterme.co.uk` pre-filled | ☐ |
-| 25.6 | Verify item 2: Support Centre | Label "Support Centre" with hint "FAQs, guides and help articles" | ☐ |
-| 25.7 | Tap Support Centre | Browser opens `https://myafterme.co.uk/support` | ☐ |
-| 25.8 | Verify item 3: Privacy Policy | Label "Privacy Policy" | ☐ |
-| 25.9 | Tap Privacy Policy | Browser opens `https://myafterme.co.uk/privacy` | ☐ |
-| 25.10 | Verify item 4: Terms of Service | Label "Terms of Service" | ☐ |
-| 25.11 | Tap Terms of Service | Browser opens `https://myafterme.co.uk/terms` | ☐ |
-| 25.12 | **Verify no TestFlight invite button** | "Invite Beta Testers" / "Share your TestFlight invite link" must **not** appear anywhere in Settings | ☐ |
-| 25.13 | **Verify no bereavement links** | "Beyond Blue", "Lifeline Australia", "Grief Support Services" must **not** appear | ☐ |
+|---|---|---|---|
+| 27.1 | Open Settings → scroll to Support section | Support section is visible with clear "Support" heading | ☐ |
+| 27.2 | Verify the Support section heading | Reads "Support" | ☐ |
+| 27.3 | Count the items in the Support section | Exactly 4 items — no more, no less | ☐ |
+| 27.4 | Verify item 1: Contact Support | Label "Contact Support" with hint "support@myafterme.co.uk" | ☐ |
+| 27.5 | Tap Contact Support | Email app opens with `support@myafterme.co.uk` pre-filled | ☐ |
+| 27.6 | Verify item 2: Support Centre | Label "Support Centre" with hint "FAQs, guides and help articles" | ☐ |
+| 27.7 | Tap Support Centre | Default browser opens `https://myafterme.co.uk/support` | ☐ |
+| 27.8 | Verify item 3: Privacy Policy | Label "Privacy Policy" with hint "How we handle your data" | ☐ |
+| 27.9 | Tap Privacy Policy | Default browser opens `https://myafterme.co.uk/privacy` | ☐ |
+| 27.10 | Verify item 4: Terms of Service | Label "Terms of Service" with hint "Your rights and our obligations" | ☐ |
+| 27.11 | Tap Terms of Service | Default browser opens `https://myafterme.co.uk/terms` | ☐ |
+| 27.12 | **Verify bereavement links are gone** | "Beyond Blue", "Lifeline Australia", "Grief Support Services" do **not** appear anywhere in the Support section | ☐ |
+| 27.13 | Verify no crisis phone numbers appear | No phone numbers (e.g. 1300 22 4636, 13 11 14) appear in the Support section | ☐ |
 
 ---
 
-## AND-26 · Website — How It Works Page
+## UAT-28 · Website — How It Works Page
 
 **Priority:** MEDIUM  
 **Precondition:** Device with a browser. Internet connection. Navigate to `myafterme.co.uk`.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 26.1 | Open `https://myafterme.co.uk/how-it-works` in a browser | Page loads without errors | ☐ |
-| 26.2 | Verify hero headline | "How your loved ones will access your vault" | ☐ |
-| 26.3 | Verify 4 access path cards | Path 1 (Family Kit — amber, "Recommended"), Path 2 (Personal Recovery Kit), Path 3 (iCloud — labelled "Not recommended for family access"), Path 4 (No preparation) | ☐ |
-| 26.4 | Verify step-by-step walkthrough | "What you do today" and "What your family does when they need it" sections present | ☐ |
-| 26.5 | Check page on mobile viewport | Page is fully responsive; no horizontal overflow on Android browser | ☐ |
-| 26.6 | Verify footer links | Privacy Policy, Terms, Support, How It Works all present | ☐ |
+|---|---|---|---|
+| 28.1 | Open `https://myafterme.co.uk/how-it-works` in a browser | Page loads without errors | ☐ |
+| 28.2 | Verify page title in browser tab | "How Family Access Works — After Me \| End-of-Life Vault" | ☐ |
+| 28.3 | Verify hero headline | "How your loved ones will access your vault" | ☐ |
+| 28.4 | Verify "The problem we set out to solve" section | Present; explains the problem without After Me | ☐ |
+| 28.5 | Verify 4 access path cards | Path 1 (Family Kit — amber, "Recommended"), Path 2 (Personal Recovery Kit), Path 3 (iCloud — "Not for family access" warning in red), Path 4 (No preparation — no recovery) | ☐ |
+| 28.6 | Verify iCloud warning callout | Red callout explicitly states iCloud does NOT give family access and explains Apple's Digital Legacy process | ☐ |
+| 28.7 | Verify step-by-step walkthrough | Two sections: "What you do today" (6 steps) and "What your family does when they need it" (4 steps) | ☐ |
+| 28.8 | Verify "What to tell your family right now" checklist | 6 checklist items covering app download, QR card location, file location, both needed, no phone needed, when last updated | ☐ |
+| 28.9 | Verify comparison table | 4 rows: Family Kit, Personal Recovery Kit, iCloud, No preparation — with Yes/No/Partial for family access and personal restore | ☐ |
+| 28.10 | Verify FAQ accordion | 5 questions; click each to expand and collapse | ☐ |
+| 28.11 | Click "Download on the App Store" CTA | Link navigates to App Store (or placeholder URL). Note: Google Play listing may also be linked. | ☐ |
+| 28.12 | Verify footer links | "How It Works" highlighted as current page; Privacy Policy, Terms, Support, Format Spec, Contact all present | ☐ |
+| 28.13 | Verify the page is linked from all other web pages | Footer on index.html, privacy.html, terms.html, support.html all include "How It Works" link | ☐ |
+| 28.14 | Check page on mobile viewport (360px width) | Page is fully responsive; no horizontal overflow | ☐ |
 
 ---
 
-## AND-27 · Premium Gate — Family Kit from Onboarding
+## UAT-29 · Premium Gate — Family Kit from Onboarding
 
 **Priority:** CRITICAL  
-**Precondition:** Onboarding just completed via the Family Kit path. User is NOT yet premium.
+**Precondition:** Onboarding just completed via the Family Kit path on Safety Net screen (UAT-24). User is NOT yet premium.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 27.1 | Complete onboarding via "Create a Family Kit" on Safety Net screen, without premium | App transitions to vault | ☐ |
-| 27.2 | Verify the experience | A paywall appears before the Family Kit wizard, OR app gracefully routes to Family Kit tab with an upgrade prompt | ☐ |
-| 27.3 | Verify no crash or dead end | The non-premium user is never left on a broken or empty screen | ☐ |
-| 27.4 | Dismiss paywall | Returns to Dashboard or Family Kit tab cleanly | ☐ |
-| 27.5 | Purchase Premium (see AND-11) | Premium is activated via Google Play Billing | ☐ |
-| 27.6 | Navigate to Family Kit tab and tap Create | Family Kit wizard opens without paywall | ☐ |
-| 27.7 | Complete the Family Kit wizard | Kit created successfully; QR code shown | ☐ |
+|---|---|---|---|
+| 29.1 | Complete onboarding via "Create a Family Kit" on Safety Net screen, without premium | App transitions to vault | ☐ |
+| 29.2 | Verify the experience | A paywall appears before the Family Kit wizard, OR the app gracefully routes to the Family Kit tab with an upgrade prompt | ☐ |
+| 29.3 | Verify no crash or dead end | The non-premium user is never left on a broken or empty screen | ☐ |
+| 29.4 | Dismiss paywall (Android back button or gesture) | Returns to Dashboard or Family Kit tab cleanly | ☐ |
+| 29.5 | Purchase Premium (see UAT-11) | Premium is activated | ☐ |
+| 29.6 | Navigate to Family Kit tab and tap Create | Family Kit wizard opens without paywall | ☐ |
+| 29.7 | Complete the Family Kit wizard | Kit created successfully; QR code shown | ☐ |
+| 29.8 | Verify Dashboard family kit prompt resolves | Dashboard no longer shows a "create your kit" warning after kit is created | ☐ |
 
 ---
 
-## AND-28 · Paywall UX — Lifetime Hero, Break-Even & Death-Risk
+## UAT-30 · Paywall UX — Lifetime Hero, Break-Even & Death-Risk
 
 **Priority:** CRITICAL  
-**Precondition:** Free tier user. Open paywall from any trigger.
+**Precondition:** Free tier user. Open paywall from any trigger.  
+**Note:** The paywall layout has been completely rebuilt. Lifetime is the hero product, shown first. Annual is secondary, shown below a break-even maths strip.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 28.1 | Open paywall from any trigger | Paywall loads; Lifetime card appears **first and largest** | ☐ |
-| 28.2 | Verify death-risk callout | Amber callout card visible: *"With an annual plan, your family may need to manage a renewal after you're gone. With lifetime, they never will."* | ☐ |
-| 28.3 | Verify Lifetime card content | "BEST VALUE · RECOMMENDED" badge; large price (£79.99); "Pay once. Then never again." tagline; 7 feature bullets | ☐ |
-| 28.4 | Verify break-even maths strip | Between the two cards: "Annual × 3 years = £104.97 · Lifetime = £79.99 · Break even in under 2.5 years" | ☐ |
-| 28.5 | Verify Annual card is below maths strip | Annual card shows £34.99/year; 5 feature bullets | ☐ |
-| 28.6 | Verify Lifetime is pre-selected by default | Lifetime radio is filled; amber border on lifetime card | ☐ |
-| 28.7 | Verify CTA button with Lifetime selected | Button reads "Get Lifetime — £79.99" | ☐ |
-| 28.8 | Tap Annual card to select it | Annual card highlights; CTA changes to "Start Annual — £34.99/yr" | ☐ |
-| 28.9 | Verify legal text with Annual selected | Text reads: "Subscription renews automatically. Cancel in **Google Play** Settings any time." — **not** "App Store" | ☐ |
-| 28.10 | Verify legal text with Lifetime selected | Text reads: "One-time payment. No subscription. No renewal. Ever." | ☐ |
-| 28.11 | Verify "Restore Purchases" button present | Visible below CTA | ☐ |
-| 28.12 | Verify no crash when products fail to load | If Google Play unavailable (emulator without Play Services), a graceful "Products temporarily unavailable" message appears | ☐ |
+|---|---|---|---|
+| 30.1 | Open paywall from any trigger | Paywall loads; Lifetime card appears **first and largest** | ☐ |
+| 30.2 | Verify death-risk callout | Amber callout card visible near top: *"With an annual plan, your family may need to manage a renewal after you're gone. With lifetime, they never will."* | ☐ |
+| 30.3 | Verify Lifetime card content | "BEST VALUE · RECOMMENDED" badge (amber); large price (£79.99); "Pay once. Then never again." tagline; 7 feature bullets including "No renewal risk at death" | ☐ |
+| 30.4 | Verify break-even maths strip | Between the two cards: "Annual × 3 years = £104.97 · Lifetime = £79.99 · Break even in under 2.5 years" | ☐ |
+| 30.5 | Verify Annual card is below maths strip | Annual card shows £34.99/year; labelled "Annual — start smaller"; 5 feature bullets; note about upgrading to lifetime from Settings | ☐ |
+| 30.6 | Verify Lifetime is pre-selected by default | Lifetime radio is filled; amber border on lifetime card | ☐ |
+| 30.7 | Verify CTA button with Lifetime selected | Button reads "Get Lifetime — £79.99" | ☐ |
+| 30.8 | Tap Annual card to select it | Annual card highlights; radio fills; CTA changes to "Start Annual — £34.99/yr" | ☐ |
+| 30.9 | Tap Lifetime card to re-select it | Lifetime card re-highlights; CTA reverts to "Get Lifetime — £79.99" | ☐ |
+| 30.10 | Verify legal text changes | Legal text below CTA shows "One-time payment. No subscription. No renewal. Ever." when Lifetime is selected; shows subscription renewal text when Annual is selected | ☐ |
+| 30.11 | Verify "Restore Purchases" button present | Visible below CTA for non-upgrade flows | ☐ |
+| 30.12 | Verify no crash when products fail to load | If Google Play Billing unavailable, a graceful "Products temporarily unavailable" message appears | ☐ |
 
 ---
 
-## AND-29 · Annual Plan Purchase via Google Play Billing
+## UAT-31 · Annual Plan Purchase via Paywall
 
 **Priority:** CRITICAL  
-**Precondition:** Licence tester Google account on device. Subscription product `com.afterme.app.premium.annual` active in Google Play Console.
+**Precondition:** Google Play licence tester account configured. IAP annual product `com.afterme.app.premium.annual` exists in Google Play Console.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 29.1 | Open paywall; tap Annual card | Annual card selected; CTA reads "Start Annual — £34.99/yr" | ☐ |
-| 29.2 | Tap CTA | **Google Play Billing** subscription sheet appears | ☐ |
-| 29.3 | Confirm subscription with licence tester account | Subscription activates; paywall dismisses | ☐ |
-| 29.4 | Verify premium status in Settings | Settings → Subscription shows "Annual subscription active" | ☐ |
-| 29.5 | Verify upgrade card is visible | Amber "Switch to Lifetime" upgrade card appears below the subscription status | ☐ |
-| 29.6 | Verify upgrade card content | Badge: "UPGRADE AVAILABLE"; Title: "Switch to Lifetime"; "See offer →" link | ☐ |
-| 29.7 | Verify no "Upgrade to Premium" button shown | Main amber button is hidden (user is already premium) | ☐ |
-| 29.8 | Verify document limit removed | Can add a 6th document without paywall | ☐ |
-| 29.9 | Verify Family Kit unlocked | Family Kit wizard opens without paywall | ☐ |
+|---|---|---|---|
+| 31.1 | Open paywall; tap Annual card | Annual card selected; CTA reads "Start Annual — £34.99/yr" | ☐ |
+| 31.2 | Tap CTA | Google Play subscription dialog appears (system UI) | ☐ |
+| 31.3 | Confirm purchase with licence tester account | Purchase completes; paywall dismisses | ☐ |
+| 31.4 | Verify premium status in Settings | Settings → Subscription shows "Annual subscription active" | ☐ |
+| 31.5 | Verify upgrade card is visible | An amber "Switch to Lifetime" upgrade card appears below the subscription status | ☐ |
+| 31.6 | Verify upgrade card content | Badge: "UPGRADE AVAILABLE"; Title: "Switch to Lifetime"; Body: "Pay once. Then never again — including for your family after you're gone."; "See offer →" link | ☐ |
+| 31.7 | Verify no "Upgrade to Premium" button shown | The main amber "Upgrade to Premium" button is hidden (user is already premium) | ☐ |
+| 31.8 | Verify document limit removed | Can add a 6th document without paywall | ☐ |
+| 31.9 | Verify Family Kit unlocked | Family Kit wizard opens without paywall | ☐ |
 
 ---
 
-## AND-30 · Settings — Annual Subscriber Upgrade Card
+## UAT-32 · Settings — Annual Subscriber Upgrade Card
 
 **Priority:** HIGH  
-**Precondition:** Annual plan purchased (from AND-29). User is in Settings.
+**Precondition:** Annual plan purchased (from UAT-31 or licence tester). User is in Settings.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 30.1 | Open Settings → scroll to Subscription section | Amber upgrade card visible below "Annual subscription active" text | ☐ |
-| 30.2 | Verify upgrade card copy | "UPGRADE AVAILABLE" badge · "Switch to Lifetime" title · "Pay once. Then never again — including for your family after you're gone." · "See offer →" | ☐ |
-| 30.3 | Tap the upgrade card | Paywall opens in upgrade mode | ☐ |
-| 30.4 | Verify upgrade paywall layout | Single card showing lifetime only — no annual option | ☐ |
-| 30.5 | Verify upgrade paywall headline | "Switch to lifetime. Pay once. Never again." | ☐ |
-| 30.6 | Verify upgrade paywall price | Shows upgrade price (£54.99 or configured price) | ☐ |
-| 30.7 | Tap upgrade CTA | Google Play Billing sheet appears for lifetime product | ☐ |
-| 30.8 | Complete purchase | Purchase completes; paywall dismisses | ☐ |
-| 30.9 | Verify upgrade card is now gone | Settings Subscription section shows "Lifetime access — no renewals, ever" · No upgrade card | ☐ |
+|---|---|---|---|
+| 32.1 | Open Settings → scroll to Subscription section | Amber upgrade card visible below "Annual subscription active" text | ☐ |
+| 32.2 | Verify upgrade card copy exactly | "UPGRADE AVAILABLE" badge · "Switch to Lifetime" title · "Pay once. Then never again — including for your family after you're gone." · "See offer →" | ☐ |
+| 32.3 | Tap the upgrade card | Paywall opens in **upgrade mode** | ☐ |
+| 32.4 | Verify upgrade paywall layout | Single card showing lifetime only — no annual option shown | ☐ |
+| 32.5 | Verify upgrade paywall headline | "Switch to lifetime. Pay once. Never again." | ☐ |
+| 32.6 | Verify upgrade paywall price | Shows upgrade price (£54.99 or the configured price) | ☐ |
+| 32.7 | Verify upgrade paywall features list | Shows full lifetime feature list including "No renewal risk at death" | ☐ |
+| 32.8 | Verify no "Restore Purchases" button in upgrade mode | Restore button not shown for the upgrade trigger | ☐ |
+| 32.9 | Tap upgrade CTA | Google Play purchase dialog appears for lifetime product | ☐ |
+| 32.10 | Complete purchase | Purchase completes; paywall dismisses | ☐ |
+| 32.11 | Verify upgrade card is now gone | Settings Subscription section shows "Lifetime access — no renewals, ever" · No upgrade card | ☐ |
 
 ---
 
-## AND-31 · Website — Pricing Section
+## UAT-33 · Website — Pricing Section
 
 **Priority:** HIGH  
 **Precondition:** Browser with internet access. Navigate to `https://myafterme.co.uk`.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 31.1 | Navigate to `myafterme.co.uk` and scroll to Pricing section | Pricing section loads | ☐ |
-| 31.2 | Verify Lifetime card is shown first with featured styling | Lifetime card has amber border, "RECOMMENDED" badge | ☐ |
-| 31.3 | Verify Lifetime price | "£79.99" displayed prominently | ☐ |
-| 31.4 | Verify break-even note | "Annual × 3 years = £104.97 · break even in under 2.5 years" | ☐ |
-| 31.5 | Verify "No renewal risk at death" bullet | Present in Lifetime feature list | ☐ |
-| 31.6 | Verify Annual card is secondary | £34.99/year; no featured styling | ☐ |
-| 31.7 | Verify no Family plan shown | Only two products: Lifetime and Annual | ☐ |
-| 31.8 | Verify free tier note | "Up to 5 documents, read-only after 7-day full trial" | ☐ |
+|---|---|---|---|
+| 33.1 | Navigate to `myafterme.co.uk` and scroll to Pricing section | Pricing section loads | ☐ |
+| 33.2 | Verify section headline | "Pay once. Then never again." | ☐ |
+| 33.3 | Verify **Lifetime card is shown first** (left/top) with featured styling | Lifetime card has amber border, "RECOMMENDED" badge, appears before Annual card | ☐ |
+| 33.4 | Verify Lifetime price | "£79.99" displayed prominently | ☐ |
+| 33.5 | Verify Lifetime subheading | "one-time · then never again" | ☐ |
+| 33.6 | Verify break-even note on Lifetime card | "Annual × 3 years = £104.97 · break even in under 2.5 years" | ☐ |
+| 33.7 | Verify "No renewal risk at death" bullet | Lifetime feature list includes "No renewal risk at death — your family inherits access, not the invoice" | ☐ |
+| 33.8 | Verify Annual card is secondary (right/below) | Annual card shown with £34.99/year price; no featured styling | ☐ |
+| 33.9 | Verify "Upgrade to lifetime any time from Settings" note on Annual card | Text present on annual card | ☐ |
+| 33.10 | Verify **no Family plan** is shown | Only two products: Lifetime and Annual. No £149 Family plan card. | ☐ |
+| 33.11 | Verify "Family plan coming soon" note in footer of pricing section | Small grey note: "Family plan coming soon · Built for individuals at launch" | ☐ |
+| 33.12 | Verify free tier note | "Up to 5 documents, read-only after 7-day full trial · Your data is always yours to export" | ☐ |
+| 33.13 | Verify "Get early access" buttons on both cards | Both CTA buttons link to `#waitlist` | ☐ |
 
 ---
 
-## AND-32 · Family Kit — Empty Vault Guard
+## UAT-34 · Family Kit — Empty Vault Guard
 
 **Priority:** CRITICAL  
-**Precondition:** Premium account. Vault must have **zero documents**.
+**Precondition:** Premium account. Vault must have **zero documents**.  
+**Note:** The kit wizard has a pre-flight guard — it dismisses immediately if no documents exist and shows a clear alert. This test verifies the guard from multiple entry points.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 32.1 | Complete fresh install + onboarding. Choose "Create a Family Kit" on Safety Net screen. Ensure vault is empty. | App completes onboarding and shows the vault dashboard | ☐ |
-| 32.2 | Verify the Family Kit wizard does NOT auto-open | Dashboard is shown. No wizard, no error screen. "No safety net yet" nudge card visible. | ☐ |
-| 32.3 | Tap the "No safety net yet" nudge card (vault still empty) | Alert shown: "Add documents first — your Family Kit is an encrypted snapshot of your vault." | ☐ |
-| 32.4 | Dismiss the alert. Add at least 1 document. | Document added successfully | ☐ |
-| 32.5 | Tap the nudge card again (vault now has 1 document) | Family Kit wizard opens at Step 1: Introduction | ☐ |
-| 32.6 | Tap "Family Kit" tab → "Create Family Kit" with empty vault (reset if needed) | Alert shown: "Add documents first..." | ☐ |
-| 32.7 | Verify alert message is clear and actionable | Alert explains: "Your Family Kit is an encrypted snapshot of your vault. Add at least one document before generating your kit." | ☐ |
-| 32.8 | Dismiss alert | Wizard is closed; user is back on the previous screen | ☐ |
-| 32.9 | Verify Safety Net card copy on onboarding Screen 8 | Card secondary text reads: "The only way your loved ones can access this vault. Add documents first, then generate your kit." | ☐ |
+|---|---|---|---|
+| 34.1 | Complete fresh install + onboarding. Choose "Create a Family Kit" on Safety Net screen. Ensure vault is empty. | App completes onboarding and shows the vault dashboard | ☐ |
+| 34.2 | Verify the Family Kit wizard does NOT auto-open | Dashboard is shown. No wizard, no error screen. "No safety net yet" nudge card visible. | ☐ |
+| 34.3 | Tap the "No safety net yet" nudge card on the dashboard (vault still empty) | Alert shown: "Add documents first — your Family Kit is an encrypted snapshot of your vault. Add at least one document before generating your kit." | ☐ |
+| 34.4 | Dismiss the alert. Add at least 1 document to the vault. | Document added successfully | ☐ |
+| 34.5 | Tap the "No safety net yet" nudge card again (vault now has 1 document) | Family Kit wizard opens at Step 1: Introduction | ☐ |
+| 34.6 | Tap "Family Kit" tab → "Create Family Kit" button with empty vault (reset vault if needed) | Alert shown: "Add documents first..." | ☐ |
+| 34.7 | Verify alert message is clear and actionable | Alert body explains: "Your Family Kit is an encrypted snapshot of your vault. Add at least one document before generating your kit." | ☐ |
+| 34.8 | Dismiss alert | Wizard is closed; user is back on the previous screen | ☐ |
+| 34.9 | Verify Safety Net card copy on onboarding screen 8 | Card 1 secondary text reads: "The only way your loved ones can access this vault. Add documents first, then generate your kit." | ☐ |
 
 ---
 
-## AND-33 · Android Back Gesture Behaviour
+## UAT-35 · Security Regression Testing
 
 **Priority:** HIGH  
-**Precondition:** Onboarding complete. App running normally.  
-**Android-specific:** This test has no iOS equivalent. Android users navigate with the system back gesture (swipe from left edge on gesture navigation, or the system back button on 3-button navigation). Verify the back gesture behaves correctly throughout the app and does not cause unintended exits or crashes.
+**Precondition:** Premium account. At least 3 documents in vault. Onboarding complete.  
+**Note:** This test covers internal security improvements — key zeroing after use, AAD (Additional Authenticated Data) binding, and atomic vault operations. While largely invisible to the end user, regression testing confirms they don't break existing flows.
+
+### Key Rotation & Session Eviction
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 33.1 | From the Dashboard (Vault tab), press system back | App moves to background (does not close tabs or navigate incorrectly) | ☐ |
-| 33.2 | Open a document viewer; press system back | Document viewer closes; returns to Document Library | ☐ |
-| 33.3 | Open Add Document modal; press system back | Modal closes without saving; returns to Document Library | ☐ |
-| 33.4 | Open Family Kit wizard (on Step 3 of 6); press system back | Wizard handles back gracefully — either prompts to confirm cancel, or navigates to previous step | ☐ |
-| 33.5 | During onboarding (Screen 3 of 8); press system back | Returns to Screen 2 of onboarding; does not exit the app or go to Welcome | ☐ |
-| 33.6 | On Legal Disclaimer screen; press system back | Returns to How It Works screen | ☐ |
-| 33.7 | Open Paywall modal; press system back | Paywall dismisses; returns to previous screen | ☐ |
-| 33.8 | Open Help & FAQ modal; press system back | Help modal closes; returns to Settings | ☐ |
-| 33.9 | Open Settings → Manage Vaults modal; press system back | Modal closes; returns to Settings | ☐ |
-| 33.10 | Press system back rapidly several times during navigation | No crash, no blank screen, no ANR | ☐ |
+|---|---|---|---|
+| 35.1 | Open app and authenticate with biometrics | Vault unlocks; dashboard shown | ☐ |
+| 35.2 | Open a document and verify it displays | Document content renders correctly (encryption keys working) | ☐ |
+| 35.3 | Background the app for 10 seconds | App moves to background | ☐ |
+| 35.4 | Return to the app | Biometric prompt appears (session key evicted after background period) | ☐ |
+| 35.5 | Authenticate and verify documents are still accessible | All documents open correctly after re-authentication | ☐ |
+
+### Vault Integrity After Backgrounding
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 35.6 | Open a document, then immediately background the app | App backgrounds mid-operation | ☐ |
+| 35.7 | Reopen and authenticate | No crash; document is intact | ☐ |
+| 35.8 | Run vault integrity check (Settings → Vault Information → Check Integrity) | All documents pass integrity verification — no corruption from background transition | ☐ |
+
+### Atomic Operations — Concurrent Access
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 35.9 | Begin adding a document (select source, pick category) | Add Document modal is open | ☐ |
+| 35.10 | While the import is processing, force-close the app | App terminates mid-import | ☐ |
+| 35.11 | Reopen and authenticate | Vault loads without corruption | ☐ |
+| 35.12 | Run vault integrity check | All previously saved documents pass. The interrupted import either completed atomically or was cleanly rolled back — no partial/corrupt entries. | ☐ |
+
+### Premium Tamper Resistance
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 35.13 | Verify premium status is active | Settings → Subscription shows premium | ☐ |
+| 35.14 | Force-close app, clear app cache (not app data) via Android Settings → Apps → After Me → Storage → Clear Cache | — | ☐ |
+| 35.15 | Reopen app and authenticate | Premium status is still active (persisted in SecureStore, not cache) | ☐ |
 
 ---
 
-## AND-34 · iCloud UI Absent on Android
-
-**Priority:** CRITICAL  
-**Precondition:** Onboarding complete.  
-**Android-specific:** This test verifies that all iCloud-related UI is completely absent on Android. These elements are iOS-only and must never appear for Android users.
-
-| Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 34.1 | Open Settings; scroll through the entire Settings screen | **No** "iCloud Backup" section, toggle, "Back Up Now" button, or "Restore from Backup" button is visible at all | ☐ |
-| 34.2 | Open Settings → Safety Net / Subscription section | No iCloud-related options visible | ☐ |
-| 34.3 | Go through onboarding to the Safety Net screen (Screen 8) | Safety Net screen shows **exactly 1 card** — "Create a Family Kit". No "Enable iCloud Backup" card. | ☐ |
-| 34.4 | On Safety Net screen, verify subhead is absent | "Two very different things." subhead does **not** appear | ☐ |
-| 34.5 | On Safety Net screen, verify body copy is correct | Body text does not mention iCloud | ☐ |
-| 34.6 | Open Help & FAQ → Recovery & Backup section | No FAQ answers suggest enabling iCloud as an option for Android users | ☐ |
-| 34.7 | Open Paywall | No reference to iCloud as a feature in any feature bullet | ☐ |
-| 34.8 | Check onboarding How It Works screen (AND-22) | If a Path 2 (iCloud) card is shown, verify it is either absent or clearly labelled as non-applicable on this device | ☐ |
-
----
-
-## AND-35 · Google Play Billing — Restore & Cancel Wording
+## UAT-36 · Date Input Validation
 
 **Priority:** HIGH  
-**Precondition:** Onboarding complete. Open the paywall or Settings → Subscription.  
-**Android-specific:** All user-facing text that refers to "Apple ID" or "App Store Settings" must say "Google account" or "Google Play Settings" on Android.
+**Precondition:** Onboarding complete. At least 1 document can be added (not at free tier limit, or premium).  
+**Note:** Tests the DD/MM/YYYY date validation logic in the Add Document modal.
+
+### Valid Date Entry
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 35.1 | Open paywall; select the Annual plan | Annual card selected | ☐ |
-| 35.2 | Read the legal text below the CTA button | Text reads: "Subscription renews automatically. Cancel in **Google Play** Settings any time." — NOT "App Store Settings" | ☐ |
-| 35.3 | Select the Lifetime plan and read legal text | Text reads: "One-time payment. No subscription. No renewal. Ever." | ☐ |
-| 35.4 | Open Settings → Subscription → "Restore Purchases" with an account that has no purchases | Alert appears: "We couldn't find any previous purchases for this **Google account**." — NOT "Apple ID" | ☐ |
-| 35.5 | Tap "Restore Purchases" after a successful purchase | "Your premium access has been restored." — no platform-specific branding in this message | ☐ |
+|---|---|---|---|
+| 36.1 | Open Add Document → choose a source → advance to category step | "Document Date" and "Expiry Date" fields visible side-by-side with DD/MM/YYYY placeholders | ☐ |
+| 36.2 | Tap "Document Date" field | Keyboard appears with numeric keypad (`keyboardType="numeric"`) | ☐ |
+| 36.3 | Enter "15/03/2024" | Field accepts input; no error shown | ☐ |
+| 36.4 | Tap away from the field (blur) | No error message appears — date is valid | ☐ |
+| 36.5 | Enter "01/01/2000" in Expiry Date field | Field accepts input; no error shown | ☐ |
+| 36.6 | Select a category and save | Document saves successfully with both dates recorded | ☐ |
+| 36.7 | Open the saved document | Metadata shows both Document Date and Expiry Date correctly | ☐ |
+
+### Invalid Date Entry
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 36.8 | Open Add Document → advance to category step | Date fields visible | ☐ |
+| 36.9 | Enter "32/01/2024" in Document Date | On blur, error shown: "Invalid day" | ☐ |
+| 36.10 | Enter "15/13/2024" in Document Date | On blur, error shown: "Invalid month" | ☐ |
+| 36.11 | Enter "15/06/1899" in Document Date | On blur, error shown: "Invalid year" (year < 1900) | ☐ |
+| 36.12 | Enter "15/06/2101" in Document Date | On blur, error shown: "Invalid year" (year > 2100) | ☐ |
+| 36.13 | Enter "29/02/2023" in Document Date (2023 is not a leap year) | On blur, error shown: "Invalid date" | ☐ |
+| 36.14 | Enter "29/02/2024" in Document Date (2024 is a leap year) | No error — date is valid | ☐ |
+| 36.15 | Enter "abc" in Document Date | On blur, error shown: "Use DD/MM/YYYY format" | ☐ |
+| 36.16 | Enter "15-03-2024" (dashes instead of slashes) | On blur, error shown: "Use DD/MM/YYYY format" | ☐ |
+
+### Boundary & Empty Behaviour
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 36.17 | Leave both date fields empty and save | Document saves successfully — dates are optional | ☐ |
+| 36.18 | Enter a valid Document Date but leave Expiry Date empty | Document saves with only Document Date set | ☐ |
+| 36.19 | Enter an invalid date and attempt to save (tap confirm button) | Save is blocked; error message remains on the invalid field | ☐ |
+| 36.20 | Correct the error and save | Document saves successfully | ☐ |
+| 36.21 | Verify max input length | Date fields accept at most 10 characters (DD/MM/YYYY) | ☐ |
+
+### Error Styling
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 36.22 | Enter an invalid date and blur | Field border turns red (danger colour); error text appears below in red | ☐ |
+| 36.23 | Start editing the field again (type a character) | Error text clears immediately as user types | ☐ |
 
 ---
 
-## AND-36 · Android Keystore Label & Key Storage
+## UAT-37 · Onboarding Back Navigation
+
+**Priority:** HIGH  
+**Precondition:** Fresh install or reset.  
+**Note:** Tests the "← Back" button added to all 8 onboarding screens. On Android, the hardware/gesture back also works for navigation.
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 37.1 | Launch app and tap "I'm Planning My Legacy" | Screen 1 of onboarding appears | ☐ |
+| 37.2 | Verify "← Back" button on Screen 1 | Button present at top-left | ☐ |
+| 37.3 | Tap "← Back" on Screen 1 | Returns to the Welcome screen | ☐ |
+| 37.4 | Re-enter onboarding; advance to Screen 2 | Screen 2 loads | ☐ |
+| 37.5 | Tap "← Back" on Screen 2 | Returns to Screen 1 | ☐ |
+| 37.6 | Advance to Screen 3 | Screen 3 loads | ☐ |
+| 37.7 | Tap "← Back" on Screen 3 | Returns to Screen 2 | ☐ |
+| 37.8 | Advance to Screen 4 (QR reveal) | Screen 4 loads | ☐ |
+| 37.9 | Tap "← Back" on Screen 4 | Returns to Screen 3 | ☐ |
+| 37.10 | Advance to Screen 5 (How It Works) | Explainer screen loads | ☐ |
+| 37.11 | Tap "← Back" on Screen 5 | Returns to Screen 4 | ☐ |
+| 37.12 | Advance to Screen 6 (Legal Disclaimer) | Legal screen loads | ☐ |
+| 37.13 | Tap "← Back" on Screen 6 | Returns to Screen 5 (How It Works) | ☐ |
+| 37.14 | Advance to Screen 7 (Biometric setup) | Biometric screen loads | ☐ |
+| 37.15 | Tap "← Back" on Screen 7 | Returns to Screen 6 (Legal) — does NOT trigger biometric prompt | ☐ |
+| 37.16 | Advance to Screen 8 (Safety Net) | Safety Net screen loads | ☐ |
+| 37.17 | Tap "← Back" on Screen 8 | Returns to Screen 7 (Biometric) | ☐ |
+| 37.18 | Verify progress dots update correctly when navigating back | Active dot decrements when going back | ☐ |
+| 37.19 | Complete onboarding by advancing forward through all screens | Onboarding completes normally despite previous back navigation — no stuck state | ☐ |
+| 37.20 | Verify no data loss | Any previously entered data (e.g. accepted legal disclaimer) persists through back/forward navigation | ☐ |
+| 37.21 | **Android back gesture/button:** On Screen 3, use Android system back gesture instead of "← Back" button | Returns to Screen 2 (same behaviour as tapping the in-app back button) | ☐ |
+
+---
+
+## UAT-38 · Kit Generation Progress
+
+**Priority:** HIGH  
+**Precondition:** Premium account. At least 3 documents in vault (so progress is visible across multiple items).  
+**Note:** Tests the "Processing document X of Y…" progress reporting during Family Kit and Personal Recovery Kit generation.
+
+### Family Kit Progress
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 38.1 | Open Family Kit tab → Create Family Kit | Wizard opens | ☐ |
+| 38.2 | Complete steps 1–2 (intro + details) and tap "Generate Kit" | Generating screen appears with spinner | ☐ |
+| 38.3 | Observe the progress text | **"Processing document X of Y…"** appears below the spinner, where X increments from 1 to Y | ☐ |
+| 38.4 | Verify X increments for each document | Progress updates in real time as each document is processed | ☐ |
+| 38.5 | Verify Y matches total document count | The "of Y" value matches the number of documents in the vault | ☐ |
+| 38.6 | Wait for generation to complete | Progress text disappears; "Verifying Kit Integrity" validating step appears, then success screen | ☐ |
+| 38.7 | Verify progress text styling | Text is amber-coloured, 14px, medium weight — visible and readable | ☐ |
+
+### Personal Recovery Kit Progress
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 38.8 | Open Settings → Personal Recovery → Personal Recovery Kit | Wizard opens | ☐ |
+| 38.9 | Tap "Generate Recovery Kit" | Generating screen appears with "Encrypting your vault…" text and spinner | ☐ |
+| 38.10 | Observe the progress text | **"Processing document X of Y…"** appears below the hint text | ☐ |
+| 38.11 | Verify X increments for each document | Progress updates as each document is encrypted | ☐ |
+| 38.12 | Wait for generation to complete | QR code shown on completion screen | ☐ |
+
+### Edge Cases
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 38.13 | Generate a kit with exactly 1 document in vault | Progress shows "Processing document 1 of 1…" briefly before completion | ☐ |
+| 38.14 | Generate a kit with many documents (10+) | Progress increments smoothly; no UI freeze; app remains responsive | ☐ |
+
+---
+
+## UAT-39 · Google Drive Sign-In Flow (Android)
+
+**Priority:** HIGH  
+**Precondition:** Fresh install or app data cleared. Google account available on device but not yet authorised for After Me backup.  
+**Note (Android-specific):** On Android, enabling Google Drive backup may require the user to select a Google account via the system account picker. This test verifies the sign-in/authorisation flow.
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 39.1 | Complete onboarding (defer Safety Net or choose Family Kit path) | App is at the main vault dashboard | ☐ |
+| 39.2 | Open Settings → Google Drive Backup section | Section shows "Auto Backup" toggle (off) and "Back Up Now" / "Restore from Backup" buttons | ☐ |
+| 39.3 | Tap "Auto Backup" toggle to enable | Google account picker appears (system UI), listing available Google accounts on the device | ☐ |
+| 39.4 | Select a Google account | Account selected; brief authorisation loading indicator may appear | ☐ |
+| 39.5 | Verify toggle turns on after sign-in | "Auto Backup" toggle is now on; Google Drive backup is enabled | ☐ |
+| 39.6 | Tap "Back Up Now" | Backup starts without another account picker prompt (account is now cached) | ☐ |
+| 39.7 | Wait for backup to complete | Success; last backup date shown | ☐ |
+| 39.8 | Toggle "Auto Backup" off and on again | Toggle flips without re-prompting for Google account (already authorised) | ☐ |
+| 39.9 | Clear app data (Android Settings → Apps → After Me → Clear Data) and re-onboard | App resets fully | ☐ |
+| 39.10 | Re-enable Google Drive Backup | Google account picker appears again (authorisation was cleared with app data) | ☐ |
+| 39.11 | **Test cancel:** When account picker appears, tap outside or press back to dismiss | Account picker dismisses; toggle remains off; no crash or error | ☐ |
+| 39.12 | **Test with no Google account:** On a device with no Google account configured, try enabling backup | A clear error or prompt directs the user to sign in to a Google account in device settings | ☐ |
+
+---
+
+## UAT-40 · Custom Bottom Sheet (Android)
+
+**Priority:** HIGH  
+**Precondition:** At least 2 documents in the vault.  
+**Note (Android-specific):** On iOS, document long-press shows a native `ActionSheetIOS`. On Android, a custom bottom sheet slides up from the bottom of the screen with Rename, Delete, and Cancel options. This test verifies the custom bottom sheet behaviour.
+
+| Step | Action | Expected Result | Result |
+|---|---|---|---|
+| 40.1 | Open Documents tab | Document library with at least 2 documents shown | ☐ |
+| 40.2 | Long-press a document card | A custom bottom sheet slides up from the bottom of the screen with a smooth animation | ☐ |
+| 40.3 | Verify bottom sheet content | Three options visible: "Rename", "Delete", and "Cancel" | ☐ |
+| 40.4 | Verify visual styling | Bottom sheet has rounded top corners, semi-transparent backdrop overlay, and clear option labels | ☐ |
+| 40.5 | Tap "Cancel" | Bottom sheet slides down and dismisses; no action taken | ☐ |
+| 40.6 | Long-press the same document again | Bottom sheet reappears | ☐ |
+| 40.7 | Tap "Rename" | Bottom sheet dismisses; rename dialog/modal appears | ☐ |
+| 40.8 | Enter a new name and confirm | Document renamed successfully | ☐ |
+| 40.9 | Long-press a different document | Bottom sheet appears for the new document | ☐ |
+| 40.10 | Tap "Delete" | Bottom sheet dismisses; confirmation dialog appears | ☐ |
+| 40.11 | Confirm deletion | Document removed from library | ☐ |
+| 40.12 | Long-press a document → press Android back button/gesture | Bottom sheet dismisses (same as tapping Cancel) | ☐ |
+| 40.13 | Long-press a document → tap the backdrop overlay outside the sheet | Bottom sheet dismisses | ☐ |
+| 40.14 | Verify vibration feedback on long-press | Device provides brief vibration feedback when the long-press is recognised | ☐ |
+| 40.15 | Verify TalkBack announces the bottom sheet | TalkBack announces options when bottom sheet appears; user can navigate between Rename, Delete, Cancel | ☐ |
+
+---
+
+## UAT-41 · Typography Verification (Android)
 
 **Priority:** MEDIUM  
-**Precondition:** Onboarding complete.  
-**Android-specific:** The Settings screen shows a label identifying where the vault key is stored. On Android this must say "Android Keystore", not "Secure Enclave".
+**Precondition:** Onboarding complete. At least 1 document in vault.  
+**Note (Android-specific):** On iOS, the app uses Georgia as its serif font. On Android, the app uses Libre Baskerville. This test verifies the font renders correctly across all key screens.
 
 | Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 36.1 | Open Settings → scroll to the Security section | A "Key Storage" or equivalent row is visible | ☐ |
-| 36.2 | Read the key storage label | Label reads "**Android Keystore**" — NOT "Secure Enclave" | ☐ |
-| 36.3 | Verify no other iOS-specific security labels appear | No mention of "Secure Enclave", "iCloud Keychain", or "Apple" in the Security section | ☐ |
-
----
-
-## AND-37 · Android-Specific Permission Prompts
-
-**Priority:** HIGH  
-**Precondition:** Fresh install on Android (or app with permissions revoked in Android Settings).  
-**Android-specific:** Android requires explicit runtime permission prompts for Camera and Photos. The prompts are Android system dialogs, not iOS-style.
-
-| Step | Action | Expected Result | Result |
-|------|--------|-----------------|--------|
-| 37.1 | Fresh install. Go to Documents tab → "+" → "Scan with Camera" | Android **Camera** permission dialog appears ("Allow After Me to take pictures and record video?") | ☐ |
-| 37.2 | Tap "Allow" | Camera opens; scanning can proceed | ☐ |
-| 37.3 | Revoke camera permission in Android Settings; return to app; try to scan again | Permission dialog appears again OR a rationale message explains why camera is needed | ☐ |
-| 37.4 | Tap "Don't allow" on camera permission | App handles gracefully — shows an error message; does not crash | ☐ |
-| 37.5 | Try importing via "Pick from Photos" | Android **Photos / Media** permission dialog appears (or scoped storage access on Android 13+) | ☐ |
-| 37.6 | Grant photos permission | Photo picker opens correctly | ☐ |
-| 37.7 | On the biometric setup screen during onboarding, verify biometric prompt | Android system biometric prompt appears (fingerprint sensor / face); **not** an iOS Face ID sheet | ☐ |
-| 37.8 | Verify the app does not request any permissions it does not need | No unexpected permission prompts (e.g. Contacts, Location, Microphone during normal use) appear | ☐ |
+|---|---|---|---|
+| 41.1 | Open app and navigate to Vault Dashboard | Body text and headings render in Libre Baskerville serif font — not a sans-serif fallback | ☐ |
+| 41.2 | Open Document Library | Document titles and category labels use serif font | ☐ |
+| 41.3 | Open a document in the viewer | Metadata text renders in serif font | ☐ |
+| 41.4 | Open Settings screen | Section headers and labels render in serif font | ☐ |
+| 41.5 | Open onboarding (reset if needed) — Screen 1 | Onboarding body text uses Libre Baskerville | ☐ |
+| 41.6 | Advance to How It Works screen (Screen 5) | Card text and headline use Libre Baskerville | ☐ |
+| 41.7 | Open Safety Net screen (Screen 8) | Card text uses Libre Baskerville | ☐ |
+| 41.8 | Open Help & FAQ screen | Question text and answer text use Libre Baskerville | ☐ |
+| 41.9 | Open Paywall screen | Product card text, taglines, and feature bullets use Libre Baskerville | ☐ |
+| 41.10 | Open Family Kit wizard | Wizard introduction text and step headings use Libre Baskerville | ☐ |
+| 41.11 | Verify font weight variants | Bold text renders as Libre Baskerville Bold (not faux-bold); italic text renders as Libre Baskerville Italic (not faux-italic) | ☐ |
+| 41.12 | Set device font size to largest | Libre Baskerville scales correctly; no rendering artefacts, broken ligatures, or missing glyphs | ☐ |
+| 41.13 | Verify special characters | Test with accented characters (é, ñ, ü) and currency symbols (£, €, $) — all render correctly in Libre Baskerville | ☐ |
+| 41.14 | Compare visual appearance with iOS | Libre Baskerville on Android is visually similar to Georgia on iOS — serif style, similar proportions, no jarring differences | ☐ |
 
 ---
 
 ## Pass/Fail Summary Sheet
 
 **Tester Name:** ___________________________  
-**Device Model:** ___________________________  
+**Device:** ___________________________  
 **Android Version:** ___________________________  
 **App Version:** ___________________________  
 **Test Date:** ___________________________  
-**Build Type:** Debug / Release AAB  
-**Google Play Licence Tester Account:** ___________________________
+**Build Type:** Release / Debug
 
 ---
 
 | Suite | Test ID | Test Name | Result | Notes |
-|-------|---------|-----------|--------|-------|
-| Onboarding | AND-01 | First Launch & Onboarding (8 screens) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Auth | AND-02 | Biometric Authentication (Fingerprint) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Legal | AND-03 | Legal Disclaimer & Privacy | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Safety Net | AND-04 | Safety Net — Android Layout (1 card) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Dashboard | AND-05 | Vault Dashboard | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Scanning | AND-06 | Document Scanning | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Import | AND-07 | Document Import (Files & Photos) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Library | AND-08 | Search, Sort & Filter | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Viewer | AND-09 | Document Viewer & Editing | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Free Tier | AND-10 | Free Tier & Paywall | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Purchases | AND-11 | In-App Purchase — Lifetime (Google Play) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Family Kit | AND-12 | Family Kit Creation | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Survivor | AND-13 | Survivor Import | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Recovery Kit | AND-14 | Personal Recovery Kit | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Security | AND-15 | Biometric Lock & Security (no iCloud section) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Integrity | AND-16 | Vault Integrity Check | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Multi-Vault | AND-17 | Multi-Vault Management | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Help | AND-18 | Help & FAQ — Android Content | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Device Loss | AND-19 | Restore My Vault (QR + .afterme file) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Accessibility | AND-20 | TalkBack & Font Scaling | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Reset | AND-21 | Reset & Re-Onboarding | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| How It Works | AND-22 | Onboarding — How It Works Screen | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Safety Net — Kit | AND-23 | Safety Net: Family Kit Path | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Safety Net — Defer | AND-24 | Safety Net: Defer Path | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Support Content | AND-25 | Settings → Support (no TestFlight link) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Website | AND-26 | Website — How It Works Page | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Premium Gate | AND-27 | Premium Gate — Family Kit from Onboarding | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Paywall UX | AND-28 | Paywall Layout — Lifetime Hero, Break-Even | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Annual Purchase | AND-29 | Annual Plan — Google Play Billing | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Upgrade Card | AND-30 | Settings → Upgrade Card | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Website Pricing | AND-31 | Website Pricing Section | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Family Kit Guard | AND-32 | Family Kit — Empty Vault Guard | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Back Gesture | AND-33 | Android Back Gesture Behaviour | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| iCloud Absent | AND-34 | iCloud UI Fully Absent on Android | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Play Billing Text | AND-35 | Google Play Wording in Alerts & Legal Text | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Keystore Label | AND-36 | Android Keystore Label in Settings | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
-| Permissions | AND-37 | Android Permission Prompts | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+|---|---|---|---|---|
+| Onboarding | UAT-01 | First Launch & Onboarding (8 screens, with back nav) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Auth | UAT-02 | Biometric Authentication (Fingerprint / Face Unlock) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Legal | UAT-03 | Legal Disclaimer & Privacy (`myafterme.co.uk/privacy`) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Safety Net | UAT-04 | Safety Net Screen — Content & Messaging | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Dashboard | UAT-05 | Vault Dashboard | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Scanning | UAT-06 | Document Scanning | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Import | UAT-07 | Document Import (with date fields) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Library | UAT-08 | Search, Sort & Filter (custom bottom sheet) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Viewer | UAT-09 | Document Viewer & Editing (with date validation) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Free Tier | UAT-10 | Free Tier & Paywall (SecureStore-backed) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Purchases | UAT-11 | In-App Purchase via Google Play (1-hr cache TTL) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Family Kit | UAT-12 | Family Kit Creation (with progress) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Survivor | UAT-13 | Survivor Import (distinct mode, manual key) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Recovery Kit | UAT-14 | Personal Recovery Kit (with progress, back-button reset) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Google Drive | UAT-15 | Google Drive Backup & Restore | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Security | UAT-16 | Biometric Lock & Security (sectioned settings) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Integrity | UAT-17 | Vault Integrity Check | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Multi-Vault | UAT-18 | Multi-Vault Management (with error/retry) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Help | UAT-19 | Help & FAQ Screen (sectioned settings) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Device Loss | UAT-20 | Restore My Vault (distinct mode) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Accessibility | UAT-21 | TalkBack & Font Scaling | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Reset | UAT-22 | Reset & Re-Onboarding | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| How It Works | UAT-23 | Onboarding — How It Works Screen (no iCloud card) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Safety Net — Kit | UAT-24 | Safety Net: Family Kit Path | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Safety Net — Google Drive | UAT-25 | Safety Net: Google Drive Path (personal only) | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Safety Net — Defer | UAT-26 | Safety Net: Defer Path | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Support Content | UAT-27 | Settings → Support — Correct Links Only | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Website | UAT-28 | Website — How It Works Page | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Premium Gate | UAT-29 | Premium Gate — Family Kit from Onboarding | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Paywall UX | UAT-30 | Paywall Layout — Lifetime Hero, Break-Even, Death-Risk | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Annual Purchase | UAT-31 | Annual Plan Purchase via Paywall | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Upgrade Card | UAT-32 | Settings → Upgrade Card for Annual Subscribers | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Website Pricing | UAT-33 | Website Pricing Section — Lifetime Hero + Annual | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Family Kit Guard | UAT-34 | Family Kit — Empty Vault Guard | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Security Regression | UAT-35 | Security Regression — Key Rotation, Integrity, Tamper Resistance | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Date Validation | UAT-36 | Date Input Validation — DD/MM/YYYY | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Back Navigation | UAT-37 | Onboarding Back Navigation — All 8 Screens + Android Back | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Kit Progress | UAT-38 | Kit Generation Progress Reporting | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Google Drive Sign-In | UAT-39 | Google Drive Sign-In Flow — Account Picker | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Custom Bottom Sheet | UAT-40 | Custom Bottom Sheet — Long-Press Actions | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
+| Typography | UAT-41 | Typography — Libre Baskerville Rendering | ☐ PASS / ☐ FAIL / ☐ BLOCKED | |
 
 ---
 
 ### Overall Result
 
 | Metric | Count |
-|--------|-------|
-| Total test suites | 37 |
+|---|---|
+| Total test suites | 41 |
 | PASS | |
 | FAIL | |
 | BLOCKED | |
@@ -1025,9 +1279,9 @@ adb reverse tcp:8081 tcp:8081
 ## Defect Log
 
 | # | Suite | Test ID | Step | Description | Severity | Status |
-|---|-------|---------|------|-------------|----------|--------|
+|---|---|---|---|---|---|---|
 | 1 | | | | | Critical / High / Medium / Low | Open / Fixed |
 
 ---
 
-*After Me Android UAT v1.0 — Covers all core phases with Android-specific adaptations: Google Play Billing (not StoreKit), Android Keystore (not Secure Enclave), TalkBack (not VoiceOver), system back gesture, iCloud UI fully absent, Safety Net single-card layout, Google Play wording in all alerts and legal text, Android runtime permission flows.*
+*After Me UAT v1.0 (Android) — Covers Phases 1–6 plus all post-launch changes. Android-specific adaptations: Google Drive Backup (replacing iCloud), Google Play Billing (replacing StoreKit), Fingerprint/Face Unlock biometrics, custom bottom sheet for document actions, Libre Baskerville serif typography, TalkBack accessibility, Android back button/gesture navigation, Google account picker for backup sign-in. Includes Android-specific test cases UAT-39 (Google Drive sign-in flow), UAT-40 (custom bottom sheet), and UAT-41 (typography verification).*

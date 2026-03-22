@@ -17,7 +17,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { VaultManager, type VaultInfo } from '../../services/VaultManager';
+import { captureVaultError } from '../../services/SentryService';
 import { colors } from '../../theme/colors';
+import { SERIF_FONT } from '../../theme/fonts';
 
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -34,12 +36,14 @@ export function VaultSwitcherScreen({ onVaultChanged }: VaultSwitcherScreenProps
   const [vaults, setVaults] = useState<VaultInfo[]>([]);
   const [activeVaultId, setActiveVaultId] = useState('default');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState<string | null>(null);
   const [modalText, setModalText] = useState('');
 
   const loadVaults = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const [all, activeId] = await Promise.all([
         VaultManager.getAllVaults(),
@@ -48,7 +52,8 @@ export function VaultSwitcherScreen({ onVaultChanged }: VaultSwitcherScreenProps
       setVaults(all);
       setActiveVaultId(activeId);
     } catch (err) {
-      console.error('Failed to load vaults:', err);
+      setError('Failed to load vaults. Please try again.');
+      captureVaultError(err, 'loadVaults');
     } finally {
       setLoading(false);
     }
@@ -199,12 +204,14 @@ export function VaultSwitcherScreen({ onVaultChanged }: VaultSwitcherScreenProps
             autoFocus
             maxLength={50}
             maxFontSizeMultiplier={1.4}
+            accessibilityLabel={placeholder}
           />
           <View style={styles.modalButtons}>
             <TouchableOpacity
               style={styles.modalCancelButton}
               onPress={() => { setModalText(''); onClose(); }}
               accessibilityRole="button"
+              accessibilityLabel="Cancel"
             >
               <Text style={styles.modalCancelText} maxFontSizeMultiplier={1.4}>Cancel</Text>
             </TouchableOpacity>
@@ -213,6 +220,7 @@ export function VaultSwitcherScreen({ onVaultChanged }: VaultSwitcherScreenProps
               onPress={onSubmit}
               disabled={!modalText.trim()}
               accessibilityRole="button"
+              accessibilityLabel={title.includes('Create') ? 'Create vault' : 'Rename vault'}
             >
               <Text style={styles.modalSubmitText} maxFontSizeMultiplier={1.4}>
                 {title.includes('Create') ? 'Create' : 'Rename'}
@@ -228,6 +236,22 @@ export function VaultSwitcherScreen({ onVaultChanged }: VaultSwitcherScreenProps
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color={colors.amAmber} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={loadVaults}
+          accessibilityRole="button"
+          accessibilityLabel="Retry loading vaults"
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -326,7 +350,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: colors.amWhite,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Semibold' : 'serif',
+    fontFamily: SERIF_FONT,
   },
   activeBadge: {
     backgroundColor: colors.amAmber,
@@ -415,7 +439,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.amWhite,
     marginBottom: 16,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif',
+    fontFamily: SERIF_FONT,
   },
   modalInput: {
     backgroundColor: colors.amBackground,
@@ -454,6 +478,26 @@ const styles = StyleSheet.create({
   modalSubmitText: {
     fontSize: 16,
     fontWeight: '700',
+    color: colors.amBackground,
+  },
+  errorText: {
+    fontSize: 16,
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 32,
+  },
+  retryButton: {
+    backgroundColor: colors.amAmber,
+    borderRadius: 10,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    minHeight: 48,
+    justifyContent: 'center',
+  },
+  retryButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
     color: colors.amBackground,
   },
 });

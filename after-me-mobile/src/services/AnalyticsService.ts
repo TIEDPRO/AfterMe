@@ -7,6 +7,7 @@
  * or when the batch reaches BATCH_SIZE to reduce I/O overhead.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeAsync } from '../utils/safeAsync';
 
 const ANALYTICS_KEY = 'afterme_analytics_events';
 const MAX_EVENTS = 500;
@@ -50,7 +51,7 @@ export class AnalyticsService {
     if (this.flushTimer) return;
     this.flushTimer = setTimeout(() => {
       this.flushTimer = null;
-      this.flush().catch(() => {});
+      safeAsync(this.flush(), 'analyticsFlush');
     }, this.FLUSH_INTERVAL_MS);
   }
 

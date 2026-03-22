@@ -21,6 +21,7 @@ import {
   VAULT_STORAGE_CAP_PERSONAL_BYTES,
   ALLOWED_EXTENSIONS,
 } from '../constants/storage';
+import { safeAsync } from '../utils/safeAsync';
 
 const THUMBNAIL_WIDTH = 200;
 
@@ -164,9 +165,9 @@ export class DocumentService {
         throw err;
       }
 
-      KitHistoryService.recordVaultChange().catch(() => {});
-      CloudBackupService.autoBackupIfEnabled().catch(() => {});
-      AnalyticsService.trackEvent(AnalyticsService.Events.DOCUMENT_ADDED, { category, source: 'file' }).catch(() => {});
+      safeAsync(KitHistoryService.recordVaultChange(), 'recordVaultChange');
+      safeAsync(CloudBackupService.autoBackupIfEnabled(), 'autoBackupIfEnabled');
+      safeAsync(AnalyticsService.trackEvent(AnalyticsService.Events.DOCUMENT_ADDED, { category, source: 'file' }), 'trackEvent:document_added');
       return result;
     } finally {
       resolve();
@@ -180,7 +181,7 @@ export class DocumentService {
     base64: string,
     category: DocumentCategory,
     title: string,
-    format: 'jpeg' | 'png' = 'jpeg',
+    formatOrOptions?: 'jpeg' | 'png' | Partial<DocumentInsert>,
   ): Promise<Document> {
     const release = importLock;
     let resolve!: () => void;
@@ -189,6 +190,12 @@ export class DocumentService {
     });
     await release;
     try {
+      const isOptionsObj = typeof formatOrOptions === 'object';
+      const format: 'jpeg' | 'png' = isOptionsObj
+        ? (formatOrOptions?.format === 'png' ? 'png' : 'jpeg')
+        : (formatOrOptions ?? 'jpeg');
+      const { format: _f, ...extraOptions } = isOptionsObj ? (formatOrOptions ?? {}) : {};
+
       const content = Buffer.from(base64, 'base64');
 
       if (content.length > MAX_SINGLE_DOCUMENT_SIZE_BYTES) {
@@ -232,6 +239,7 @@ export class DocumentService {
           fileRef,
           format,
           thumbnailRef,
+          ...extraOptions,
         });
       } catch (err) {
         await EncryptedStorageService.deleteFile(fileRef).catch(() => {});
@@ -241,9 +249,9 @@ export class DocumentService {
         throw err;
       }
 
-      KitHistoryService.recordVaultChange().catch(() => {});
-      CloudBackupService.autoBackupIfEnabled().catch(() => {});
-      AnalyticsService.trackEvent(AnalyticsService.Events.DOCUMENT_SCANNED, { category }).catch(() => {});
+      safeAsync(KitHistoryService.recordVaultChange(), 'recordVaultChange');
+      safeAsync(CloudBackupService.autoBackupIfEnabled(), 'autoBackupIfEnabled');
+      safeAsync(AnalyticsService.trackEvent(AnalyticsService.Events.DOCUMENT_SCANNED, { category }), 'trackEvent:document_scanned');
       return result;
     } finally {
       resolve();
@@ -288,8 +296,8 @@ export class DocumentService {
     updates: Parameters<typeof DocumentRepository.updateDocument>[1],
   ): Promise<void> {
     await DocumentRepository.updateDocument(id, updates);
-    KitHistoryService.recordVaultChange().catch(() => {});
-    CloudBackupService.autoBackupIfEnabled().catch(() => {});
+    safeAsync(KitHistoryService.recordVaultChange(), 'recordVaultChange');
+    safeAsync(CloudBackupService.autoBackupIfEnabled(), 'autoBackupIfEnabled');
   }
 
   static async deleteDocument(id: string): Promise<void> {
@@ -303,9 +311,9 @@ export class DocumentService {
     if (thumbnailRef) {
       await EncryptedStorageService.deleteFile(thumbnailRef).catch(() => {});
     }
-    KitHistoryService.recordVaultChange().catch(() => {});
-    CloudBackupService.autoBackupIfEnabled().catch(() => {});
-    AnalyticsService.trackEvent(AnalyticsService.Events.DOCUMENT_DELETED).catch(() => {});
+    safeAsync(KitHistoryService.recordVaultChange(), 'recordVaultChange');
+    safeAsync(CloudBackupService.autoBackupIfEnabled(), 'autoBackupIfEnabled');
+    safeAsync(AnalyticsService.trackEvent(AnalyticsService.Events.DOCUMENT_DELETED), 'trackEvent:document_deleted');
   }
 
   static async getDocumentCountByCategory(): Promise<

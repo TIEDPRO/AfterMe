@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KitHistoryService, type KitHistoryEntry, type KitDistributionEntry, type FreshnessLevel } from '../../services/KitHistoryService';
 import { CATEGORY_ICONS, CATEGORY_LABELS, type DocumentCategory } from '../../models/DocumentCategory';
 import { colors } from '../../theme/colors';
+import { SERIF_FONT } from '../../theme/fonts';
 
 interface KitHistoryScreenProps {
   onCreateKit: () => void;
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '600',
     color: colors.amWhite,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Semibold' : 'serif',
+    fontFamily: SERIF_FONT,
   },
   backBtn: {
     width: 60,
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: colors.amWhite,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif',
+    fontFamily: SERIF_FONT,
     marginBottom: 12,
     marginTop: 8,
   },

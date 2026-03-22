@@ -1,4 +1,5 @@
 import { StyleSheet, Platform } from 'react-native';
+import { SERIF_FONT } from '../../../theme/fonts';
 
 export const onboardingStyles = StyleSheet.create({
   container: {
@@ -37,13 +38,13 @@ export const onboardingStyles = StyleSheet.create({
     opacity: 0.9,
   },
   ctaText: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 18,
     fontWeight: '700',
     color: '#2D3142',
   },
   headline: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 28,
     fontWeight: '700',
     color: '#FAF9F6',

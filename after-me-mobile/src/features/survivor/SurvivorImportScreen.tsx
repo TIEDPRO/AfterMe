@@ -26,6 +26,7 @@ import { KeyManager } from '../../core/auth/KeyManager';
 import { OnboardingStorage } from '../../services/OnboardingStorage';
 import { importFamilyKit } from '../../services/FamilyKitService';
 import { colors } from '../../theme/colors';
+import { SERIF_FONT } from '../../theme/fonts';
 
 type Step = 'welcome' | 'scan' | 'manualEntry' | 'selectFile' | 'importing' | 'vaultIntro';
 
@@ -449,7 +450,7 @@ const styles = StyleSheet.create({
     color: colors.amWhite,
     textAlign: 'center',
     marginBottom: 16,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif',
+    fontFamily: SERIF_FONT,
   },
   welcomeBody: {
     fontSize: 16,
@@ -582,7 +583,7 @@ const styles = StyleSheet.create({
     color: colors.amWhite,
     textAlign: 'center',
     marginBottom: 12,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif',
+    fontFamily: SERIF_FONT,
   },
   selectBody: {
     fontSize: 15,
@@ -651,7 +652,7 @@ const styles = StyleSheet.create({
     color: colors.amWhite,
     textAlign: 'center',
     marginBottom: 12,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif',
+    fontFamily: SERIF_FONT,
   },
   vaultIntroBody: {
     fontSize: 16,
@@ -725,7 +726,7 @@ const styles = StyleSheet.create({
     color: colors.amWhite,
     textAlign: 'center',
     marginBottom: 12,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif',
+    fontFamily: SERIF_FONT,
   },
   permBody: {
     fontSize: 15,

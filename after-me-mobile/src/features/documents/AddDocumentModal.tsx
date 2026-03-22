@@ -46,6 +46,10 @@ export function AddDocumentModal({
   const [step, setStep] = useState<Step>('source');
   const [pendingSource, setPendingSource] = useState<'scan' | 'files' | 'photos' | null>(null);
   const [scanTitle, setScanTitle] = useState('');
+  const [documentDate, setDocumentDate] = useState('');
+  const [documentDateError, setDocumentDateError] = useState('');
+  const [expiryDate, setExpiryDate] = useState('');
+  const [expiryDateError, setExpiryDateError] = useState('');
   const [categorySearch, setCategorySearch] = useState('');
 
   const reset = () => {
@@ -54,7 +58,35 @@ export function AddDocumentModal({
     setStep('source');
     setPendingSource(null);
     setScanTitle('');
+    setDocumentDate('');
+    setDocumentDateError('');
+    setExpiryDate('');
+    setExpiryDateError('');
     setCategorySearch('');
+  };
+
+  const validateDateField = (value: string): string => {
+    if (!value.trim()) return '';
+    const match = value.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!match) return 'Use DD/MM/YYYY format';
+    const [, dd, mm, yyyy] = match;
+    const day = parseInt(dd, 10);
+    const month = parseInt(mm, 10);
+    const year = parseInt(yyyy, 10);
+    if (month < 1 || month > 12) return 'Invalid month';
+    if (day < 1 || day > 31) return 'Invalid day';
+    if (year < 1900 || year > 2100) return 'Invalid year';
+    const date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+      return 'Invalid date';
+    }
+    return '';
+  };
+
+  const toIsoDate = (ddmmyyyy: string): string | null => {
+    const match = ddmmyyyy.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!match) return null;
+    return `${match[3]}-${match[2]}-${match[1]}`;
   };
 
   const handleClose = () => {
@@ -74,6 +106,12 @@ export function AddDocumentModal({
 
   const executeImport = async () => {
     if (!selectedCategory || !pendingSource) return;
+
+    const dateOptions: { documentDate?: string; expiryDate?: string } = {};
+    const docDateIso = toIsoDate(documentDate);
+    const expDateIso = toIsoDate(expiryDate);
+    if (docDateIso) dateOptions.documentDate = docDateIso;
+    if (expDateIso) dateOptions.expiryDate = expDateIso;
 
     try {
       setLoading(true);
@@ -111,12 +149,13 @@ export function AddDocumentModal({
             : baseName;
 
           if (isBase64) {
-            await DocumentService.importFromBase64(img, selectedCategory, title);
+            await DocumentService.importFromBase64(img, selectedCategory, title, dateOptions);
           } else {
             await DocumentService.importFromFilePath(
               img as string,
               selectedCategory,
               title,
+              dateOptions,
             );
           }
         }
@@ -142,6 +181,7 @@ export function AddDocumentModal({
               : file.mimeType?.includes('png')
                 ? 'png'
                 : 'jpeg',
+            ...dateOptions,
           },
         );
       } else if (pendingSource === 'photos') {
@@ -161,6 +201,7 @@ export function AddDocumentModal({
           asset.uri,
           selectedCategory,
           'Photo from Library',
+          dateOptions,
         );
       }
 
@@ -182,6 +223,13 @@ export function AddDocumentModal({
       Alert.alert('Select Category', 'Please choose a category for your document.');
       return;
     }
+    const docErr = validateDateField(documentDate);
+    const expErr = validateDateField(expiryDate);
+    if (docErr || expErr) {
+      setDocumentDateError(docErr);
+      setExpiryDateError(expErr);
+      return;
+    }
     executeImport();
   };
 
@@ -190,7 +238,7 @@ export function AddDocumentModal({
       <Modal visible={visible} transparent animationType="slide">
         <View style={styles.overlay}>
           <View style={styles.card}>
-            <Text style={styles.title}>Choose Category</Text>
+            <Text style={styles.title} accessibilityRole="header">Choose Category</Text>
             <Text style={styles.subtitle}>
               {pendingSource === 'scan'
                 ? 'Select category for scanned document'
@@ -208,6 +256,43 @@ export function AddDocumentModal({
                 accessibilityLabel="Document title"
               />
             )}
+
+            <View style={styles.dateRow}>
+              <View style={styles.dateField}>
+                <TextInput
+                  style={[styles.dateInput, documentDateError ? styles.dateInputError : null]}
+                  placeholder="DD/MM/YYYY"
+                  placeholderTextColor={colors.textMuted}
+                  value={documentDate}
+                  onChangeText={(t) => { setDocumentDate(t); setDocumentDateError(''); }}
+                  onBlur={() => setDocumentDateError(validateDateField(documentDate))}
+                  keyboardType="numeric"
+                  maxLength={10}
+                  accessibilityLabel="Document date"
+                />
+                <Text style={styles.dateLabel} maxFontSizeMultiplier={1.4}>Document Date</Text>
+                {documentDateError ? (
+                  <Text style={styles.dateError} maxFontSizeMultiplier={1.4}>{documentDateError}</Text>
+                ) : null}
+              </View>
+              <View style={styles.dateField}>
+                <TextInput
+                  style={[styles.dateInput, expiryDateError ? styles.dateInputError : null]}
+                  placeholder="DD/MM/YYYY"
+                  placeholderTextColor={colors.textMuted}
+                  value={expiryDate}
+                  onChangeText={(t) => { setExpiryDate(t); setExpiryDateError(''); }}
+                  onBlur={() => setExpiryDateError(validateDateField(expiryDate))}
+                  keyboardType="numeric"
+                  maxLength={10}
+                  accessibilityLabel="Expiry date"
+                />
+                <Text style={styles.dateLabel} maxFontSizeMultiplier={1.4}>Expiry Date</Text>
+                {expiryDateError ? (
+                  <Text style={styles.dateError} maxFontSizeMultiplier={1.4}>{expiryDateError}</Text>
+                ) : null}
+              </View>
+            </View>
 
             <TextInput
               style={styles.searchInput}
@@ -295,11 +380,17 @@ export function AddDocumentModal({
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.overlay}>
         <View style={styles.card}>
-          <Text style={styles.title}>Add Document</Text>
+          <Text style={styles.title} accessibilityRole="header">Add Document</Text>
           <Text style={styles.subtitle}>Choose how to add your document</Text>
 
           {!isPremium && (
-            <View style={styles.freeTierBanner}>
+            <View
+              style={styles.freeTierBanner}
+              accessibilityRole="text"
+              accessibilityLabel={canAddDocument
+                ? `${documentsRemaining} of ${FREE_TIER_DOCUMENT_LIMIT} free documents remaining`
+                : `Free limit reached, ${FREE_TIER_DOCUMENT_LIMIT} documents. Upgrade to add more.`}
+            >
               <Text style={styles.freeTierText} maxFontSizeMultiplier={1.4}>
                 {canAddDocument
                   ? `${documentsRemaining} of ${FREE_TIER_DOCUMENT_LIMIT} free documents remaining`
@@ -400,6 +491,36 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 12,
+  },
+  dateField: {
+    flex: 1,
+  },
+  dateInput: {
+    backgroundColor: colors.amCard,
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 15,
+    color: colors.amWhite,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  dateInputError: {
+    borderColor: colors.amDanger,
+  },
+  dateLabel: {
+    fontSize: 11,
+    color: colors.textMuted,
+    marginTop: 4,
+  },
+  dateError: {
+    fontSize: 11,
+    color: colors.amDanger,
+    marginTop: 2,
   },
   searchInput: {
     backgroundColor: colors.amCard,

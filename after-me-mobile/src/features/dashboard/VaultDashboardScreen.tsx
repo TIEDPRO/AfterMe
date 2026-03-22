@@ -22,6 +22,7 @@ import {
 import { KitHistoryService, type FreshnessLevel } from '../../services/KitHistoryService';
 import { KitCreationWizard } from '../familykit/KitCreationWizard';
 import { colors } from '../../theme/colors';
+import { SERIF_FONT } from '../../theme/fonts';
 
 const RING_SIZE = 48;
 const RING_STROKE = 4;
@@ -113,7 +114,7 @@ function CategoryCard({
         <ProgressRing progress={progress} color={catColor} count={count} />
       </View>
       <Text
-        style={[styles.categoryName, { fontFamily: Platform.OS === 'ios' ? 'NewYork-Semibold' : 'serif' }]}
+        style={[styles.categoryName, { fontFamily: SERIF_FONT }]}
         maxFontSizeMultiplier={1.4}
       >
         {CATEGORY_LABELS[category]}
@@ -313,15 +314,16 @@ export function VaultDashboardScreen({
         <OverallCompletenessRing totalDocuments={totalDocuments} />
         <View style={styles.summaryText}>
           <Text
-            style={[styles.summaryTitle, { fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif' }]}
+            style={[styles.summaryTitle, { fontFamily: SERIF_FONT }]}
             maxFontSizeMultiplier={1.4}
+            accessibilityRole="header"
           >
             Your Vault
           </Text>
-          <Text style={styles.summaryCount} maxFontSizeMultiplier={1.4}>
+          <Text style={styles.summaryCount} maxFontSizeMultiplier={1.4} accessibilityRole="text">
             {totalDocuments} of {TOTAL_TARGET} key documents
           </Text>
-          <Text style={styles.summaryPercent} maxFontSizeMultiplier={1.4}>
+          <Text style={styles.summaryPercent} maxFontSizeMultiplier={1.4} accessibilityRole="text">
             {totalDocuments >= TOTAL_TARGET ? 'Vault complete!' : `${Math.round((totalDocuments / TOTAL_TARGET) * 100)}% complete`}
           </Text>
         </View>

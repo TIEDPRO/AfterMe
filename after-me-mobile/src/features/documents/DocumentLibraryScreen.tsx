@@ -10,7 +10,6 @@ import {
   SafeAreaView,
   Image,
   TextInput,
-  ActionSheetIOS,
   Alert,
   Platform,
   Modal,
@@ -19,6 +18,7 @@ import { DocumentService } from '../../services/DocumentService';
 import { useApp } from '../../context/AppContext';
 import type { Document } from '../../models/Document';
 import { colors } from '../../theme/colors';
+import { SERIF_FONT } from '../../theme/fonts';
 import {
   CATEGORY_LABELS,
   CATEGORY_ICONS,
@@ -28,6 +28,7 @@ import {
 import { AddDocumentModal } from './AddDocumentModal';
 import { DocumentViewerModal } from './DocumentViewerModal';
 import { PaywallScreen } from '../paywall/PaywallScreen';
+import { ActionSheet, showActionSheet, type ActionSheetOption } from '../../components/ActionSheet';
 
 type SortMode = 'newest' | 'oldest' | 'name';
 
@@ -103,28 +104,19 @@ export function DocumentLibraryScreen() {
     setThumbnailCache((prev) => ({ ...prev, [id]: uri }));
   }, []);
 
+  const [actionSheetDoc, setActionSheetDoc] = useState<Document | null>(null);
+
   const handleLongPress = (doc: Document) => {
-    const options = ['Rename', 'Delete', 'Cancel'];
-    const destructiveIndex = 1;
-    const cancelIndex = 2;
+    const options: ActionSheetOption[] = [
+      { label: 'Rename', onPress: () => handleRename(doc) },
+      { label: 'Delete', onPress: () => confirmDelete(doc), destructive: true },
+    ];
 
     if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        { options, destructiveButtonIndex: destructiveIndex, cancelButtonIndex: cancelIndex },
-        (index) => handleContextAction(index, doc),
-      );
+      showActionSheet(doc.title, options, () => {});
     } else {
-      Alert.alert(doc.title, 'Choose an action', [
-        { text: 'Rename', onPress: () => handleRename(doc) },
-        { text: 'Delete', style: 'destructive', onPress: () => confirmDelete(doc) },
-        { text: 'Cancel', style: 'cancel' },
-      ]);
+      setActionSheetDoc(doc);
     }
-  };
-
-  const handleContextAction = (index: number, doc: Document) => {
-    if (index === 0) handleRename(doc);
-    if (index === 1) confirmDelete(doc);
   };
 
   const handleRename = (doc: Document) => {
@@ -212,7 +204,7 @@ export function DocumentLibraryScreen() {
 
   const categoryEmptyState = categoryFilter ? (
     <View style={styles.empty}>
-      <Text style={styles.emptyIcon}>{CATEGORY_ICONS[categoryFilter]}</Text>
+      <Text style={styles.emptyIcon} accessible={false}>{CATEGORY_ICONS[categoryFilter]}</Text>
       <Text style={styles.emptyTitle} maxFontSizeMultiplier={1.4}>
         No {CATEGORY_LABELS[categoryFilter]} documents yet
       </Text>
@@ -234,6 +226,7 @@ export function DocumentLibraryScreen() {
         onPress={() => setAddModalVisible(true)}
         accessibilityRole="button"
         accessibilityLabel={`Add your first ${CATEGORY_LABELS[categoryFilter]} document`}
+        accessibilityHint="Opens the document import screen"
       >
         <Text style={styles.addFirstButtonText} maxFontSizeMultiplier={1.4}>
           Add Your First Document
@@ -242,7 +235,7 @@ export function DocumentLibraryScreen() {
     </View>
   ) : (
     <View style={styles.empty}>
-      <Text style={styles.emptyIcon}>📁</Text>
+      <Text style={styles.emptyIcon} accessible={false}>📁</Text>
       <Text style={styles.emptyTitle} maxFontSizeMultiplier={1.4}>No documents yet</Text>
       <Text style={styles.emptyHint} maxFontSizeMultiplier={1.4}>
         Your vault is empty. Start by scanning or importing your most important document.
@@ -252,6 +245,7 @@ export function DocumentLibraryScreen() {
         onPress={() => setAddModalVisible(true)}
         accessibilityRole="button"
         accessibilityLabel="Add your first document"
+        accessibilityHint="Opens the document import screen"
       >
         <Text style={styles.addFirstButtonText} maxFontSizeMultiplier={1.4}>
           Add Your First Document
@@ -265,8 +259,9 @@ export function DocumentLibraryScreen() {
       <View style={styles.header}>
         <View style={styles.headerRow}>
           <Text
-            style={[styles.title, { fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif' }]}
+            style={[styles.title, { fontFamily: SERIF_FONT }]}
             maxFontSizeMultiplier={1.4}
+            accessibilityRole="header"
           >
             Documents
           </Text>
@@ -306,7 +301,7 @@ export function DocumentLibraryScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.subtitle} maxFontSizeMultiplier={1.4}>
+        <Text style={styles.subtitle} maxFontSizeMultiplier={1.4} accessibilityRole="text">
           {filteredDocs.length} document{filteredDocs.length !== 1 ? 's' : ''}
           {categoryFilter ? ` in ${CATEGORY_LABELS[categoryFilter]}` : ' in vault'}
         </Text>
@@ -334,7 +329,7 @@ export function DocumentLibraryScreen() {
         categoryEmptyState
       ) : filteredDocs.length === 0 && searchQuery ? (
         <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>🔍</Text>
+          <Text style={styles.emptyIcon} accessible={false}>🔍</Text>
           <Text style={styles.emptyTitle} maxFontSizeMultiplier={1.4}>No results</Text>
           <Text style={styles.emptyHint} maxFontSizeMultiplier={1.4}>
             No documents matching &ldquo;{searchQuery}&rdquo;
@@ -423,6 +418,18 @@ export function DocumentLibraryScreen() {
           </View>
         </View>
       </Modal>
+
+      {Platform.OS === 'android' && (
+        <ActionSheet
+          visible={!!actionSheetDoc}
+          title={actionSheetDoc?.title}
+          options={actionSheetDoc ? [
+            { label: 'Rename', onPress: () => handleRename(actionSheetDoc) },
+            { label: 'Delete', onPress: () => confirmDelete(actionSheetDoc), destructive: true },
+          ] : []}
+          onCancel={() => setActionSheetDoc(null)}
+        />
+      )}
     </SafeAreaView>
   );
 }

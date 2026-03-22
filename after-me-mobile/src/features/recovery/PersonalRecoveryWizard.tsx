@@ -22,6 +22,7 @@ import { shareAsync } from 'expo-sharing';
 import { PersonalRecoveryKitService, type RecoveryKitResult } from '../../services/PersonalRecoveryKitService';
 import { PdfExportService } from '../../services/PdfExportService';
 import { colors } from '../../theme/colors';
+import { SERIF_FONT } from '../../theme/fonts';
 
 type WizardStep = 'intro' | 'generating' | 'complete' | 'distribute';
 
@@ -38,6 +39,7 @@ export function PersonalRecoveryWizard({ visible, onDismiss }: PersonalRecoveryW
   const [step, setStep] = useState<WizardStep>('intro');
   const [result, setResult] = useState<RecoveryKitResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [qrDataUri, setQrDataUri] = useState('');
   const qrRef = useRef<ViewShot>(null);
 
@@ -45,6 +47,7 @@ export function PersonalRecoveryWizard({ visible, onDismiss }: PersonalRecoveryW
     setStep('intro');
     setResult(null);
     setError(null);
+    setProgress({ current: 0, total: 0 });
     setQrDataUri('');
   }, []);
 
@@ -56,8 +59,11 @@ export function PersonalRecoveryWizard({ visible, onDismiss }: PersonalRecoveryW
   const handleGenerate = useCallback(async () => {
     setStep('generating');
     setError(null);
+    setProgress({ current: 0, total: 0 });
     try {
-      const kit = await PersonalRecoveryKitService.generateKit();
+      const kit = await PersonalRecoveryKitService.generateKit(
+        (current, total) => setProgress({ current, total }),
+      );
       setResult(kit);
 
       await new Promise<void>((resolve) => {
@@ -178,6 +184,11 @@ export function PersonalRecoveryWizard({ visible, onDismiss }: PersonalRecoveryW
       <Text style={styles.generatingHint} maxFontSizeMultiplier={1.4}>
         This may take a moment depending on vault size
       </Text>
+      {progress.total > 0 && (
+        <Text style={styles.progressText} maxFontSizeMultiplier={1.4}>
+          Processing document {progress.current} of {progress.total}…
+        </Text>
+      )}
 
       {result && (
         <View style={styles.hiddenQr} pointerEvents="none">
@@ -338,7 +349,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.amWhite,
     textAlign: 'center',
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif',
+    fontFamily: SERIF_FONT,
   },
   subtitle: {
     fontSize: 16,
@@ -415,6 +426,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textMuted,
     marginTop: 8,
+  },
+  progressText: {
+    fontSize: 14,
+    color: colors.amAmber,
+    marginTop: 12,
+    fontWeight: '500',
   },
   hiddenQr: {
     position: 'absolute',

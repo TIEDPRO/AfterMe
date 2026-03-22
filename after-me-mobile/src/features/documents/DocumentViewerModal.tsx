@@ -283,8 +283,8 @@ export function DocumentViewerModal({
               <Text style={styles.loadingText} maxFontSizeMultiplier={1.4}>Decrypting...</Text>
             </View>
           ) : decryptError ? (
-            <View style={styles.errorBlock}>
-              <Text style={styles.errorIcon}>⚠️</Text>
+            <View style={styles.errorBlock} accessibilityRole="alert">
+              <Text style={styles.errorIcon} accessible={false}>⚠️</Text>
               <Text style={styles.errorTitle} maxFontSizeMultiplier={1.4}>Could Not Decrypt Document</Text>
               <Text style={styles.errorMessage} maxFontSizeMultiplier={1.4}>{decryptError}</Text>
               <Text style={styles.errorHint} maxFontSizeMultiplier={1.4}>
@@ -303,7 +303,7 @@ export function DocumentViewerModal({
             </View>
           ) : document.format === 'pdf' && (pdfError || (!pdfUri && !loading)) ? (
             <View style={styles.pdfPlaceholder}>
-              <Text style={styles.pdfIcon}>📄</Text>
+              <Text style={styles.pdfIcon} accessible={false}>📄</Text>
               <Text style={styles.pdfTitle} maxFontSizeMultiplier={1.4}>{displayDoc.title}</Text>
               <Text style={styles.pdfHint} maxFontSizeMultiplier={1.4}>
                 {pdfError ? `Could not display PDF: ${pdfError}` : 'Document is stored securely in your vault.'}
@@ -311,7 +311,7 @@ export function DocumentViewerModal({
             </View>
           ) : document.format !== 'pdf' && imageError ? (
             <View style={styles.pdfPlaceholder}>
-              <Text style={styles.pdfIcon}>🖼️</Text>
+              <Text style={styles.pdfIcon} accessible={false}>🖼️</Text>
               <Text style={styles.pdfTitle} maxFontSizeMultiplier={1.4}>{displayDoc.title}</Text>
               <Text style={styles.pdfHint} maxFontSizeMultiplier={1.4}>{imageError}</Text>
             </View>
@@ -431,6 +431,7 @@ export function DocumentViewerModal({
               onPress={handleDelete}
               accessibilityRole="button"
               accessibilityLabel="Delete this document"
+              accessibilityHint="Permanently removes this document from your vault"
             >
               <Text style={styles.deleteButtonText} maxFontSizeMultiplier={1.4}>Delete Document</Text>
             </TouchableOpacity>

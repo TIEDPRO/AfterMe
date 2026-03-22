@@ -22,6 +22,7 @@ import { OnboardingScreen5 } from '../features/onboarding/OnboardingScreen5';
 import { OnboardingScreen6 } from '../features/onboarding/OnboardingScreen6';
 import type { DocumentCategory } from '../models/DocumentCategory';
 import { colors } from '../theme/colors';
+import { SERIF_FONT } from '../theme/fonts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type MainTabParamList = {
@@ -205,7 +206,7 @@ export function AppNavigator() {
             fontWeight: '600',
             fontSize: 17,
             color: colors.amWhite,
-            fontFamily: Platform.OS === 'ios' ? 'NewYork-Semibold' : 'serif',
+            fontFamily: SERIF_FONT,
           },
           }}
         >

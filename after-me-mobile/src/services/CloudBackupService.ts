@@ -1,17 +1,20 @@
 /**
- * CloudBackupService — encrypts the entire vault and uploads to iCloud Documents.
+ * CloudBackupService — encrypts the entire vault and uploads to cloud storage.
+ *
+ * iOS: iCloud Documents via native module.
+ * Android: Google Drive appDataFolder via REST API.
  *
  * Backup format: a single encrypted blob per backup version, plus a metadata JSON.
- * The vault key itself is backed up separately via KeychainBackupService (iCloud Keychain).
+ * The vault key itself is backed up separately via KeychainBackupService.
  *
  * Backup flow:
  *   1. Export all document records + encrypted files → single archive
  *   2. Encrypt archive with the vault key
- *   3. Write encrypted archive + metadata to iCloud Documents container
+ *   3. Write encrypted archive + metadata to cloud storage
  *
  * Restore flow:
- *   1. Read metadata + encrypted archive from iCloud
- *   2. Decrypt with vault key (which was restored from iCloud Keychain)
+ *   1. Read metadata + encrypted archive from cloud
+ *   2. Decrypt with vault key (restored from cloud key backup)
  *   3. Import document records + files back into local vault
  */
 import { Platform } from 'react-native';
@@ -25,12 +28,12 @@ import * as DocumentRepository from '../db/DocumentRepository';
 import { OnboardingStorage } from './OnboardingStorage';
 import { AnalyticsService } from './AnalyticsService';
 import { captureVaultError } from './SentryService';
+import { safeAsync } from '../utils/safeAsync';
 
 const BACKUP_SIZE_LIMIT_BYTES = 200 * 1024 * 1024;
 
-const BACKUP_DIR = 'AfterMe';
-const BACKUP_METADATA_FILE = `${BACKUP_DIR}/backup-meta.json`;
-const BACKUP_VAULT_FILE = `${BACKUP_DIR}/vault-backup.enc`;
+const BACKUP_METADATA_FILE = 'backup-meta.json';
+const BACKUP_VAULT_FILE = 'vault-backup.enc';
 
 const BACKUP_STATUS_KEY = 'afterme_backup_status';
 const LAST_BACKUP_KEY = 'afterme_last_backup_date';
@@ -50,28 +53,48 @@ type BackupMetadata = {
 let backupDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 const BACKUP_DEBOUNCE_MS = 30_000; // 30 seconds
 
-let ICloudModule: {
-  isICloudAvailable: () => Promise<boolean>;
-  writeToICloud: (path: string, base64: string) => Promise<boolean>;
-  readFromICloud: (path: string) => Promise<string | null>;
-  deleteFromICloud: (path: string) => Promise<boolean>;
-  listICloudFiles: (path: string) => Promise<string[]>;
-} | null = null;
+interface CloudStorageProvider {
+  isAvailable: () => Promise<boolean>;
+  writeFile: (path: string, base64: string) => Promise<boolean>;
+  readFile: (path: string) => Promise<string | null>;
+  deleteFile: (path: string) => Promise<boolean>;
+}
+
+let storageProvider: CloudStorageProvider | null = null;
 
 try {
   if (Platform.OS === 'ios') {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    ICloudModule = require('../../modules/icloud-backup');
+    const ICloudModule = require('../../modules/icloud-backup');
+    const ICLOUD_DIR = 'AfterMe';
+    storageProvider = {
+      isAvailable: () => ICloudModule.isICloudAvailable(),
+      writeFile: (path: string, base64: string) => ICloudModule.writeToICloud(`${ICLOUD_DIR}/${path}`, base64),
+      readFile: (path: string) => ICloudModule.readFromICloud(`${ICLOUD_DIR}/${path}`),
+      deleteFile: (path: string) => ICloudModule.deleteFromICloud(`${ICLOUD_DIR}/${path}`),
+    };
+  } else if (Platform.OS === 'android') {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { GoogleDriveService } = require('./GoogleDriveService');
+    storageProvider = {
+      isAvailable: () => GoogleDriveService.isAvailable(),
+      writeFile: (path: string, base64: string) => GoogleDriveService.writeToGoogleDrive(path, base64),
+      readFile: (path: string) => GoogleDriveService.readFromGoogleDrive(path),
+      deleteFile: (path: string) => GoogleDriveService.deleteFromGoogleDrive(path),
+    };
   }
 } catch {
-  ICloudModule = null;
+  storageProvider = null;
 }
+
+/** Human-readable cloud provider name for the current platform. */
+export const CLOUD_PROVIDER_NAME = Platform.OS === 'ios' ? 'iCloud' : 'Google Drive';
 
 export class CloudBackupService {
   static async isAvailable(): Promise<boolean> {
-    if (!ICloudModule) return false;
+    if (!storageProvider) return false;
     try {
-      return await ICloudModule.isICloudAvailable();
+      return await storageProvider.isAvailable();
     } catch {
       return false;
     }
@@ -101,11 +124,11 @@ export class CloudBackupService {
   }
 
   /**
-   * Perform a full vault backup to iCloud.
+   * Perform a full vault backup to cloud storage.
    * Returns true on success.
    */
   static async backupNow(): Promise<boolean> {
-    if (!ICloudModule) return false;
+    if (!storageProvider) return false;
 
     const available = await this.isAvailable();
     if (!available) return false;
@@ -128,7 +151,7 @@ export class CloudBackupService {
           totalBytes += fileContent.length;
           if (totalBytes > BACKUP_SIZE_LIMIT_BYTES) {
             throw new Error(
-              'Vault too large for iCloud backup. Total file size exceeds ' +
+              `Vault too large for ${CLOUD_PROVIDER_NAME} backup. Total file size exceeds ` +
               `${BACKUP_SIZE_LIMIT_BYTES / 1024 / 1024}MB.`,
             );
           }
@@ -150,13 +173,16 @@ export class CloudBackupService {
       }
 
       const jsonPayload = JSON.stringify(vaultData);
+      vaultData.files = {};
+      vaultData.documents = [] as any;
+
       const payloadBuffer = Buffer.from(jsonPayload, 'utf-8');
 
       const vaultKey = await KeyManager.getVaultKey();
       const encrypted = CryptoService.encrypt(payloadBuffer, vaultKey);
       const encryptedBase64 = encrypted.toString('base64');
 
-      await ICloudModule.writeToICloud(BACKUP_VAULT_FILE, encryptedBase64);
+      await storageProvider.writeFile(BACKUP_VAULT_FILE, encryptedBase64);
 
       if (skippedFiles > 0) {
         console.warn(
@@ -174,12 +200,12 @@ export class CloudBackupService {
       };
 
       const metaBase64 = Buffer.from(JSON.stringify(metadata), 'utf-8').toString('base64');
-      await ICloudModule.writeToICloud(BACKUP_METADATA_FILE, metaBase64);
+      await storageProvider.writeFile(BACKUP_METADATA_FILE, metaBase64);
 
       const now = new Date().toISOString();
       await AsyncStorage.setItem(LAST_BACKUP_KEY, now);
       await this.setStatus('success');
-      AnalyticsService.trackEvent(AnalyticsService.Events.BACKUP_COMPLETED, { documentCount: docs.length }).catch(() => {});
+      safeAsync(AnalyticsService.trackEvent(AnalyticsService.Events.BACKUP_COMPLETED, { documentCount: docs.length }), 'trackEvent:backup_completed');
       return true;
     } catch (err) {
       console.error('Backup failed:', err);
@@ -190,13 +216,13 @@ export class CloudBackupService {
   }
 
   /**
-   * Get metadata about the latest iCloud backup without downloading it.
+   * Get metadata about the latest cloud backup without downloading it.
    */
   static async getBackupInfo(): Promise<BackupMetadata | null> {
-    if (!ICloudModule) return null;
+    if (!storageProvider) return null;
 
     try {
-      const metaBase64 = await ICloudModule.readFromICloud(BACKUP_METADATA_FILE);
+      const metaBase64 = await storageProvider.readFile(BACKUP_METADATA_FILE);
       if (!metaBase64) return null;
 
       const metaJson = Buffer.from(metaBase64, 'base64').toString('utf-8');
@@ -207,16 +233,16 @@ export class CloudBackupService {
   }
 
   /**
-   * Restore vault from iCloud backup.
-   * Attempts to restore the vault key from iCloud Keychain if not available locally.
+   * Restore vault from cloud backup.
+   * Attempts to restore the vault key from cloud key backup if not available locally.
    */
   static async restore(): Promise<{ success: boolean; documentCount: number }> {
-    if (!ICloudModule) return { success: false, documentCount: 0 };
+    if (!storageProvider) return { success: false, documentCount: 0 };
 
     await this.setStatus('restoring');
 
     try {
-      const encryptedBase64 = await ICloudModule.readFromICloud(BACKUP_VAULT_FILE);
+      const encryptedBase64 = await storageProvider.readFile(BACKUP_VAULT_FILE);
       if (!encryptedBase64) {
         await this.setStatus('error');
         return { success: false, documentCount: 0 };
@@ -270,7 +296,7 @@ export class CloudBackupService {
       }
 
       await this.setStatus('success');
-      AnalyticsService.trackEvent(AnalyticsService.Events.BACKUP_RESTORED, { documentCount: restoredCount }).catch(() => {});
+      safeAsync(AnalyticsService.trackEvent(AnalyticsService.Events.BACKUP_RESTORED, { documentCount: restoredCount }), 'trackEvent:backup_restored');
       return { success: true, documentCount: restoredCount };
     } catch (err) {
       console.error('Restore failed:', err);
@@ -294,15 +320,15 @@ export class CloudBackupService {
     if (backupDebounceTimer) clearTimeout(backupDebounceTimer);
     backupDebounceTimer = setTimeout(() => {
       backupDebounceTimer = null;
-      this.backupNow().catch(() => {});
+      safeAsync(this.backupNow(), 'autoBackup');
     }, BACKUP_DEBOUNCE_MS);
   }
 
   static async deleteBackup(): Promise<boolean> {
-    if (!ICloudModule) return false;
+    if (!storageProvider) return false;
     try {
-      await ICloudModule.deleteFromICloud(BACKUP_VAULT_FILE);
-      await ICloudModule.deleteFromICloud(BACKUP_METADATA_FILE);
+      await storageProvider.deleteFile(BACKUP_VAULT_FILE);
+      await storageProvider.deleteFile(BACKUP_METADATA_FILE);
       return true;
     } catch {
       return false;

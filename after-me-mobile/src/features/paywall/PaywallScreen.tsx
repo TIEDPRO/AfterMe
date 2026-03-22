@@ -35,7 +35,9 @@ import {
   BREAK_EVEN_YEARS,
 } from '../../constants/products';
 import { AnalyticsService } from '../../services/AnalyticsService';
+import { safeAsync } from '../../utils/safeAsync';
 import { colors } from '../../theme/colors';
+import { SERIF_FONT } from '../../theme/fonts';
 
 export type PaywallTrigger =
   | 'document_limit'
@@ -93,7 +95,7 @@ export function PaywallScreen({ visible, onDismiss, trigger = 'settings' }: Payw
       return;
     }
 
-    AnalyticsService.trackEvent(AnalyticsService.Events.PAYWALL_SHOWN, { trigger }).catch(() => {});
+    safeAsync(AnalyticsService.trackEvent(AnalyticsService.Events.PAYWALL_SHOWN, { trigger }), 'trackEvent:paywall_shown');
 
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -471,7 +473,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '700',
     color: colors.amWhite,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif',
+    fontFamily: SERIF_FONT,
     textAlign: 'center',
     letterSpacing: -0.5,
   },

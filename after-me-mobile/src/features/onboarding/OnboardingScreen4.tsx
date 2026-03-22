@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { onboardingStyles } from './shared/onboardingStyles';
+import { SERIF_FONT } from '../../theme/fonts';
 
 /**
  * Decorative QR-like pattern — NOT a real scannable QR code.
@@ -392,7 +393,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headlineLine1: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 28,
     fontWeight: '700',
     color: '#FAF9F6',
@@ -400,7 +401,7 @@ const styles = StyleSheet.create({
     lineHeight: 34,
   },
   headlineLine2: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 28,
     fontWeight: '700',
     color: '#C9963A',
@@ -433,7 +434,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   ctaLine1: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 18,
     fontWeight: '700',
     color: '#2D3142',

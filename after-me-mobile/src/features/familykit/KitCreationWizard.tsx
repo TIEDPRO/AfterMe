@@ -30,6 +30,7 @@ import { PdfExportService } from '../../services/PdfExportService';
 import { KitHistoryService } from '../../services/KitHistoryService';
 import { useApp } from '../../context/AppContext';
 import { colors } from '../../theme/colors';
+import { SERIF_FONT } from '../../theme/fonts';
 
 type WizardStep = 'intro' | 'details' | 'generating' | 'validating' | 'complete' | 'distribute';
 
@@ -49,6 +50,7 @@ export function KitCreationWizard({ visible, onDismiss }: KitCreationWizardProps
   const [emergencyContact, setEmergencyContact] = useState('');
   const [result, setResult] = useState<KitGenerationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [qrDataUri, setQrDataUri] = useState<string>('');
   const qrRef = useRef<ViewShot>(null);
 
@@ -71,6 +73,7 @@ export function KitCreationWizard({ visible, onDismiss }: KitCreationWizardProps
     setEmergencyContact('');
     setResult(null);
     setError(null);
+    setProgress({ current: 0, total: 0 });
     setQrDataUri('');
   }, []);
 
@@ -82,10 +85,12 @@ export function KitCreationWizard({ visible, onDismiss }: KitCreationWizardProps
   const handleGenerate = useCallback(async () => {
     setStep('generating');
     setError(null);
+    setProgress({ current: 0, total: 0 });
     try {
       const kitResult = await FamilyKitExportService.generateKit(
         ownerName.trim() || null,
         emergencyContact.trim() || null,
+        (current, total) => setProgress({ current, total }),
       );
 
       setStep('validating');
@@ -173,8 +178,8 @@ export function KitCreationWizard({ visible, onDismiss }: KitCreationWizardProps
 
   const renderIntro = () => (
     <ScrollView contentContainerStyle={styles.scrollContent}>
-      <Text style={styles.stepIndicator} maxFontSizeMultiplier={1.4}>Step 1 of 4</Text>
-      <Text style={styles.heading} maxFontSizeMultiplier={1.4}>Create Your Family Kit</Text>
+      <Text style={styles.stepIndicator} maxFontSizeMultiplier={1.4} accessibilityRole="text">Step 1 of 4</Text>
+      <Text style={styles.heading} maxFontSizeMultiplier={1.4} accessibilityRole="header">Create Your Family Kit</Text>
       <Text style={styles.body} maxFontSizeMultiplier={1.4}>
         A Family Kit is a secure, encrypted package of your vault contents that your
         loved ones can open after you&apos;re gone — or whenever they need it.
@@ -224,15 +229,15 @@ export function KitCreationWizard({ visible, onDismiss }: KitCreationWizardProps
 
   const renderDetails = () => (
     <ScrollView contentContainerStyle={styles.scrollContent}>
-      <Text style={styles.stepIndicator} maxFontSizeMultiplier={1.4}>Step 2 of 4</Text>
-      <Text style={styles.heading} maxFontSizeMultiplier={1.4}>Personalise Your Kit</Text>
+      <Text style={styles.stepIndicator} maxFontSizeMultiplier={1.4} accessibilityRole="text">Step 2 of 4</Text>
+      <Text style={styles.heading} maxFontSizeMultiplier={1.4} accessibilityRole="header">Personalise Your Kit</Text>
       <Text style={styles.body} maxFontSizeMultiplier={1.4}>
         These details appear on the printed cover sheet and inside the README, helping
         your survivors identify the kit and know who to contact.
       </Text>
 
       {error && (
-        <View style={styles.errorBanner}>
+        <View style={styles.errorBanner} accessibilityRole="alert">
           <Text style={styles.errorText} maxFontSizeMultiplier={1.4}>{error}</Text>
         </View>
       )}
@@ -300,6 +305,11 @@ export function KitCreationWizard({ visible, onDismiss }: KitCreationWizardProps
         Encrypting vault contents with a unique access key...{'\n'}
         This may take a moment depending on your vault size.
       </Text>
+      {progress.total > 0 && (
+        <Text style={styles.progressText} maxFontSizeMultiplier={1.4}>
+          Processing document {progress.current} of {progress.total}…
+        </Text>
+      )}
     </View>
   );
 
@@ -317,15 +327,15 @@ export function KitCreationWizard({ visible, onDismiss }: KitCreationWizardProps
     if (!result) return null;
     return (
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.stepIndicator} maxFontSizeMultiplier={1.4}>Step 3 of 4</Text>
-        <View style={styles.successBanner}>
-          <Text style={styles.successIcon}>✅</Text>
+        <Text style={styles.stepIndicator} maxFontSizeMultiplier={1.4} accessibilityRole="text">Step 3 of 4</Text>
+        <View style={styles.successBanner} accessibilityRole="alert">
+          <Text style={styles.successIcon} accessible={false}>✅</Text>
           <Text style={styles.successText} maxFontSizeMultiplier={1.4}>
             Kit Created & Verified
           </Text>
         </View>
 
-        <Text style={styles.heading} maxFontSizeMultiplier={1.4}>Your Access Key</Text>
+        <Text style={styles.heading} maxFontSizeMultiplier={1.4} accessibilityRole="header">Your Access Key</Text>
         <Text style={styles.body} maxFontSizeMultiplier={1.4}>
           This QR code is the only way to unlock your Family Kit. Without it, the .afterme
           file cannot be decrypted by anyone — not even us.
@@ -413,8 +423,8 @@ export function KitCreationWizard({ visible, onDismiss }: KitCreationWizardProps
     if (!result) return null;
     return (
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.stepIndicator} maxFontSizeMultiplier={1.4}>Step 4 of 4</Text>
-        <Text style={styles.heading} maxFontSizeMultiplier={1.4}>Distribute Your Kit</Text>
+        <Text style={styles.stepIndicator} maxFontSizeMultiplier={1.4} accessibilityRole="text">Step 4 of 4</Text>
+        <Text style={styles.heading} maxFontSizeMultiplier={1.4} accessibilityRole="header">Distribute Your Kit</Text>
         <Text style={styles.body} maxFontSizeMultiplier={1.4}>
           For the best protection, make sure your loved ones can actually find and use
           the kit when they need it. Here are our recommendations:
@@ -543,7 +553,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '600',
     color: colors.amWhite,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Semibold' : 'serif',
+    fontFamily: SERIF_FONT,
   },
   closeBtn: {
     width: 44,
@@ -565,6 +575,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
   },
+  progressText: {
+    fontSize: 14,
+    color: colors.amAmber,
+    marginTop: 12,
+    fontWeight: '500',
+  },
   stepIndicator: {
     fontSize: 13,
     fontWeight: '600',
@@ -577,7 +593,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     color: colors.amWhite,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif',
+    fontFamily: SERIF_FONT,
     marginBottom: 12,
     marginTop: 8,
   },

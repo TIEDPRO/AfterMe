@@ -1,31 +1,32 @@
 /**
- * Backup service — iCloud / CloudKit encrypted backup.
+ * Backup service — cloud encrypted backup (iCloud on iOS, Google Drive on Android).
  * Bridges onboarding preferences with the actual CloudBackupService.
  */
 import { OnboardingStorage } from './OnboardingStorage';
 import { CloudBackupService } from './CloudBackupService';
+import { safeAsync } from '../utils/safeAsync';
 
 export const BackupService = {
-  async enableIcloudBackup(): Promise<void> {
+  async enableCloudBackup(): Promise<void> {
     await OnboardingStorage.setIcloudBackupEnabled(true);
     await CloudBackupService.setAutoBackupEnabled(true);
 
     const available = await CloudBackupService.isAvailable();
     if (available) {
-      CloudBackupService.backupNow().catch(() => {});
+      safeAsync(CloudBackupService.backupNow(), 'initialBackup');
     }
   },
 
-  async disableIcloudBackup(): Promise<void> {
+  async disableCloudBackup(): Promise<void> {
     await OnboardingStorage.setIcloudBackupEnabled(false);
     await CloudBackupService.setAutoBackupEnabled(false);
   },
 
-  async isIcloudBackupEnabled(): Promise<boolean> {
+  async isCloudBackupEnabled(): Promise<boolean> {
     return OnboardingStorage.isIcloudBackupEnabled();
   },
 
-  async isIcloudAvailable(): Promise<boolean> {
+  async isCloudAvailable(): Promise<boolean> {
     return CloudBackupService.isAvailable();
   },
 
@@ -39,5 +40,22 @@ export const BackupService = {
 
   async getBackupInfo(): Promise<{ documentCount: number; createdAt: string } | null> {
     return CloudBackupService.getBackupInfo();
+  },
+
+  /** @deprecated Use enableCloudBackup() — kept for backward compatibility */
+  async enableIcloudBackup(): Promise<void> {
+    return this.enableCloudBackup();
+  },
+  /** @deprecated Use disableCloudBackup() */
+  async disableIcloudBackup(): Promise<void> {
+    return this.disableCloudBackup();
+  },
+  /** @deprecated Use isCloudBackupEnabled() */
+  async isIcloudBackupEnabled(): Promise<boolean> {
+    return this.isCloudBackupEnabled();
+  },
+  /** @deprecated Use isCloudAvailable() */
+  async isIcloudAvailable(): Promise<boolean> {
+    return this.isCloudAvailable();
   },
 };

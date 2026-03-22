@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../theme/colors';
+import { SERIF_FONT } from '../../theme/fonts';
 
 interface FaqItem {
   question: string;
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: colors.amWhite,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Bold' : 'serif',
+    fontFamily: SERIF_FONT,
     marginBottom: 6,
   },
   pageSubtitle: {
@@ -253,7 +254,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.amAmber,
     marginBottom: 12,
-    fontFamily: Platform.OS === 'ios' ? 'NewYork-Semibold' : 'serif',
+    fontFamily: SERIF_FONT,
   },
   faqItem: {
     backgroundColor: colors.amCard,

@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { PurchaseService } from '../services/PurchaseService';
 
 jest.mock('../core/crypto/CryptoService', () => ({
@@ -23,7 +23,9 @@ const StoreKit = require('../../modules/storekit');
 describe('PurchaseService', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
-    await AsyncStorage.clear();
+    await SecureStore.deleteItemAsync('afterme_premium_status');
+    await SecureStore.deleteItemAsync('afterme_premium_hmac');
+    await SecureStore.deleteItemAsync('afterme_active_product_id');
     PurchaseService.clearCache();
   });
 
@@ -66,15 +68,15 @@ describe('PurchaseService', () => {
     });
 
     it('rejects tampered cache without HMAC (Fix 23)', async () => {
-      await AsyncStorage.setItem('afterme_premium_status', 'true');
+      await SecureStore.setItemAsync('afterme_premium_status', 'true');
       const isPremium = await PurchaseService.checkEntitlements();
       expect(isPremium).toBe(false);
     });
 
     it('returns true with valid HMAC cache', async () => {
       StoreKit.getPurchasedProducts.mockRejectedValueOnce(new Error('unavailable'));
-      await AsyncStorage.setItem('afterme_premium_status', 'true');
-      await AsyncStorage.setItem('afterme_premium_hmac', 'true_mock_hmac_123');
+      await SecureStore.setItemAsync('afterme_premium_status', 'true');
+      await SecureStore.setItemAsync('afterme_premium_hmac', 'true_mock_hmac_123');
 
       const result = await PurchaseService.checkEntitlements();
       expect(result).toBe(true);
@@ -100,9 +102,9 @@ describe('PurchaseService', () => {
       const result = await PurchaseService.purchase(productId);
 
       expect(result.status).toBe('success');
-      expect(await AsyncStorage.getItem('afterme_premium_status')).toBe('true');
-      expect(await AsyncStorage.getItem('afterme_active_product_id')).toBe(productId);
-      expect(await AsyncStorage.getItem('afterme_premium_hmac')).toBe('true_mock_hmac_123');
+      expect(await SecureStore.getItemAsync('afterme_premium_status')).toBe('true');
+      expect(await SecureStore.getItemAsync('afterme_active_product_id')).toBe(productId);
+      expect(await SecureStore.getItemAsync('afterme_premium_hmac')).toBe('true_mock_hmac_123');
     });
 
     it('returns unknown when StoreKit throws', async () => {
@@ -154,7 +156,7 @@ describe('PurchaseService', () => {
 
     it('returns cached value from AsyncStorage on StoreKit failure', async () => {
       StoreKit.getPurchasedProducts.mockRejectedValueOnce(new Error('fail'));
-      await AsyncStorage.setItem('afterme_active_product_id', 'com.afterme.app.premium.lifetime');
+      await SecureStore.setItemAsync('afterme_active_product_id', 'com.afterme.app.premium.lifetime');
 
       const id = await PurchaseService.getActiveProductId();
       expect(id).toBe('com.afterme.app.premium.lifetime');

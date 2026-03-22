@@ -9,6 +9,7 @@
  */
 import JSZip from 'jszip';
 import { Buffer } from 'buffer';
+import Constants from 'expo-constants';
 import {
   cacheDirectory,
   writeAsStringAsync,
@@ -26,6 +27,8 @@ const EXPORT_DOC_LIMIT = 100;
 const EXPORT_SIZE_LIMIT_BYTES = 200 * 1024 * 1024;
 const SALT_SIZE = 32;
 const RECOVERY_KIT_KEY = 'afterme_personal_recovery_kit';
+
+const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';
 
 function generateAccessKey(): string {
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_~!@#$%^&*';
@@ -94,7 +97,9 @@ export interface RecoveryKitResult {
 }
 
 export class PersonalRecoveryKitService {
-  static async generateKit(): Promise<RecoveryKitResult> {
+  static async generateKit(
+    onProgress?: (current: number, total: number) => void,
+  ): Promise<RecoveryKitResult> {
     const docs = await DocumentRepository.getAllDocuments();
 
     if (docs.length === 0) {
@@ -116,7 +121,9 @@ export class PersonalRecoveryKitService {
     };
 
     let totalPayloadBytes = 0;
-    for (const doc of docs) {
+    for (let i = 0; i < docs.length; i++) {
+      const doc = docs[i];
+      onProgress?.(i + 1, docs.length);
       const content = await EncryptedStorageService.readFile(doc.fileRef);
       totalPayloadBytes += content.length;
       if (totalPayloadBytes > EXPORT_SIZE_LIMIT_BYTES) {
@@ -141,6 +148,9 @@ export class PersonalRecoveryKitService {
     }
 
     const vaultJson = Buffer.from(JSON.stringify(vaultPayload), 'utf8');
+    vaultPayload.documents.length = 0;
+    (vaultPayload as any).documents = null;
+
     const vaultEnc = CryptoService.encrypt(vaultJson, cek);
 
     const salt = Buffer.from(QuickCrypto.randomBytes(SALT_SIZE));
@@ -157,6 +167,7 @@ export class PersonalRecoveryKitService {
 
     const manifest = JSON.stringify({
       version: '1.0',
+      app_version: APP_VERSION,
       type: 'personal_recovery',
       created_at: new Date().toISOString(),
       document_count: docs.length,

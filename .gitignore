@@ -30,6 +30,12 @@ yarn-error.*
 .DS_Store
 *.pem
 
+# Xcode user state
+*.xcuserstate
+
+# Build output
+after-me-mobile/build/
+
 # Local env
 .env*.local
 

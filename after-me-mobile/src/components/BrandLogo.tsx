@@ -5,6 +5,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle, Platform } from 'react-native';
 import Svg, { Rect, Path, Circle, Line } from 'react-native-svg';
+import { SERIF_FONT } from '../theme/fonts';
 
 interface BrandLogoProps {
   size?: 'small' | 'medium' | 'large';
@@ -77,19 +78,19 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   after: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontWeight: '700',
     letterSpacing: -1,
   },
   me: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontWeight: '700',
     color: '#C9963A',
     letterSpacing: -1,
     marginLeft: 4,
   },
   tagline: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 11,
     color: '#2D3142',
     opacity: 0.38,

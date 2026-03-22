@@ -15,13 +15,14 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { onboardingStyles } from './shared/onboardingStyles';
+import { SERIF_FONT } from '../../theme/fonts';
 
 interface OnboardingScreen1Props {
   onContinue: () => void;
   onBack?: () => void;
 }
 
-export function OnboardingScreen1({ onContinue }: OnboardingScreen1Props) {
+export function OnboardingScreen1({ onContinue, onBack }: OnboardingScreen1Props) {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const circleSize = width * 0.8;
@@ -118,6 +119,16 @@ export function OnboardingScreen1({ onContinue }: OnboardingScreen1Props) {
 
   return (
     <View style={[onboardingStyles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+      {onBack && (
+        <Pressable
+          onPress={onBack}
+          style={[styles.backButton, { top: insets.top + 4 }]}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+        >
+          <Text style={styles.backText}>← Back</Text>
+        </Pressable>
+      )}
       {/* Top section — illustration area (upper 45%) */}
       <View style={[styles.illustrationSection, { height: '45%' }]}>
         <Animated.View
@@ -234,7 +245,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headlineLine1: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 28,
     fontWeight: '700',
     color: '#FAF9F6',
@@ -242,7 +253,7 @@ const styles = StyleSheet.create({
     lineHeight: 34,
   },
   headlineLine2: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 28,
     fontWeight: '700',
     color: '#C9963A',
@@ -270,7 +281,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   ctaLine1: {
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: SERIF_FONT,
     fontSize: 18,
     fontWeight: '700',
     color: '#2D3142',
