@@ -113,7 +113,24 @@ describe('AppContext', () => {
     expect(migrateDatesToPlaintext).toHaveBeenCalled();
   });
 
-  it('hasCompletedOnboarding becomes true when either hasKeys or storageCompleted is true', async () => {
+  it('initialLoadDone becomes true after refreshInit completes', async () => {
+    const { result } = renderHook(() => useApp(), { wrapper });
+    await waitFor(() => {
+      expect(result.current.initialLoadDone).toBe(true);
+    });
+  });
+
+  it('migrateDatesToPlaintext is skipped when hasKeys but not storageCompleted', async () => {
+    (KeyManager.isInitialized as jest.Mock).mockResolvedValue(true);
+    (OnboardingStorage.hasCompletedOnboarding as jest.Mock).mockResolvedValue(false);
+    const { result } = renderHook(() => useApp(), { wrapper });
+    await waitFor(() => {
+      expect(result.current.isInitialized).not.toBeNull();
+    });
+    expect(migrateDatesToPlaintext).not.toHaveBeenCalled();
+  });
+
+  it('hasCompletedOnboarding becomes true only when storageCompleted is true', async () => {
     (KeyManager.isInitialized as jest.Mock).mockResolvedValue(false);
     (OnboardingStorage.hasCompletedOnboarding as jest.Mock).mockResolvedValue(
       true,
@@ -123,6 +140,18 @@ describe('AppContext', () => {
       expect(result.current.isInitialized).not.toBeNull();
     });
     expect(result.current.hasCompletedOnboarding).toBe(true);
+  });
+
+  it('hasCompletedOnboarding is false when hasKeys is true but storageCompleted is false (reinstall scenario)', async () => {
+    (KeyManager.isInitialized as jest.Mock).mockResolvedValue(true);
+    (OnboardingStorage.hasCompletedOnboarding as jest.Mock).mockResolvedValue(
+      false,
+    );
+    const { result } = renderHook(() => useApp(), { wrapper });
+    await waitFor(() => {
+      expect(result.current.isInitialized).not.toBeNull();
+    });
+    expect(result.current.hasCompletedOnboarding).toBe(false);
   });
 
   it('hasSafetyNet is true when icloudEnabled is true (Fix 6 regression)', async () => {

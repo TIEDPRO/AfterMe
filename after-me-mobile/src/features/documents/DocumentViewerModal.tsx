@@ -12,17 +12,13 @@ import {
   Alert,
   useWindowDimensions,
 } from 'react-native';
+import { DatePickerField } from '../../components/DatePickerField';
 import { cacheDirectory, documentDirectory, writeAsStringAsync, deleteAsync, EncodingType } from 'expo-file-system/legacy';
 import { PdfView } from '@kishannareshpal/expo-pdf';
 import { DocumentService } from '../../services/DocumentService';
 import type { Document } from '../../models/Document';
 import { CATEGORY_LABELS, CATEGORY_ICONS } from '../../models/DocumentCategory';
 import { colors } from '../../theme/colors';
-
-function isValidISODate(value: string): boolean {
-  if (!value) return true;
-  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !isNaN(Date.parse(value));
-}
 
 interface DocumentViewerModalProps {
   document: Document;
@@ -164,21 +160,12 @@ export function DocumentViewerModal({
 
   const handleSave = async () => {
     if (!document?.id) return;
-    const documentDateTrim = editValues.documentDate.trim();
-    const expiryDateTrim = editValues.expiryDate.trim();
-    if (!isValidISODate(documentDateTrim) || !isValidISODate(expiryDateTrim)) {
-      Alert.alert(
-        'Invalid date',
-        'Please use YYYY-MM-DD for document and expiry dates, or leave them empty.',
-      );
-      return;
-    }
     setSaving(true);
     try {
       const updates: Parameters<typeof DocumentService.updateDocument>[1] = {
         title: editValues.title.trim() || document.title,
-        documentDate: editValues.documentDate.trim() || null,
-        expiryDate: editValues.expiryDate.trim() || null,
+        documentDate: editValues.documentDate || null,
+        expiryDate: editValues.expiryDate || null,
         providerName: editValues.providerName.trim() || null,
         locationOfOriginal: editValues.locationOfOriginal.trim() || null,
       };
@@ -340,26 +327,20 @@ export function DocumentViewerModal({
                   maxFontSizeMultiplier={1.4}
                 />
                 <Text style={styles.metaLabel} maxFontSizeMultiplier={1.4}>Document Date</Text>
-                <TextInput
-                  style={styles.input}
-                  value={editValues.documentDate}
-                  onChangeText={(t) => setEditValues((v) => ({ ...v, documentDate: t }))}
-                  placeholder="YYYY-MM-DD"
-                  placeholderTextColor={colors.textMuted}
-                  editable={!saving}
-                  accessibilityLabel="Document date"
-                  maxFontSizeMultiplier={1.4}
+                <DatePickerField
+                  label=""
+                  value={editValues.documentDate || null}
+                  onChange={(d) => setEditValues((v) => ({ ...v, documentDate: d ?? '' }))}
+                  placeholder="Select date"
+                  disabled={saving}
                 />
                 <Text style={styles.metaLabel} maxFontSizeMultiplier={1.4}>Expiry Date</Text>
-                <TextInput
-                  style={styles.input}
-                  value={editValues.expiryDate}
-                  onChangeText={(t) => setEditValues((v) => ({ ...v, expiryDate: t }))}
-                  placeholder="YYYY-MM-DD"
-                  placeholderTextColor={colors.textMuted}
-                  editable={!saving}
-                  accessibilityLabel="Expiry date"
-                  maxFontSizeMultiplier={1.4}
+                <DatePickerField
+                  label=""
+                  value={editValues.expiryDate || null}
+                  onChange={(d) => setEditValues((v) => ({ ...v, expiryDate: d ?? '' }))}
+                  placeholder="Select date"
+                  disabled={saving}
                 />
                 <Text style={styles.metaLabel} maxFontSizeMultiplier={1.4}>Provider/Issuer</Text>
                 <TextInput

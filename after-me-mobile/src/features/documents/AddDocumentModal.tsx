@@ -10,6 +10,7 @@ import {
   ScrollView,
   TextInput,
 } from 'react-native';
+import { DatePickerField } from '../../components/DatePickerField';
 import DocumentScanner from 'react-native-document-scanner-plugin';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -46,10 +47,8 @@ export function AddDocumentModal({
   const [step, setStep] = useState<Step>('source');
   const [pendingSource, setPendingSource] = useState<'scan' | 'files' | 'photos' | null>(null);
   const [scanTitle, setScanTitle] = useState('');
-  const [documentDate, setDocumentDate] = useState('');
-  const [documentDateError, setDocumentDateError] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [expiryDateError, setExpiryDateError] = useState('');
+  const [documentDate, setDocumentDate] = useState<string | null>(null);
+  const [expiryDate, setExpiryDate] = useState<string | null>(null);
   const [categorySearch, setCategorySearch] = useState('');
 
   const reset = () => {
@@ -58,35 +57,9 @@ export function AddDocumentModal({
     setStep('source');
     setPendingSource(null);
     setScanTitle('');
-    setDocumentDate('');
-    setDocumentDateError('');
-    setExpiryDate('');
-    setExpiryDateError('');
+    setDocumentDate(null);
+    setExpiryDate(null);
     setCategorySearch('');
-  };
-
-  const validateDateField = (value: string): string => {
-    if (!value.trim()) return '';
-    const match = value.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-    if (!match) return 'Use DD/MM/YYYY format';
-    const [, dd, mm, yyyy] = match;
-    const day = parseInt(dd, 10);
-    const month = parseInt(mm, 10);
-    const year = parseInt(yyyy, 10);
-    if (month < 1 || month > 12) return 'Invalid month';
-    if (day < 1 || day > 31) return 'Invalid day';
-    if (year < 1900 || year > 2100) return 'Invalid year';
-    const date = new Date(year, month - 1, day);
-    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
-      return 'Invalid date';
-    }
-    return '';
-  };
-
-  const toIsoDate = (ddmmyyyy: string): string | null => {
-    const match = ddmmyyyy.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-    if (!match) return null;
-    return `${match[3]}-${match[2]}-${match[1]}`;
   };
 
   const handleClose = () => {
@@ -108,10 +81,8 @@ export function AddDocumentModal({
     if (!selectedCategory || !pendingSource) return;
 
     const dateOptions: { documentDate?: string; expiryDate?: string } = {};
-    const docDateIso = toIsoDate(documentDate);
-    const expDateIso = toIsoDate(expiryDate);
-    if (docDateIso) dateOptions.documentDate = docDateIso;
-    if (expDateIso) dateOptions.expiryDate = expDateIso;
+    if (documentDate) dateOptions.documentDate = documentDate;
+    if (expiryDate) dateOptions.expiryDate = expiryDate;
 
     try {
       setLoading(true);
@@ -223,13 +194,6 @@ export function AddDocumentModal({
       Alert.alert('Select Category', 'Please choose a category for your document.');
       return;
     }
-    const docErr = validateDateField(documentDate);
-    const expErr = validateDateField(expiryDate);
-    if (docErr || expErr) {
-      setDocumentDateError(docErr);
-      setExpiryDateError(expErr);
-      return;
-    }
     executeImport();
   };
 
@@ -259,38 +223,22 @@ export function AddDocumentModal({
 
             <View style={styles.dateRow}>
               <View style={styles.dateField}>
-                <TextInput
-                  style={[styles.dateInput, documentDateError ? styles.dateInputError : null]}
-                  placeholder="DD/MM/YYYY"
-                  placeholderTextColor={colors.textMuted}
+                <DatePickerField
+                  label="Document Date"
                   value={documentDate}
-                  onChangeText={(t) => { setDocumentDate(t); setDocumentDateError(''); }}
-                  onBlur={() => setDocumentDateError(validateDateField(documentDate))}
-                  keyboardType="numeric"
-                  maxLength={10}
-                  accessibilityLabel="Document date"
+                  onChange={setDocumentDate}
+                  placeholder="Select date"
+                  disabled={loading}
                 />
-                <Text style={styles.dateLabel} maxFontSizeMultiplier={1.4}>Document Date</Text>
-                {documentDateError ? (
-                  <Text style={styles.dateError} maxFontSizeMultiplier={1.4}>{documentDateError}</Text>
-                ) : null}
               </View>
               <View style={styles.dateField}>
-                <TextInput
-                  style={[styles.dateInput, expiryDateError ? styles.dateInputError : null]}
-                  placeholder="DD/MM/YYYY"
-                  placeholderTextColor={colors.textMuted}
+                <DatePickerField
+                  label="Expiry Date"
                   value={expiryDate}
-                  onChangeText={(t) => { setExpiryDate(t); setExpiryDateError(''); }}
-                  onBlur={() => setExpiryDateError(validateDateField(expiryDate))}
-                  keyboardType="numeric"
-                  maxLength={10}
-                  accessibilityLabel="Expiry date"
+                  onChange={setExpiryDate}
+                  placeholder="Select date"
+                  disabled={loading}
                 />
-                <Text style={styles.dateLabel} maxFontSizeMultiplier={1.4}>Expiry Date</Text>
-                {expiryDateError ? (
-                  <Text style={styles.dateError} maxFontSizeMultiplier={1.4}>{expiryDateError}</Text>
-                ) : null}
               </View>
             </View>
 
@@ -500,27 +448,10 @@ const styles = StyleSheet.create({
   dateField: {
     flex: 1,
   },
-  dateInput: {
-    backgroundColor: colors.amCard,
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 15,
-    color: colors.amWhite,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  dateInputError: {
-    borderColor: colors.amDanger,
-  },
   dateLabel: {
     fontSize: 11,
     color: colors.textMuted,
     marginTop: 4,
-  },
-  dateError: {
-    fontSize: 11,
-    color: colors.amDanger,
-    marginTop: 2,
   },
   searchInput: {
     backgroundColor: colors.amCard,

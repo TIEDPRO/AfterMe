@@ -12,6 +12,7 @@ import type { DocumentCategory } from '../models/DocumentCategory';
 type AppState = {
   isInitialized: boolean | null;
   hasCompletedOnboarding: boolean;
+  initialLoadDone: boolean;
   documentCountByCategory: Record<string, number>;
   totalDocuments: number;
   expiringSoonCount: number;
@@ -32,6 +33,7 @@ type AppContextValue = AppState & {
 const defaultState: AppState = {
   isInitialized: null,
   hasCompletedOnboarding: false,
+  initialLoadDone: false,
   documentCountByCategory: {},
   totalDocuments: 0,
   expiringSoonCount: 0,
@@ -99,21 +101,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           OnboardingStorage.getShowFamilyKitCreationImmediately(),
           KitHistoryService.getFreshnessScore().catch(() => null),
         ]);
-      const hasCompletedOnboarding = hasKeys || storageCompleted;
+      const hasCompletedOnboarding = storageCompleted;
       const hasKitBeenCreated = kitFreshness !== null && kitFreshness.kitVersion !== null;
       const hasSafetyNet = icloudEnabled || hasKitBeenCreated;
+
+      if (hasKeys && hasCompletedOnboarding) {
+        await migrateDatesToPlaintext();
+        await refreshDocuments();
+      }
+
       setState((prev) => ({
         ...prev,
         isInitialized: hasKeys,
         hasCompletedOnboarding,
+        initialLoadDone: true,
         hasSafetyNet,
         safetyNetDeferred,
         showFamilyKitCreationImmediately: showFamilyKit,
       }));
-      if (hasKeys) {
-        await migrateDatesToPlaintext();
-        await refreshDocuments();
-      }
     } catch {
       setState((prev) => ({
         ...prev,

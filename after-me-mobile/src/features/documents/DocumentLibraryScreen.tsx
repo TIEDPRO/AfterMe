@@ -33,7 +33,7 @@ import { ActionSheet, showActionSheet, type ActionSheetOption } from '../../comp
 type SortMode = 'newest' | 'oldest' | 'name';
 
 export function DocumentLibraryScreen() {
-  const { categoryFilter, setCategoryFilter, refreshDocuments } = useApp();
+  const { categoryFilter, setCategoryFilter, refreshDocuments, initialLoadDone } = useApp();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -70,8 +70,8 @@ export function DocumentLibraryScreen() {
   }, [categoryFilter, setCategoryFilter, refreshDocuments]);
 
   useEffect(() => {
-    loadDocuments();
-  }, [loadDocuments]);
+    if (initialLoadDone) loadDocuments();
+  }, [loadDocuments, initialLoadDone]);
 
   const filteredDocs = useMemo(() => {
     let result = documents;

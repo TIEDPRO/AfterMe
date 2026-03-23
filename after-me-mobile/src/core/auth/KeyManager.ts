@@ -23,10 +23,14 @@ let appStateSubscription: NativeEventSubscription | null = null;
 function ensureAppStateListener(): void {
   if (appStateSubscription) return;
   appStateSubscription = AppState.addEventListener('change', (state) => {
-    if (state !== 'active') {
+    if (state === 'background') {
       if (cachedVaultKey) cachedVaultKey.fill(0);
       cachedVaultKey = null;
-      pendingKeyPromise = null;
+      // pendingKeyPromise is NOT cleared here — it must resolve naturally.
+      // Clearing it during 'inactive' (which fires when FaceID/system dialogs
+      // appear) caused duplicate biometric prompts: the first getVaultKey()
+      // triggers FaceID → app goes inactive → pendingKeyPromise wiped →
+      // second caller creates a new promise → second FaceID prompt.
     }
   });
 }
