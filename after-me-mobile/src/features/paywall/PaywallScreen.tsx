@@ -43,7 +43,6 @@ export type PaywallTrigger =
   | 'document_limit'
   | 'family_kit'
   | 'settings'
-  | 'backup'
   | 'upgrade';     // annual → lifetime upgrade path
 
 interface PaywallScreenProps {
@@ -62,7 +61,6 @@ type ProductInfo = {
 const TRIGGER_HEADLINE: Record<PaywallTrigger, string> = {
   document_limit: `You've reached the free limit of ${FREE_TIER_DOCUMENT_LIMIT} documents.`,
   family_kit:     'Family Kit requires After Me Premium.',
-  backup:         'Encrypted backup requires After Me Premium.',
   settings:       'Unlock the full After Me experience.',
   upgrade:        'Switch to lifetime. Pay once. Never again.',
 };
@@ -70,7 +68,6 @@ const TRIGGER_HEADLINE: Record<PaywallTrigger, string> = {
 const TRIGGER_SUB: Record<PaywallTrigger, string> = {
   document_limit: 'Upgrade to store unlimited documents and protect everything that matters.',
   family_kit:     'Create a Family Kit so your loved ones can access your vault when it matters most.',
-  backup:         'Back up your encrypted vault to iCloud. Recoverable only by you.',
   settings:       'Everything your family needs. Protected forever.',
   upgrade:        'Annual subscribers who switch to lifetime save money every year — and remove one more thing for their family to manage.',
 };

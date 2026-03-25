@@ -337,7 +337,7 @@
       <li><strong>We do not use third-party analytics inside the app.</strong> No Google Analytics, no Facebook Pixel, no tracking SDKs inside After Me.</li>
       <li><strong>The website uses minimal cookies</strong> for basic functionality only. No tracking cookies without your consent.</li>
       <li><strong>You have full rights</strong> over any personal data we hold — access, correction, deletion, portability. Contact us any time.</li>
-      <li><strong>If you use iCloud backup</strong> (optional), your vault is encrypted before it leaves your device. Apple cannot read it. We cannot read it.</li>
+      <li><strong>If you use cloud backup</strong> (optional), your vault is encrypted before it leaves your device. Neither Apple, Google, nor After Me can read it.</li>
     </ul>
   </div>
 
@@ -351,7 +351,7 @@
       <li><a href="#document-data"><span class="toc-num">4.</span> Your documents and vault contents</a></li>
       <li><a href="#legal-basis"><span class="toc-num">5.</span> Our legal basis for processing</a></li>
       <li><a href="#third-parties"><span class="toc-num">6.</span> Third parties and data sharing</a></li>
-      <li><a href="#icloud"><span class="toc-num">7.</span> iCloud backup</a></li>
+      <li><a href="#icloud"><span class="toc-num">7.</span> Cloud backup</a></li>
       <li><a href="#cookies"><span class="toc-num">8.</span> Cookies and website tracking</a></li>
       <li><a href="#retention"><span class="toc-num">9.</span> How long we keep your data</a></li>
       <li><a href="#security"><span class="toc-num">10.</span> Security</a></li>
@@ -475,7 +475,7 @@
       <li>We cannot read your documents under any circumstances</li>
       <li>We cannot comply with a request to provide your documents to third parties, because we do not have them</li>
       <li>If you are locked out of your vault, we cannot recover your data — this is a deliberate feature of the zero-knowledge architecture</li>
-      <li>If your device is destroyed and you have not created a Family Kit or enabled iCloud backup, your vault data cannot be recovered by anyone</li>
+      <li>If your device is destroyed and you have not created a Family Kit or enabled cloud backup, your vault data cannot be recovered by anyone</li>
     </ul>
     <p>The .afterme file format is an open, documented standard. The specification and a reference decoder are published at <a href="/format-spec">myafterme.co.uk/format-spec</a>. This means your family can access your vault documents using any compatible tool, not just our App.</p>
     <p>Because your vault contents never reach our systems, we are not a data controller or data processor in relation to the documents you store. You are the sole controller of your vault contents.</p>
@@ -548,17 +548,17 @@
 
   <!-- 7. ICLOUD -->
   <div class="policy-section" id="icloud">
-    <h2>7. iCloud backup</h2>
-    <p>After Me offers an entirely optional encrypted iCloud backup feature. It can be enabled or disabled in Settings at any time.</p>
-    <p>When iCloud backup is enabled:</p>
+    <h2>7. Cloud backup</h2>
+    <p>After Me offers an entirely optional encrypted cloud backup feature. On iOS, backups are stored in iCloud; on Android, in Google Drive. It can be enabled or disabled in Settings at any time.</p>
+    <p>When cloud backup is enabled:</p>
     <ul>
       <li>Your vault is encrypted on your device using AES-256 GCM <strong>before</strong> being uploaded to iCloud</li>
       <li>The encryption key remains in your device's Secure Enclave — it is not uploaded to iCloud</li>
       <li>Apple cannot read the contents of your backed-up vault</li>
       <li>We cannot read the contents of your backed-up vault</li>
-      <li>The backup is stored in your personal iCloud account, subject to <a href="https://www.apple.com/uk/legal/privacy/" target="_blank" rel="noopener">Apple's Privacy Policy</a> and your iCloud storage limits</li>
+      <li>The backup is stored in your personal iCloud (iOS) or Google Drive (Android) account, subject to <a href="https://www.apple.com/uk/legal/privacy/" target="_blank" rel="noopener">Apple's Privacy Policy</a> and your iCloud storage limits</li>
     </ul>
-    <p>iCloud backup is governed by Apple's terms. We have no contractual relationship with Apple in relation to your iCloud storage — this is a service between you and Apple.</p>
+    <p>Cloud backup is governed by the terms of your cloud provider (Apple for iCloud, Google for Google Drive). We have no contractual relationship with these providers in relation to your cloud storage — this is a service between you and your provider.</p>
   </div>
 
   <!-- 8. COOKIES -->

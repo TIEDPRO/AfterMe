@@ -38,13 +38,13 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
       {
         question: 'What happens to my data if I delete the app?',
         answer:
-          'Deleting the app removes all local data permanently. If you have an iCloud backup or a Personal Recovery Kit, you can restore your vault on a new installation. Without a backup, your data is unrecoverable.',
+          'Deleting the app removes all local data permanently. If you have a cloud backup or a Personal Recovery Kit, you can restore your vault on a new installation. Without a backup, your data is unrecoverable.',
       },
       {
         question: 'Is my data backed up to any cloud?',
         answer: Platform.OS === 'android'
-          ? 'No automatic cloud backup exists on Android. Your vault lives on your device. To protect against device loss, create a Personal Recovery Kit (encrypted .afterme file + printed QR card) or a Family Kit. Both work on any device — no cloud account required.'
-          : 'Only if you explicitly enable iCloud backup in Settings. When enabled, an encrypted copy of your vault is stored in your personal iCloud Documents container. The encryption key is stored in iCloud Keychain, separate from the data.',
+          ? 'Only if you explicitly enable cloud backup in Settings. When enabled, an encrypted copy of your vault is stored in your personal Google Drive account. The encryption key is stored separately. After Me cannot access your backup.'
+          : 'Only if you explicitly enable cloud backup in Settings. When enabled, an encrypted copy of your vault is stored in your personal iCloud Documents container. The encryption key is stored in iCloud Keychain, separate from the data. After Me cannot access your backup.',
       },
     ],
   },
@@ -54,8 +54,8 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
       {
         question: 'What if I lose my phone?',
         answer: Platform.OS === 'android'
-          ? 'Use your Personal Recovery Kit or Family Kit to restore your vault on a new device. Your encrypted .afterme file and QR Recovery Card are all you need — no cloud account required. This is why keeping a printed kit somewhere safe matters.'
-          : 'If you enabled iCloud backup, install After Me on your new device and your vault will be restored automatically via iCloud Keychain + iCloud Documents. Alternatively, use your Personal Recovery Kit or Family Kit to restore.',
+          ? 'If you enabled cloud backup, install After Me on your new device and your vault will be restored automatically from Google Drive. Alternatively, use your Personal Recovery Kit or Family Kit to restore.'
+          : 'If you enabled cloud backup, install After Me on your new device and your vault will be restored automatically via iCloud Keychain + iCloud Documents. Alternatively, use your Personal Recovery Kit or Family Kit to restore.',
       },
       {
         question: 'What is a Personal Recovery Kit?',

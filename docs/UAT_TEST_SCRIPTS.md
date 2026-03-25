@@ -216,7 +216,7 @@ npx expo run:ios --device "Your iPhone Name" --configuration Release
 | 01.1 | Launch the app | Welcome screen appears with After Me logo, tagline "Your legacy. Their peace of mind.", and 3 buttons | ☐ |
 | 01.2 | Verify button layout | "I'm Planning My Legacy" (amber, primary), "I Have a Legacy Kit" (secondary, border), "Restore My Vault" (subtle, lowest) | ☐ |
 | 01.3 | Tap "I'm Planning My Legacy" | First onboarding screen appears — emotional, warm tone | ☐ |
-| 01.4 | Verify "← Back" button is present on Screen 1 | A "← Back" button is visible at the top-left of the screen | ☐ |
+| 01.4 | Verify "← Back" button is present on Screen 1 | A "← Back" button is visible at the top-left of the screen | ☐ |   
 | 01.5 | Read and advance through Screens 1–4 | Each screen loads without crash; "← Back" button visible on every screen | ☐ |
 | 01.6 | On Screen 2, tap "← Back" | Returns to Screen 1 without data loss or crash | ☐ |
 | 01.7 | Re-advance to Screen 4 and note the next screen | After Screen 4 (QR reveal), **"How Your Family Will Access This" explainer screen appears** (not the Legal Disclaimer yet) | ☐ |

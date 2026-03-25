@@ -251,7 +251,7 @@ export function VaultDashboardScreen({
           </Text>
           <Text style={styles.safetyNetText} maxFontSizeMultiplier={1.4}>
             {safetyNetDeferred
-              ? "Create a Family Kit or enable iCloud backup to protect your vault"
+              ? "Create a Family Kit or enable cloud backup to protect your vault"
               : "Create a Family Kit or enable backup to protect your vault"}
           </Text>
         </TouchableOpacity>
