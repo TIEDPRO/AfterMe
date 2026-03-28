@@ -7,9 +7,15 @@ dist/
 web-build/
 expo-env.d.ts
 
-# Native build folders (app-level; excludes modules/storekit/ios which has native source)
-after-me-mobile/ios/
-after-me-mobile/android/
+# Native app projects are tracked (versions, Xcode/Gradle). Ignore artifacts only.
+after-me-mobile/ios/build/
+after-me-mobile/ios/Pods/
+after-me-mobile/ios/**/*.xcuserstate
+after-me-mobile/ios/**/xcuserdata/
+after-me-mobile/android/app/build/
+after-me-mobile/android/build/
+after-me-mobile/android/.gradle/
+after-me-mobile/android/local.properties
 .kotlin/
 *.orig.*
 *.jks
