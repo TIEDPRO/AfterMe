@@ -11,7 +11,6 @@ import {
   Animated,
   ScrollView,
   Alert,
-  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
@@ -304,7 +303,7 @@ export function OnboardingScreen6({ onComplete, onBack }: OnboardingScreen6Props
                 pressed && styles.cardPressed,
               ]}
               accessible
-              accessibilityLabel="I'll create a Family Kit. Your family's only way in. Set up after adding your first document."
+              accessibilityLabel="I will create a Family Kit. Your family only way in. Set up after adding your first document."
               accessibilityRole="button"
             >
               <View style={styles.cardAccentBar} />
@@ -312,9 +311,9 @@ export function OnboardingScreen6({ onComplete, onBack }: OnboardingScreen6Props
                 <Text style={styles.cardBadgeText}>For your family</Text>
               </View>
               <View style={styles.cardContent}>
-                <Text style={styles.cardPrimary}>I'll create a Family Kit</Text>
+                <Text style={styles.cardPrimary}>I&apos;ll create a Family Kit</Text>
                 <Text style={styles.cardSecondary}>
-                  Your family's only way in.{'\n'}Set up after you've added your first document.
+                  Your family&apos;s only way in.{'\n'}Set up after you&apos;ve added your first document.
                 </Text>
               </View>
             </Pressable>

@@ -1,9 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-jest.mock('../core/auth/KeyManager', () => ({
-  KeyManager: {
-    getVaultKey: jest.fn(() => Promise.resolve(Buffer.alloc(32, 0x42))),
-  },
+jest.mock('../core/auth/VaultKeyStore', () => ({
+  getVaultKey: jest.fn(() => Promise.resolve(Buffer.alloc(32, 0x42))),
 }));
 
 jest.mock('../db/migrations', () => ({

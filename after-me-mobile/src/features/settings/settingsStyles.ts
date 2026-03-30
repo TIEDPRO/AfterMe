@@ -270,6 +270,22 @@ export const settingsStyles = StyleSheet.create({
     fontWeight: '600',
     color: colors.amAmber,
   },
+  lifetimeMemberPill: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(201, 150, 58, 0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(201, 150, 58, 0.45)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginBottom: 12,
+  },
+  lifetimeMemberPillText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.amAmber,
+    letterSpacing: 0.3,
+  },
   premiumBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',

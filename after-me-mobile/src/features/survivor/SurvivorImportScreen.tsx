@@ -127,13 +127,12 @@ export function SurvivorImportScreen({ mode: _mode, onBack, onImportComplete }: 
             Welcome
           </Text>
           <Text style={styles.welcomeBody} maxFontSizeMultiplier={3.0}>
-            We understand this may be a difficult time. Someone who cared about you
-            prepared this vault to make things a little easier.
+            We understand this may be a difficult time. Someone who cared about you left an encrypted
+            Family Kit so you can open what they prepared without their phone or passwords.
           </Text>
           <Text style={styles.welcomeBody} maxFontSizeMultiplier={3.0}>
-            Inside, you&apos;ll find important documents they wanted you to have —
-            identity papers, legal documents, financial records, and perhaps
-            personal messages.
+            Inside, you&apos;ll find the documents they chose to include — identity papers, legal and
+            financial records, and perhaps personal messages.
           </Text>
           <Text style={styles.welcomeDetail} maxFontSizeMultiplier={3.0}>
             Take your time. There&apos;s no rush.
@@ -143,19 +142,19 @@ export function SurvivorImportScreen({ mode: _mode, onBack, onImportComplete }: 
             <View style={styles.welcomeStepRow}>
               <View style={styles.stepDot}><Text style={styles.stepNum}>1</Text></View>
               <Text style={styles.stepText} maxFontSizeMultiplier={3.0}>
-                Scan the QR code from the printed Family Kit
+                Scan the QR code from the printed Family Kit card (camera opens next)
               </Text>
             </View>
             <View style={styles.welcomeStepRow}>
               <View style={styles.stepDot}><Text style={styles.stepNum}>2</Text></View>
               <Text style={styles.stepText} maxFontSizeMultiplier={3.0}>
-                Select the encrypted vault file (from USB, email, or cloud storage)
+                Choose the encrypted .afterme vault file — from email, USB, or cloud storage on this device
               </Text>
             </View>
             <View style={styles.welcomeStepRow}>
               <View style={styles.stepDot}><Text style={styles.stepNum}>3</Text></View>
               <Text style={styles.stepText} maxFontSizeMultiplier={3.0}>
-                The vault will be securely imported to this device
+                We import and decrypt the vault here; you&apos;ll protect it with this device&apos;s biometrics
               </Text>
             </View>
           </View>
@@ -271,7 +270,7 @@ export function SurvivorImportScreen({ mode: _mode, onBack, onImportComplete }: 
           </View>
 
           <Text style={styles.findFileHeading} maxFontSizeMultiplier={3.0}>
-            Now let's find the file
+            Now let&apos;s find the file
           </Text>
           <Text style={styles.findFileIntro} maxFontSizeMultiplier={3.0}>
             The encrypted vault file is what holds the documents. The QR code you just

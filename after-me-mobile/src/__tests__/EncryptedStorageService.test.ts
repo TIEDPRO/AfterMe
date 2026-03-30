@@ -1,10 +1,8 @@
 import { EncryptedStorageService } from '../core/storage/EncryptedStorageService';
 import { CryptoService } from '../core/crypto/CryptoService';
 
-jest.mock('../core/auth/KeyManager', () => ({
-  KeyManager: {
-    getVaultKey: jest.fn(() => Promise.resolve(Buffer.alloc(32, 0x42))),
-  },
+jest.mock('../core/auth/VaultKeyStore', () => ({
+  getVaultKey: jest.fn(() => Promise.resolve(Buffer.alloc(32, 0x42))),
 }));
 
 jest.mock('../services/SentryService', () => ({

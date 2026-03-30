@@ -174,10 +174,13 @@ describe('KitHistoryService', () => {
       };
       await AsyncStorage.setItem('familyKit:history', JSON.stringify([historyEntry]));
 
+      const expectedDays = Math.floor(
+        (Date.now() - oldDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
       const warning = await KitHistoryService.getStaleKitWarning();
       expect(warning).not.toBeNull();
       expect(warning).toContain('v2');
-      expect(warning).toContain('45');
+      expect(warning).toContain(String(expectedDays));
     });
 
     it('returns critical message for kit older than 180 days without vault changes', async () => {

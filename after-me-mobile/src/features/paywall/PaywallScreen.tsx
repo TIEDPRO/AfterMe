@@ -299,6 +299,9 @@ export function PaywallScreen({ visible, onDismiss, trigger = 'settings' }: Payw
                   <Text style={styles.lifetimePriceSub} maxFontSizeMultiplier={1.2}>
                     Pay once. Then never again.
                   </Text>
+                  <Text style={styles.lifetimeTrustLine} maxFontSizeMultiplier={1.2}>
+                    Serious planning deserves a product you pay for once — with no renewal for your family to manage later.
+                  </Text>
 
                   <View style={styles.divider} />
 
@@ -593,6 +596,14 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: 2,
     marginBottom: 4,
+  },
+  lifetimeTrustLine: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 8,
+    marginBottom: 4,
+    lineHeight: 17,
+    fontStyle: 'italic',
   },
 
   // Break-even maths strip

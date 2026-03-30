@@ -6,7 +6,7 @@
 
 <!-- Primary SEO -->
 <title>After Me — Encrypted Digital Vault for End-of-Life Planning</title>
-<meta name="description" content="After Me is a secure, local-first digital vault for end-of-life planning. AES-256 encrypted. Documents never leave your phone. One QR code gives your family instant access. Pay once, yours forever.">
+<meta name="description" content="After Me is the delivery layer for your plan: legal papers, accounts, and family access come together when the moment arrives. Local-first encrypted vault. UK. Not a replacement for a will or legal advice.">
 <meta name="keywords" content="end-of-life planning app, digital vault, estate planning, encrypted document storage, family kit, legacy planning, secure document organiser, after death planning, will storage app, UK estate planning">
 <meta name="author" content="TITADE Ltd">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
@@ -20,7 +20,7 @@
 <meta property="og:site_name"   content="After Me">
 <meta property="og:locale"      content="en_GB">
 <meta property="og:title"       content="After Me — Encrypted Digital Vault for End-of-Life Planning">
-<meta property="og:description" content="Your documents are encrypted on your device. Nobody else can access them — not even us. One QR code gives your family everything they need. Pay once, yours forever.">
+<meta property="og:description" content="The delivery layer for your plan: encrypted vault on your device, Family Kit for handover. Not a will or legal advice. Pay once or yearly — lifetime option available.">
 <meta property="og:image"       content="https://myafterme.co.uk/og-image.png">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
@@ -582,6 +582,49 @@
     section { padding: 72px 20px; }
     .trust-inner { gap: 24px; }
   }
+
+  /* Four tools — positioning frame (legal / accounts / people / delivery) */
+  .four-tools-section {
+    padding: 56px 24px 72px;
+    background: linear-gradient(180deg, rgba(30,34,53,0.5) 0%, rgba(45,49,66,0.2) 100%);
+    border-top: 1px solid rgba(250,249,246,0.08);
+    border-bottom: 1px solid rgba(250,249,246,0.08);
+  }
+  .four-tools-inner { max-width: 900px; margin: 0 auto; }
+  .four-tools-eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--amber); margin-bottom: 12px; text-align: center;
+  }
+  .four-tools-title {
+    font-family: var(--serif); font-size: clamp(24px, 4vw, 34px); font-weight: 700;
+    color: var(--white); text-align: center; margin-bottom: 10px; line-height: 1.2;
+  }
+  .four-tools-intro {
+    font-size: 15px; color: var(--muted); text-align: center; max-width: 640px; margin: 0 auto 28px;
+    line-height: 1.65;
+  }
+  .four-tools-table {
+    width: 100%; border-collapse: collapse; font-size: 14px;
+    background: var(--card); border-radius: 12px; overflow: hidden;
+    border: 1px solid rgba(250,249,246,0.1);
+  }
+  .four-tools-table th, .four-tools-table td {
+    padding: 14px 16px; text-align: left; border-bottom: 1px solid rgba(250,249,246,0.07);
+    vertical-align: top;
+  }
+  .four-tools-table th {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--faint); width: 28%;
+  }
+  .four-tools-table td strong { color: var(--white); font-weight: 600; }
+  .four-tools-table tr:last-child td { border-bottom: none; }
+  .four-tools-table .highlight-row { background: rgba(201,150,58,0.08); }
+  .four-tools-intro a { color: var(--amber); text-decoration: underline; text-underline-offset: 2px; }
+  .four-tools-intro a:hover { color: var(--amber-lt); }
+  @media (max-width: 640px) {
+    .four-tools-table th, .four-tools-table td { display: block; width: 100%; }
+    .four-tools-table th { padding-bottom: 4px; border-bottom: none; }
+  }
 </style>
 </head>
 <body>
@@ -605,6 +648,7 @@
     <li><a href="#features">How it works</a></li>
     <li><a href="#family-kit">Family Kit</a></li>
     <li><a href="#pricing">Pricing</a></li>
+    <li><a href="/founders">For founders</a></li>
     <li><a href="#waitlist" class="nav-cta">Get early access</a></li>
     <li><a href="/blog/">Blog</a></li>
   </ul>
@@ -614,9 +658,9 @@
 <section class="hero">
   <div class="hero-glow"></div>
   <div class="hero-glow-2"></div>
-  <p class="hero-eyebrow">Launching April 2026 · iOS &amp; Android</p>
-  <h1 class="hero-headline">The one conversation<br>you keep <em>putting off.</em></h1>
-  <p class="hero-sub">After Me takes 20 minutes. Your documents stay on your phone. Your family gets a single QR code. That's it.</p>
+  <p class="hero-eyebrow">Launching April 2026 · iOS &amp; Android · The timing layer for your plan</p>
+  <h1 class="hero-headline">When the moment comes,<br>your plan <em>reaches the right people.</em></h1>
+  <p class="hero-sub">After Me is the <strong>delivery layer</strong> — not a will, not legal advice, not a password manager. It holds your encrypted vault on your device and gives your family a single QR when plans must activate. About 20 minutes to set up.</p>
   <div class="hero-actions">
     <a href="#waitlist" class="btn-primary">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" role="img" aria-label="Arrow">
@@ -722,6 +766,43 @@
     </div>
   </div>
 </div>
+
+<!-- FOUR TOOLS — where After Me sits in your plan -->
+<section id="planning-layers" class="four-tools-section" aria-labelledby="four-tools-heading">
+  <div class="four-tools-inner">
+    <p class="four-tools-eyebrow">How the pieces fit together</p>
+    <h2 class="four-tools-title" id="four-tools-heading">Four tools. One complete plan.</h2>
+    <p class="four-tools-intro">
+      A <strong>legal will</strong> gives authority. A <strong>password manager</strong> holds logins.
+      <strong>Emergency contacts</strong> name who to call. <strong>After Me</strong> is the layer that delivers your encrypted vault and instructions when the moment arrives — locally on your phone until you choose to share the kit.
+    </p>
+    <p class="four-tools-intro" style="margin-top:-12px;">
+      Read more: <a href="/blog/timing-layer-when-your-family-needs-the-plan">The timing layer</a>,
+      <a href="/blog/business-continuity-documents-for-founders">continuity for founders</a>,
+      or <a href="/founders">how we talk to operators</a>.
+    </p>
+    <table class="four-tools-table" role="table">
+      <tbody>
+        <tr>
+          <th scope="row">Legal will &amp; professional advice</th>
+          <td><strong>Authority &amp; probate.</strong> After Me does not replace a solicitor or a signed will. Use both.</td>
+        </tr>
+        <tr>
+          <th scope="row">Password manager</th>
+          <td><strong>Accounts &amp; logins.</strong> After Me is not a general password vault — it focuses on documents and family access.</td>
+        </tr>
+        <tr>
+          <th scope="row">Emergency contacts</th>
+          <td><strong>Who to notify first.</strong> After Me adds structured document access and a Family Kit for handover.</td>
+        </tr>
+        <tr class="highlight-row">
+          <th scope="row">After Me</th>
+          <td><strong>Delivery when it matters.</strong> Encrypted vault on your device; Family Kit (QR + .afterme file) for your chosen people. Not a cloud copy of your life — a deliberate handover.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
 <!-- FEATURES -->
 <section id="features">
@@ -932,6 +1013,7 @@
     <a href="#" class="footer-logo">after<span>me</span></a>
     <ul class="footer-links">
       <li><a href="/how-it-works">How It Works</a></li>
+      <li><a href="/founders">For founders</a></li>
       <li><a href="/privacy">Privacy Policy</a></li>
       <li><a href="/terms">Terms of Service</a></li>
       <li><a href="/support">Support</a></li>

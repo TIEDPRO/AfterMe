@@ -23,6 +23,7 @@ import {
 } from '../../models/DocumentCategory';
 import { KitHistoryService, type FreshnessLevel } from '../../services/KitHistoryService';
 import { KitCreationWizard } from '../familykit/KitCreationWizard';
+import { ReadinessChecklistCard } from './ReadinessChecklistCard';
 import { BackupService } from '../../services/BackupService';
 import { colors } from '../../theme/colors';
 import { SERIF_FONT } from '../../theme/fonts';
@@ -205,6 +206,7 @@ export function VaultDashboardScreen({
   const [kitWarning, setKitWarning] = useState<string | null>(null);
   const [kitFreshness, setKitFreshness] = useState<FreshnessLevel | null>(null);
   const [backupLoading, setBackupLoading] = useState(false);
+  const [readinessRefreshKey, setReadinessRefreshKey] = useState(0);
 
   const currentTarget = isPremium ? TOTAL_TARGET : FREE_TIER_DOCUMENT_LIMIT;
 
@@ -272,6 +274,7 @@ export function VaultDashboardScreen({
   const onRefresh = async () => {
     setRefreshing(true);
     await Promise.all([refreshDocuments(), refreshKitStatus()]);
+    setReadinessRefreshKey((k) => k + 1);
     setRefreshing(false);
   };
 
@@ -351,7 +354,14 @@ export function VaultDashboardScreen({
         onDismiss={() => {
           setKitWizardVisible(false);
           refreshKitStatus();
+          setReadinessRefreshKey((k) => k + 1);
         }}
+      />
+
+      <ReadinessChecklistCard
+        refreshKey={readinessRefreshKey}
+        onPressCreateKit={() => setKitWizardVisible(true)}
+        variant="full"
       />
 
       {expiringSoonCount > 0 && (

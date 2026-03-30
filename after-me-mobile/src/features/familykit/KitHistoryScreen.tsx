@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KitHistoryService, type KitHistoryEntry, type KitDistributionEntry, type FreshnessLevel } from '../../services/KitHistoryService';
+import { ReadinessChecklistCard } from '../dashboard/ReadinessChecklistCard';
 import { CATEGORY_ICONS, CATEGORY_LABELS, type DocumentCategory } from '../../models/DocumentCategory';
 import { colors } from '../../theme/colors';
 import { SERIF_FONT } from '../../theme/fonts';
@@ -42,6 +43,7 @@ export function KitHistoryScreen({ onCreateKit, onBack }: KitHistoryScreenProps)
     kitVersion: number | null;
   } | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
+  const [readinessRefreshKey, setReadinessRefreshKey] = useState(0);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -56,6 +58,7 @@ export function KitHistoryScreen({ onCreateKit, onBack }: KitHistoryScreenProps)
       setDistributions(d.reverse());
       setFreshness(f);
       setWarning(w);
+      setReadinessRefreshKey((k) => k + 1);
     } catch {
       // silent
     } finally {
@@ -93,6 +96,11 @@ export function KitHistoryScreen({ onCreateKit, onBack }: KitHistoryScreenProps)
         contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={loadData} tintColor={colors.amAmber} />}
       >
+        <ReadinessChecklistCard
+          variant="compact"
+          refreshKey={readinessRefreshKey}
+          onPressCreateKit={onCreateKit}
+        />
         {/* Freshness banner */}
         {cfg && freshness && (
           <View style={[styles.freshnessCard, { borderColor: cfg.color }]}>

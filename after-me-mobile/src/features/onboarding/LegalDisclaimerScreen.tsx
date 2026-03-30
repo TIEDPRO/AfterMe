@@ -58,8 +58,9 @@ export function LegalDisclaimerScreen({ onContinue, onBack }: LegalDisclaimerScr
         <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
           <Text style={styles.title}>Important information</Text>
           <Text style={styles.disclaimer}>
-            After Me is not a substitute for professional legal or financial advice. The app helps
-            you organise and store important documents so loved ones can access them when needed.
+            After Me is not a substitute for professional legal or financial advice, and it is not a
+            will or grant of probate authority. The app helps you organise and store important documents
+            so loved ones can access them when needed.
           </Text>
           <Text style={styles.disclaimer}>
             We recommend consulting solicitors, financial advisers, or other qualified professionals

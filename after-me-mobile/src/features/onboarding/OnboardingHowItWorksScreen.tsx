@@ -11,7 +11,6 @@ import {
   Pressable,
   ScrollView,
   Animated,
-  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CLOUD_PROVIDER_NAME } from '../../services/CloudBackupService';
@@ -96,6 +95,10 @@ export function OnboardingHowItWorksScreen({ onContinue, onBack }: OnboardingHow
           </Text>
           <Text style={styles.subhead} maxFontSizeMultiplier={3.0}>
             Here&apos;s how it works in practice.
+          </Text>
+          <Text style={[styles.subhead, styles.subheadTiming]} maxFontSizeMultiplier={3.0}>
+            Think of this as the timing layer: your will and accounts matter for authority;
+            After Me helps with the moment your documents need to reach someone — without your phone or logins.
           </Text>
         </Animated.View>
 
@@ -244,6 +247,13 @@ const styles = StyleSheet.create({
     color: 'rgba(250,249,246,0.6)',
     lineHeight: 23,
     marginBottom: 8,
+  },
+  subheadTiming: {
+    marginTop: 6,
+    marginBottom: 0,
+    fontSize: 14,
+    lineHeight: 21,
+    color: 'rgba(250,249,246,0.52)',
   },
 
   // Path cards

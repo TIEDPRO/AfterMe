@@ -16,6 +16,9 @@ export function WelcomeScreen({ onPlanningLegacy, onHaveKit, onRestoreVault }: W
       <View style={styles.content}>
         <BrandLogo size="large" variant="dark" />
         <Text style={styles.tagline}>Your legacy. Their peace of mind.</Text>
+        <Text style={styles.subTagline}>
+          Encrypted vault on your device — when the time comes, your plan can reach the right people without your passwords.
+        </Text>
       </View>
 
       <View style={styles.buttons}>
@@ -90,6 +93,16 @@ const styles = StyleSheet.create({
     color: colors.amWhite,
     opacity: 0.45,
     marginTop: 12,
+  },
+  subTagline: {
+    fontSize: 14,
+    color: colors.amWhite,
+    opacity: 0.38,
+    marginTop: 14,
+    textAlign: 'center',
+    lineHeight: 21,
+    paddingHorizontal: 8,
+    maxWidth: 340,
   },
   buttons: {
     gap: 20,

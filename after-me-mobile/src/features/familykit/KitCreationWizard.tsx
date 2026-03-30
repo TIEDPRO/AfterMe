@@ -187,8 +187,9 @@ export function KitCreationWizard({ visible, onDismiss }: KitCreationWizardProps
       <Text style={styles.stepIndicator} maxFontSizeMultiplier={3.0} accessibilityRole="text">Step 1 of 5</Text>
       <Text style={styles.heading} maxFontSizeMultiplier={3.0} accessibilityRole="header">Create Your Family Kit</Text>
       <Text style={styles.body} maxFontSizeMultiplier={3.0}>
-        A Family Kit is a secure, encrypted package of your vault contents that your
-        loved ones can open after you&apos;re gone — or whenever they need it.
+        A Family Kit is a secure, encrypted snapshot of your entire vault at the time you generate it
+        — every document you have stored. Your loved ones can open it after you&apos;re gone (or whenever
+        you plan for) using the QR card and file together.
       </Text>
 
       <View style={styles.infoCard}>
@@ -196,7 +197,7 @@ export function KitCreationWizard({ visible, onDismiss }: KitCreationWizardProps
         <View style={styles.infoRow}>
           <Text style={styles.infoIcon}>📦</Text>
           <Text style={styles.infoText} maxFontSizeMultiplier={3.0}>
-            An encrypted vault file (.afterme) with all your documents
+            An encrypted vault file (.afterme) containing your whole vault as it exists when you create the kit
           </Text>
         </View>
         <View style={styles.infoRow}>

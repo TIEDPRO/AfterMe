@@ -26,6 +26,13 @@ export function SubscriptionSection({
     <View style={styles.section}>
       <Text style={styles.sectionTitle} maxFontSizeMultiplier={3.0}>Subscription</Text>
       <View style={styles.infoCard}>
+        {isLifetime && (
+          <View style={styles.lifetimeMemberPill} accessibilityRole="text">
+            <Text style={styles.lifetimeMemberPillText} maxFontSizeMultiplier={1.3}>
+              Lifetime member
+            </Text>
+          </View>
+        )}
         <View style={styles.subscriptionRow}>
           <Text style={styles.subscriptionLabel} maxFontSizeMultiplier={3.0}>Status</Text>
           <Text style={[styles.subscriptionValue, { color: isPremium ? colors.success : colors.amAmber }]} maxFontSizeMultiplier={3.0}>

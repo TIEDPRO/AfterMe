@@ -8,6 +8,8 @@ const babelJestEntry = babelJestKey ? jestExpoPreset.transform[babelJestKey] : u
 /** @type {import('jest').Config} */
 module.exports = {
   ...jestExpoPreset,
+  // Single worker avoids occasional SIGSEGV in Jest workers with native crypto paths.
+  maxWorkers: 1,
   ...(babelJestEntry
     ? {
         transform: {

@@ -10,7 +10,6 @@ import {
   Pressable,
   useWindowDimensions,
   Animated,
-  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { onboardingStyles } from './shared/onboardingStyles';
@@ -272,10 +271,10 @@ export function OnboardingScreen4({ onContinue, onBack }: OnboardingScreen4Props
             Print it. Save it. Give it to someone you trust.
           </Animated.Text>
           <Animated.Text style={[styles.bodyCopy, { opacity: body2Opacity }]} maxFontSizeMultiplier={1.5}>
-            They scan it. Everything opens instantly.
+            They scan it and pick the file — your vault opens on their device.
           </Animated.Text>
           <Animated.Text style={[styles.bodyCopy, styles.bodyLast, { opacity: body3Opacity }]} maxFontSizeMultiplier={1.5}>
-            No account. No password. No fuss.
+            The kit is a snapshot of your whole vault. No account. No password. No fuss.
           </Animated.Text>
         </Animated.View>
       </View>

@@ -31,6 +31,7 @@ export const PREMIUM_FEATURES_LIFETIME = [
   'Unlimited documents — stored forever',
   'Family Kit creation & unlimited updates',
   'All future features included — no upgrade fees',
+  'Lifetime is our trust signal — one payment, long-term product commitment',
   'No renewal risk at death — your family inherits access, not the invoice',
   'Open format guarantee — your data is yours, permanently',
   'Priority support',

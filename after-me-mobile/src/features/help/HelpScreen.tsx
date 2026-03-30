@@ -65,7 +65,7 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
       {
         question: 'What is a Family Kit?',
         answer:
-          'A Family Kit is designed for your loved ones. It contains an encrypted copy of your vault and a QR Key Card you print and give to a trusted person. To generate a kit, you must have at least one document in your vault — the kit is an encrypted snapshot of what you have stored. Go to the Family Kit tab once your vault has documents to create one.',
+          'A Family Kit is for your loved ones. It packages an encrypted snapshot of your whole vault (every document in it at the time you generate the kit) plus a QR Key Card you print and give to a trusted person. Categories organise your vault in the app; the kit is one vault snapshot for whoever receives it — not separate hidden vaults per person unless you create new kits over time. You need at least one document before you can generate a kit. Use the Family Kit tab once your vault has documents.',
       },
       {
         question: 'How often should I update my recovery kits?',
@@ -220,6 +220,14 @@ export function HelpScreen() {
           accessibilityLabel="View terms of service"
         >
           <Text style={styles.linkText} maxFontSizeMultiplier={3.0}>Terms of Service</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.linkButton}
+          onPress={() => Linking.openURL('https://myafterme.co.uk/founders')}
+          accessibilityRole="link"
+          accessibilityLabel="Open For founders page on the website"
+        >
+          <Text style={styles.linkText} maxFontSizeMultiplier={3.0}>For founders (website)</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
