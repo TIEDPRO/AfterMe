@@ -120,15 +120,20 @@
 
 ## UAT-04 · How It Works — Timing Layer Copy
 
-**Precondition:** On How It Works screen (from onboarding or any re-entry).
+**Precondition:** This screen only appears during the initial onboarding flow — there is no re-entry path once onboarding is complete. To reach it: delete and reinstall the app (or use the dev Reset button on a development build), tap **"Start My Legacy Vault"** on the Welcome screen, and proceed through onboarding screens 1–4. How It Works is **step 5 of 8** (fifth progress dot active).
 
 | Step | Action | Expected | Result |
 |------|--------|----------|--------|
-| 4.1 | View the How It Works screen | Overview of steps: add documents, create kit, share | |
-| 4.2 | Locate the timing-layer subhead | Text reads: **"Think of this as the timing layer: your will and accounts matter for authority; After Me helps with the moment your documents need to reach someone — without your phone or logins."** | |
-| 4.3 | Confirm styling | Subhead is in a lighter muted colour (rgba ~52% opacity) below a primary heading | |
-| 4.4 | Read the "four tools" framing | Four steps/tools described in sequence on-screen | |
-| 4.5 | Tap Continue | Proceeds to Legal Disclaimer | |
+| 4.1 | View the How It Works screen | Eyebrow reads "Before you set up"; headline reads "How your family will access this" | |
+| 4.2 | Read the introductory subhead | Text reads: **"After Me is built around a simple idea: your loved ones should be able to access what you leave them — without needing your phone, your password, or your account."** | |
+| 4.3 | Locate the timing-layer subhead below | Text reads: **"Think of this as the timing layer: your will and accounts matter for authority; After Me helps with the moment your documents need to reach someone — without your phone or logins."** | |
+| 4.4 | Confirm timing-layer styling | Subhead is in a lighter muted colour (rgba ~52% opacity), slightly smaller than the introductory subhead above it | |
+| 4.5 | Read the three access path cards | Three cards displayed in sequence: **Family Kit** (amber border, "Recommended" badge), **iCloud Backup** ("For your own recovery" badge), **No preparation** (danger/red border) | |
+| 4.6 | Verify Family Kit card content | Shows QR Card + Vault File = Vault Opens equation row; note reads "Both pieces are needed — neither works alone" | |
+| 4.7 | Verify iCloud Backup card warning | Red warning box reads: "This does not give your family access. Accessing another person's cloud account after death is a complex legal process that can take weeks." | |
+| 4.8 | Verify No Preparation card | States vault is permanently inaccessible to everyone if no Family Kit or backup exists | |
+| 4.9 | Read bottom note | Amber note reads: "You'll set up your Family Kit right after finishing this setup. It takes about two minutes." | |
+| 4.10 | Tap **I understand — continue** | Proceeds to Legal Disclaimer | |
 
 ---
 
